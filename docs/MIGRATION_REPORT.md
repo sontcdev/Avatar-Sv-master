@@ -1,5 +1,14 @@
 # Gameplay recovery report — 2026-10-28
 
+## Milestone 2.1 — kết quả thay thế trạng thái cũ
+
+[Chắc chắn] Tiếp tục từ `79e939f48403feb054e6ce2ac509bf45d3b04929`, ban đầu worktree clean. Java 17 build đạt; **47 test khác nhau đạt: 32 unit + 15 DB opt-in**, không cộng rerun. JAR SHA256 `9ef00532c343e4dfd44db8aace5fcf67702b70e913a95f39c3150fedb8106008` trùng artifact chạy staging. Đã sửa boss/bot tự chiếm player TCP slots và null-zone khi client gửi context 8. Cùng MIDlet 71 reconnect được sau restart bản cuối, nhưng toàn bộ acceptance E2E vẫn **PARTIAL**.
+
+[Chắc chắn] Test DB tái hiện replay sau harvest mới (100→240→380 xu) và stale snapshot khôi phục kho đã bán. Native 63 chỉ chứa product short, không có operation ID dùng để deduplicate bền vững. **Live sales BLOCKED, mặc định OFF**; không đổi packet layout, không có giá production. Commit ACK loss/precommit/rollback failure đã được fault-inject ở JDBC boundary trên DB cô lập; không phải crash hoặc client E2E test. Backup production **PARTIAL**, load gate chưa đạt, không cutover.
+
+Bằng chứng và giới hạn hiện hành: [MILESTONE_2_1_FINAL_REPORT.md](MILESTONE_2_1_FINAL_REPORT.md), [CLIENT_CONNECTIVITY_DIAGNOSIS.md](CLIENT_CONNECTIVITY_DIAGNOSIS.md), [NATIVE63_REPLAY_ANALYSIS.md](NATIVE63_REPLAY_ANALYSIS.md). Các mục Milestone 1/2 bên dưới là lịch sử, không dùng để nâng trạng thái Milestone 2.1.
+
+
 [Chắc chắn] Đã audit và triển khai một phần trong worktree cách ly `/Volumes/sontc/sources/others/avatar2d-gameplay-migration`, nhánh `codex/gameplay-migration`. **Chưa hoàn tất toàn bộ yêu cầu; chưa có nhóm gameplay mới đạt COMPLETE theo completion rule. Không cutover production.**
 
 ## Milestone 2 — kết quả hiện tại

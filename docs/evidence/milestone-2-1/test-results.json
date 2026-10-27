@@ -1,0 +1,85 @@
+{
+  "java": "Corretto 17.0.18",
+  "default_package": [
+    {
+      "name": "avatar.server.SessionLifecycleTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "avatar.service.AttendancePersistenceTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "1"
+    },
+    {
+      "name": "avatar.service.FarmPersistenceTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "1"
+    },
+    {
+      "name": "avatar.service.FarmSalePersistenceTest",
+      "tests": "12",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "12"
+    },
+    {
+      "name": "avatar.service.FarmSaleTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "avatar.service.FarmVisitTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "avatar.service.FriendshipPersistenceTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "1"
+    },
+    {
+      "name": "avatar.service.GameplayFeedbackTest",
+      "tests": "16",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "avatar.service.SocialProtocolTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "avatar.service.StarfruitHarvestTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "opt_in_separate_JVMs": {
+    "FarmPersistenceTest": 1,
+    "AttendancePersistenceTest": 1,
+    "FarmSalePersistenceTest": 12,
+    "FriendshipPersistenceTest": 1
+  },
+  "unique_passed": 47,
+  "default_passed": 32,
+  "db_passed": 15,
+  "notes": "Default package skips 15 opt-in cases. Separate DB runs passed those 15; reruns are not extra tests. An initial final farm invocation used a nonexistent config path and failed before DB access; corrected isolated.properties invocation passed."
+}

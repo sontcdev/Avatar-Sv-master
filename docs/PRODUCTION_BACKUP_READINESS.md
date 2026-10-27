@@ -1,5 +1,10 @@
 # Production backup readiness — Milestone 2, 2026-10-28
 
+## Milestone 2.1 checkpoint
+
+[Chắc chắn] **PARTIAL**: chưa có administrator thực hiện production backup và isolated restore. Không thử vượt quyền hoặc chạy lại sudo. Service quan sát khi JVM staging cuối PID 327395 chạy vẫn MainPID 313665/NRestarts 0; xem [runtime identity](evidence/milestone-2-1/runtime-identity.txt). Bản restore 35 bảng/checksum bên dưới là staging Milestone 2, không phải lần backup production mới. Quy trình chờ admin và rollback bên dưới tiếp tục áp dụng; chưa được phép cutover.
+
+
 [Chắc chắn] **PARTIAL; production chưa sẵn sàng cutover.** Chỉ audit quyền đọc và trạng thái service; không dump, sửa DB, migrate, deploy, restart hoặc đổi quyền production.
 
 ## Bằng chứng thực tế

@@ -1,0 +1,10 @@
+Stopped verified staging PID 327395
+Stopped verified staging PID 325129
+MainPID=313665
+NRestarts=0
+
+Removed run-owned reverse tcp:19128 on emulator-5554
+Removed run-owned reverse tcp:19128 on emulator-5556
+Stopped owned AvatarMilestone2 emulator 5556; preserved 5554 and shared ADB 5037.
+Stopped verified run-owned SSH tunnel PID 70683.
+Private datadir, AVD data, logs and artifacts retained. No production mutation.

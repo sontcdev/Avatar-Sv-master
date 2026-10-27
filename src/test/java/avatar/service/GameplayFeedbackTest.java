@@ -15,6 +15,15 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class GameplayFeedbackTest {
+    @Test public void initialCityHandlerWorksBeforeJoiningAnyZone() throws Exception {
+        withSession(session -> {
+            assertNull(session.user.getZone());
+            session.getHandler(new Message(Cmd.GET_HANDLER,new byte[]{8}));
+            assertEquals(Cmd.GET_HANDLER,session.messages.get(0).getCommand());
+            assertArrayEquals(new byte[]{8},session.messages.get(0).getData());
+        });
+    }
+
     @Test public void incompleteFarmActionsRespondInsteadOfWaiting() throws Exception {
         withSession(session -> {
             FarmMsgHandler handler = new FarmMsgHandler(session);

@@ -143,4 +143,112 @@ public class FarmSalePersistenceTest {
         });
     }
 
+    @Test public void legacyPacketReplayAfterLegitimateHarvestSellsNewStockKnownBlocker() throws Exception {
+        GameplayFeedbackTest.withSession(s -> {
+            stock(s.user);
+            byte[] oldPacket = new byte[]{0, (byte) 215};
+            FarmMsgHandler handler = new FarmMsgHandler(s);
+            handler.onMessage(new Message(Cmd.SELL_ITEM,oldPacket.clone()));
+            balance(240);
+            s.user.setStarfruitQuantity(20); s.user.setStarfruitLastHarvestMs(0);
+            assertEquals(20,s.user.harvestStarfruit());
+            User loaded = new User(); loaded.setId(9001); loaded.loadFarmData(9001);
+            assertEquals(20,loaded.NongSanDacBiet.get(0).getSoluong());
+            handler.onMessage(new Message(Cmd.SELL_ITEM,oldPacket.clone()));
+            // Characterization of the unresolved protocol ambiguity, not a replay-safety assertion.
+            balance(380); assertEquals(0,s.user.NongSanDacBiet.get(0).getSoluong());
+        });
+    }
+
+    @Test public void lostCommitAcknowledgementCannotBeOverwrittenByUncertainSession() throws Exception {
+        GameplayFeedbackTest.withSession(s -> {
+            stock(s.user);
+            try (JdbcFault fault = new JdbcFault(db,"ack")) {
+                try { s.user.sellFarmProduct(215,7); fail("Expected lost commit acknowledgement"); }
+                catch (SQLException expected) { assertTrue(s.user.isFarmSaleUncertain()); }
+            }
+            balance(240); assertEquals(100,s.user.getXu());
+            try { s.user.saveFarmData(9001); fail("Uncertain snapshot must not persist"); }
+            catch (SQLException expected) { }
+            java.lang.reflect.Method save = User.class.getDeclaredMethod("saveData");
+            save.setAccessible(true); save.invoke(s.user); balance(240);
+            User loaded = new User(); loaded.setId(9001); loaded.loadFarmData(9001);
+            assertEquals(0,loaded.NongSanDacBiet.get(0).getSoluong());
+        });
+    }
+
+    @Test public void failedCommitBeforeDatabaseCommitLeavesBothRowsUnchanged() throws Exception {
+        GameplayFeedbackTest.withSession(s -> {
+            stock(s.user);
+            try (JdbcFault fault = new JdbcFault(db,"before")) {
+                try { s.user.sellFarmProduct(215,7); fail("Expected precommit failure"); }
+                catch (SQLException expected) { assertTrue(s.user.isFarmSaleUncertain()); }
+            }
+            balance(100);
+            User loaded = new User(); loaded.setId(9001); loaded.loadFarmData(9001);
+            assertEquals(20,loaded.NongSanDacBiet.get(0).getSoluong());
+        });
+    }
+
+    @Test public void rollbackFailureMarksSessionUncertainAndBlocksItsFarmWrites() throws Exception {
+        GameplayFeedbackTest.withSession(s -> {
+            stock(s.user);
+            try (JdbcFault fault = new JdbcFault(db,"rollback")) {
+                try { s.user.sellFarmProduct(215,50000); fail("Expected constraint failure"); }
+                catch (SQLException expected) {
+                    assertEquals(1,expected.getSuppressed().length);
+                    assertTrue(s.user.isFarmSaleUncertain());
+                }
+            }
+            try { s.user.saveFarmData(9001); fail("Unsafe rollback snapshot"); }
+            catch (SQLException expected) { }
+            balance(100);
+            User loaded = new User(); loaded.setId(9001); loaded.loadFarmData(9001);
+            assertEquals(20,loaded.NongSanDacBiet.get(0).getSoluong());
+        });
+    }
+
+    @Test public void staleFarmSnapshotCanRestoreSoldStockKnownBlocker() throws Exception {
+        GameplayFeedbackTest.withSession(s -> {
+            stock(s.user);
+            User stale = new User(); stale.setId(9001); stale.loadFarmData(9001);
+            s.user.sellFarmProduct(215,7); balance(240);
+            stale.saveFarmData(9001);
+            User loaded = new User(); loaded.setId(9001); loaded.loadFarmData(9001);
+            assertEquals(20,loaded.NongSanDacBiet.get(0).getSoluong());
+            // Separate legacy snapshot writers have no revision guard; sales stay disabled.
+        });
+    }
+
+    /** Inject only JDBC boundary failures; all queries/locks/commits use the real isolated DB. */
+    private static final class JdbcFault implements AutoCloseable {
+        private final DbManager db;
+        private final java.lang.reflect.Field field;
+        private final com.zaxxer.hikari.HikariDataSource original;
+        JdbcFault(DbManager db, String mode) throws Exception {
+            this.db = db;
+            field = DbManager.class.getDeclaredField("hikariDataSource"); field.setAccessible(true);
+            original = (com.zaxxer.hikari.HikariDataSource) field.get(db);
+            field.set(db,new com.zaxxer.hikari.HikariDataSource() {
+                @Override public Connection getConnection() throws SQLException {
+                    Connection real = original.getConnection();
+                    return (Connection) java.lang.reflect.Proxy.newProxyInstance(Connection.class.getClassLoader(),
+                            new Class<?>[]{Connection.class}, (proxy,method,args) -> {
+                                if (method.getName().equals("commit") && mode.equals("before"))
+                                    throw new SQLException("Synthetic precommit failure");
+                                if (method.getName().equals("rollback") && mode.equals("rollback"))
+                                    throw new SQLException("Synthetic rollback failure");
+                                try {
+                                    Object result = method.invoke(real,args);
+                                    if (method.getName().equals("commit") && mode.equals("ack"))
+                                        throw new SQLException("Synthetic lost commit acknowledgement");
+                                    return result;
+                                } catch (java.lang.reflect.InvocationTargetException e) { throw e.getCause(); }
+                            });
+                }
+            });
+        }
+        @Override public void close() throws Exception { field.set(db,original); }
+    }
+
 }

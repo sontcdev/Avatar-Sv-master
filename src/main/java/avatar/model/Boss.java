@@ -478,24 +478,8 @@ public class Boss extends User {
         }
     }
 
-    public static Session createSession(User boss){
-        //Cmd.SET_PROVIDER
-        try {
-            // Tạo một Socket (thay thế bằng thông tin kết nối thực tế)
-            Socket socket = new Socket();
-            socket.connect(ServerManager.getListenerAddress(), 5000);
-            int sessionId = boss.getId(); // Ví dụ về ID, có thể là bất kỳ giá trị nào phù hợp
-            Session session = new Session(socket, sessionId);
-            session.ip = "127.0.0.1";
-            session.user = boss;
-            session.connected = true;
-            session.login = true;
-            System.out.println("Session created with ID: " + session.id);
-            return session;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static Session createSession(User boss) {
+        return Session.forInternalActor(boss);
     }
 
     @Builder

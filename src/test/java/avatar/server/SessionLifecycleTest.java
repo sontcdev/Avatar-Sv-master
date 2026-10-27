@@ -43,18 +43,29 @@ public class SessionLifecycleTest {
         }
     }
     @Test
-    public void bossUsesActualListenerInsteadOfHardcodedLoopbackPort() throws Exception {
+    public void bossesDoNotConsumePlayerConnectionsOrRequireAListener() throws Exception {
         try (ServerSocket listener = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
+            listener.setSoTimeout(150);
             ServerManager.server = listener;
-            avatar.network.Session session = avatar.model.Boss.createSession(new avatar.model.Boss());
-            assertNotNull(session);
-            try (Socket accepted = listener.accept()) {
-                assertEquals(listener.getLocalPort(), session.sc.getPort());
-            } finally {
-                session.sc.close();
-                ServerManager.server = null;
-            }
+            try {
+                for (int i = 0; i < 14; i++) {
+                    Session session = avatar.model.Boss.createSession(new avatar.model.Boss());
+                    assertNotNull(session);
+                    assertNotNull(session.getParkService());
+                    session.sendMessage(new avatar.network.Message((byte) -1));
+                    session.user = null;
+                    session.close();
+                    assertFalse(session.isConnected());
+                }
+                try (Socket unexpected = listener.accept()) {
+                    fail("Boss consumed a player connection");
+                } catch (SocketTimeoutException expected) { }
+            } finally { ServerManager.server = null; }
         }
+        Session session = avatar.model.Boss.createSession(new avatar.model.Boss());
+        assertNotNull(session);
+        session.user = null;
+        session.close();
     }
 
     @Test

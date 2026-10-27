@@ -1,0 +1,8 @@
+pid 327395 cwd /home/sontc/avatar2d-gameplay-stage
+command java -Xms32m -Xmx128m -XX:ActiveProcessorCount=2 -Davatar.protocol.trace=true -cp m21-server.jar:. GameplayProbe
+jar_sha256 9ef00532c343e4dfd44db8aace5fcf67702b70e913a95f39c3150fedb8106008
+LISTEN 0      52                                127.0.0.1:13317      0.0.0.0:*    users:(("mariadbd",pid=325129,fd=18))
+LISTEN 0      20                       [::ffff:127.0.0.1]:19129            *:*    users:(("java",pid=327395,fd=9))
+
+MainPID=313665
+NRestarts=0

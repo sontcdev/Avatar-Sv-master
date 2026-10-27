@@ -90,13 +90,18 @@ public class Session implements ISession {
     private static final long ACTION_COOLDOWN_MS = 100; //
 
     public Session(Socket sc, int id) throws IOException {
+        this(sc, id, ((InetSocketAddress) sc.getRemoteSocketAddress()).getAddress().getHostAddress(),
+                sc.getInputStream(), sc.getOutputStream());
+    }
+
+    private Session(Socket sc, int id, String ip, java.io.InputStream input, java.io.OutputStream output) {
         this.obj = new Object();
         this.resourceType = 0;
         this.sc = sc;
         this.id = id;
-        this.ip = ((InetSocketAddress) this.sc.getRemoteSocketAddress()).getAddress().toString().replace("/", "");
-        this.dis = new DataInputStream(sc.getInputStream());
-        this.dos = new DataOutputStream(sc.getOutputStream());
+        this.ip = ip;
+        this.dis = new DataInputStream(input);
+        this.dos = new DataOutputStream(output);
         this.setHandler(new MessageHandler(this));
         this.sendThread = new Thread(this.sender = new Sender());
         this.collectorThread = new Thread(new MessageCollector());
@@ -105,6 +110,15 @@ public class Session implements ISession {
         this.homeService = new HomeService(this);
         this.parkService = new ParkService(this);
         this.service = new Service(this);
+    }
+
+    public static Session forInternalActor(User actor) {
+        Session session = new Session(null, actor.getId(), "127.0.0.1",
+                java.io.InputStream.nullInputStream(), java.io.OutputStream.nullOutputStream());
+        session.user = actor;
+        session.connected = true;
+        session.login = true;
+        return session;
     }
 
     public void startCollector() {
@@ -123,6 +137,7 @@ public class Session implements ISession {
 
     @Override
     public void sendMessage(Message message) {
+        if (sc == null) return; // Internal actors have no client transport or outbound queue.
         if (Boolean.getBoolean("avatar.protocol.trace")) traceGameplay("QUEUED",message,message.getData());
         this.sender.AddMessage(message);
     }
@@ -208,6 +223,12 @@ public class Session implements ISession {
         closed = true;
         this.parkService.cancelFishing();
         try {
+            if (sc == null) {
+                connected = false;
+                login = false;
+                if (user != null && user.getZone() != null) user.getZone().leave(user);
+                return;
+            }
             if (this.user != null) {
                 this.user.close();
                 UserManager.getInstance().remove(user);
@@ -216,7 +237,7 @@ public class Session implements ISession {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            this.cleanNetwork();
+            if (sc != null) this.cleanNetwork();
         }
     }
 
@@ -319,7 +340,7 @@ public class Session implements ISession {
 
         if (index == 8) {
             Zone zone = user.getZone();
-            zone.leave(user);
+            if (zone != null) zone.leave(user);
         }
         ms = new Message(Cmd.GET_HANDLER);
         DataOutputStream ds2 = ms.writer();
