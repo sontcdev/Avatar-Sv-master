@@ -41,6 +41,7 @@ import java.time.LocalTime;
 import java.util.stream.Collectors;
 
 public class NpcHandler {
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(NpcHandler.class);
 
     private static final Map<Integer, Long> lastActionTimes = new HashMap<>();
     private static final long ACTION_COOLDOWN_MS = 90; // 2 giây cooldown
@@ -590,10 +591,16 @@ public class NpcHandler {
                 case NpcName.LAI_BUON: {
                     List<Menu> laibuon = new ArrayList<>();
                     Menu LAI_BUON = Menu.builder().name("Điểm Danh").action(() -> {
-                        //Item item = new Item(593, -1, 1);
-                        //us.addItemToChests(item);
-                        //us.addExp(5);
-                        us.getService().serverMessage("đang xây dựng");//Bạn nhận được 5 điểm exp + 1 thẻ quay số miễn phí");
+                        try {
+                            us.getService().serverMessage(us.claimDailyAttendance()
+                                    ? "Bạn nhận được 20 điểm chuyên cần và 1 vé quay số miễn phí."
+                                    : "Hôm nay bạn đã điểm danh rồi.");
+                        } catch (IllegalArgumentException | ArithmeticException invalid) {
+                            us.getService().serverDialog(invalid.getMessage());
+                        } catch (java.sql.SQLException failure) {
+                            logger.error("Could not save daily attendance", failure);
+                            us.getService().serverDialog("Chưa lưu được điểm danh. Vui lòng thử lại sau.");
+                        }
                     }).build();
                     laibuon.add(LAI_BUON);
                     laibuon.add(Menu.builder().name("Xem hướng dẫn").action(() -> {

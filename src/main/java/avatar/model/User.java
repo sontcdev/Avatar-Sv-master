@@ -121,8 +121,55 @@ public class User {
     public List<NongSan> NongSan = new ArrayList<>();
     public List<PhanBon> PhanBon = new ArrayList<>();
     public List<NongSanDacBiet> NongSanDacBiet = new ArrayList<>();
-    // shortcut: preserve the existing initial crop; regrowth needs game rules before enabling it.
+    // shortcut: retain local capacity 180; add level-specific capacity only with a verified economy catalog.
     private int starfruitQuantity = 180;
+    private long starfruitLastHarvestMs;
+
+    public synchronized int getStarfruitQuantity() {
+        if (starfruitLastHarvestMs <= 0) return Math.max(0, Math.min(180, starfruitQuantity));
+        long elapsedMinutes = Math.max(0, (System.currentTimeMillis() - starfruitLastHarvestMs) / 60_000L);
+        return (int) (Math.min(60, elapsedMinutes) * 180 / 60);
+    }
+
+    public synchronized boolean claimDailyAttendance() throws SQLException {
+        LocalDate today = LocalDate.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"));
+        synchronized (chests) {
+            Item ticket = chests.stream().filter(item -> item.getId() == 593).findFirst().orElse(null);
+            Part ticketPart = avatar.item.PartManager.getInstance().findPartByID(593);
+            if (ticketPart == null || ticketPart.getType() != -2)
+                throw new IllegalArgumentException("Chưa có dữ liệu vé điểm danh hợp lệ.");
+            if (ticket == null && chests.size() >= chestSlot)
+                throw new IllegalArgumentException("Rương đồ đã đầy.");
+            if (ticket != null && (ticket.getQuantity() < 0 || ticket.getQuantity() >= 20000))
+                throw new IllegalArgumentException("Số vé trong rương đã đạt giới hạn.");
+            int newScores = Math.addExact(scores, 20);
+            JSONArray saved = new JSONArray();
+            for (Item item : chests) {
+                JSONObject value = new JSONObject();
+                value.put("id", item.getId()); value.put("expired", item.getExpired());
+                value.put("quantity", item.getQuantity() + (item == ticket ? 1 : 0));
+                saved.add(value);
+            }
+            if (ticket == null) {
+                JSONObject value = new JSONObject(); value.put("id", 593);
+                value.put("expired", -1); value.put("quantity", 1); saved.add(value);
+            }
+            // The conditional write commits the reward and day together, including across reconnects.
+            try (Connection connection = DbManager.getInstance().getConnection();
+                 PreparedStatement update = connection.prepareStatement(
+                         "UPDATE players SET chests = ?, scores = ?, attendance_date = ? " +
+                         "WHERE user_id = ? AND (attendance_date IS NULL OR attendance_date < ?) LIMIT 1")) {
+                update.setString(1, saved.toJSONString()); update.setInt(2, newScores);
+                update.setDate(3, java.sql.Date.valueOf(today)); update.setInt(4, id);
+                update.setDate(5, java.sql.Date.valueOf(today));
+                if (update.executeUpdate() == 0) return false;
+            }
+            if (ticket == null) chests.add(new Item(593, -1, 1));
+            else ticket.setQuantity(ticket.getQuantity() + 1);
+            scores = newScores;
+            return true;
+        }
+    }
 
     public synchronized int harvestCrop(int index) throws SQLException {
         if (index < 0 || index >= landItems.size()) throw new IllegalArgumentException("Ô đất không hợp lệ.");
@@ -152,21 +199,25 @@ public class User {
     }
 
     public synchronized int harvestStarfruit() throws SQLException {
-        if (starfruitQuantity <= 0) return 0;
+        int quantity = getStarfruitQuantity();
+        if (quantity <= 0) return 0;
         NongSanDacBiet stock = NongSanDacBiet.stream().filter(item -> item.getId() == 215).findFirst().orElse(null);
         int oldStock = stock == null ? 0 : stock.getSoluong();
-        if (oldStock < 0 || starfruitQuantity > Short.MAX_VALUE - oldStock) {
+        if (oldStock < 0 || quantity > Short.MAX_VALUE - oldStock) {
             throw new SQLException("Starfruit inventory exceeds client capacity");
         }
         boolean added = stock == null;
         if (added) { stock = new NongSanDacBiet(215, 0); NongSanDacBiet.add(stock); }
-        int quantity = starfruitQuantity;
+        int previousQuantity = starfruitQuantity;
+        long previousHarvestMs = starfruitLastHarvestMs;
         stock.setSoluong(oldStock + quantity);
         starfruitQuantity = 0;
+        starfruitLastHarvestMs = System.currentTimeMillis();
         try {
             saveFarmData(id);
         } catch (SQLException failure) {
-            starfruitQuantity = quantity;
+            starfruitQuantity = previousQuantity;
+            starfruitLastHarvestMs = previousHarvestMs;
             if (added) NongSanDacBiet.remove(stock); else stock.setSoluong(oldStock);
             throw failure;
         }
@@ -609,7 +660,7 @@ public class User {
         this.session.sendMessage(ms);
     }
 
-    protected void saveData() {
+    protected synchronized void saveData() {
         DbManager.getInstance().executeUpdate("UPDATE `players` SET `gender` = ?, `friendly` = ?, `crazy` = ?, `stylish` = ?, `happy` = ?, `hunger` = ?, `chest_slot` = ? , `chest_home_slot` = ? WHERE `user_id` = ? LIMIT 1;",
                 this.gender, this.friendly, this.crazy, this.stylish, this.happy, this.hunger, this.chestSlot, this.chestHomeSlot, this.id);
         DbManager.getInstance().executeUpdate("UPDATE `players` SET `xu` = ?, `luong` = ?, `luong_khoa` = ?, `xeng` = ?, `level_main` = ?, `exp_main` = ?,`scores` = ? , `xu_from_boss` = ? , `TopPhaoLuong` = ?, `TopPhaoXu` = ? WHERE `user_id` = ? LIMIT 1;",
@@ -659,7 +710,7 @@ public class User {
         JSONArray landData = new JSONArray();
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-        for (LandItem landItem : this.session.user.landItems) {
+        for (LandItem landItem : this.landItems) {
             JSONObject landObject = new JSONObject();
             landObject.put("growthTime", landItem.getGrowthTime());
             landObject.put("type", landItem.getType());//lao
@@ -681,7 +732,7 @@ public class User {
 
 
         JSONArray animalData = new JSONArray();
-        for (Animal animal : this.session.user.Animal) {
+        for (Animal animal : this.Animal) {
             JSONObject animalObject = new JSONObject();
             animalObject.put("id", animal.getId());
             animalObject.put("health", animal.getHealth());
@@ -695,7 +746,7 @@ public class User {
         }
 
         JSONArray hatgiongData = new JSONArray();
-        for (HatGiong hatGiong : this.session.user.hatgiong) {
+        for (HatGiong hatGiong : this.hatgiong) {
             JSONObject hatGiongObject = new JSONObject();
             hatGiongObject.put("id", hatGiong.getId());
             hatGiongObject.put("soluong", hatGiong.getSoluong());
@@ -704,7 +755,7 @@ public class User {
 
 
         JSONArray phanbonData = new JSONArray();
-        for (PhanBon phanBon : this.session.user.PhanBon) {
+        for (PhanBon phanBon : this.PhanBon) {
             JSONObject phanBonObject = new JSONObject();
             phanBonObject.put("id", phanBon.getId());
             phanBonObject.put("soluong", phanBon.getSoluong());
@@ -712,7 +763,7 @@ public class User {
         }
 
         JSONArray nongsanData = new JSONArray();
-        for (NongSan nongSan : this.session.user.NongSan) {
+        for (NongSan nongSan : this.NongSan) {
             JSONObject nongSanObject = new JSONObject();
             nongSanObject.put("id", nongSan.getId());
             nongSanObject.put("soluong", nongSan.getSoluong());
@@ -720,7 +771,7 @@ public class User {
         }
 
         JSONArray nongsandacbietData = new JSONArray();
-        for (NongSanDacBiet nongsandacbiet : this.session.user.NongSanDacBiet) {
+        for (NongSanDacBiet nongsandacbiet : this.NongSanDacBiet) {
             JSONObject nongsandacbietObject = new JSONObject();
             nongsandacbietObject.put("id", nongsandacbiet.getId());
             nongsandacbietObject.put("soluong", nongsandacbiet.getSoluong());
@@ -729,8 +780,8 @@ public class User {
 
 
         // Cập nhật cơ sở dữ liệu với dữ liệu đã tạo
-        String query = "INSERT INTO `farm_data` (user_id, land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE land_data = ?, animal_data = ?, hatgiong = ?, phanbon = ?, nongsan = ?, nongsandacbiet = ?, starfruit_quantity = ?";
+        String query = "INSERT INTO `farm_data` (user_id, land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE land_data = ?, animal_data = ?, hatgiong = ?, phanbon = ?, nongsan = ?, nongsandacbiet = ?, starfruit_quantity = ?, starfruit_last_harvest_ms = ?";
         try (Connection connection = DbManager.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -751,20 +802,22 @@ public class User {
             ps.setString(6, nongsanDataString);
             ps.setString(7, nongsandacbietDataString);
             ps.setInt(8, starfruitQuantity);
-            ps.setString(9, landDataString);
-            ps.setString(10, animalDataString);
-            ps.setString(11, hatgiongDataString);
-            ps.setString(12, phanbonDataString);
-            ps.setString(13, nongsanDataString);
-            ps.setString(14, nongsandacbietDataString);
-            ps.setInt(15, starfruitQuantity);
+            ps.setLong(9, starfruitLastHarvestMs);
+            ps.setString(10, landDataString);
+            ps.setString(11, animalDataString);
+            ps.setString(12, hatgiongDataString);
+            ps.setString(13, phanbonDataString);
+            ps.setString(14, nongsanDataString);
+            ps.setString(15, nongsandacbietDataString);
+            ps.setInt(16, starfruitQuantity);
+            ps.setLong(17, starfruitLastHarvestMs);
             ps.executeUpdate();
         }
     }
 
     public void loadFarmData(int userId) throws SQLException {
 
-        String query = "SELECT land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity FROM `farm_data` WHERE user_id = ?";
+        String query = "SELECT land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms FROM `farm_data` WHERE user_id = ?";
 
         try (Connection connection = DbManager.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
@@ -773,6 +826,7 @@ public class User {
             try (ResultSet res = ps.executeQuery()) {
                 if (res.next()) {
                     starfruitQuantity = res.getInt("starfruit_quantity");
+                    starfruitLastHarvestMs = res.getLong("starfruit_last_harvest_ms");
                     String landDataString = res.getString("land_data");
                     String animalDataString = res.getString("animal_data");
                     String hatgiongDataString = res.getString("hatgiong");
@@ -804,7 +858,7 @@ public class User {
                         landItems.add(landItem);
                     }
                     // Cập nhật danh sách ô đất cho người chơi
-                    this.session.user.landItems = landItems;
+                    this.landItems = landItems;
 
                     // Phân tích dữ liệu vật nuôi (animal_data)
                     JSONArray animalData = (JSONArray) JSONValue.parse(animalDataString);
@@ -825,7 +879,7 @@ public class User {
                         animals.add(animalObj);
                     }
                     // Cập nhật danh sách vật nuôi cho người chơi
-                    this.session.user.Animal = animals;
+                    this.Animal = animals;
 
 
 
@@ -840,7 +894,7 @@ public class User {
                         HatGiong animalObj = new HatGiong(id, soluong);
                         hatgiongs.add(animalObj);
                     }
-                    this.session.user.hatgiong = hatgiongs;
+                    this.hatgiong = hatgiongs;
 
 
                     JSONArray phanbondata = (JSONArray) JSONValue.parse(phanbonDataString);
@@ -854,7 +908,7 @@ public class User {
                         PhanBon pb = new PhanBon(id, soluong);
                         phanBons.add(pb);
                     }
-                    this.session.user.PhanBon = phanBons;
+                    this.PhanBon = phanBons;
 
 
 
@@ -869,7 +923,7 @@ public class User {
                         NongSan ns = new NongSan(id, soluong);
                         nongSans.add(ns);
                     }
-                    this.session.user.NongSan = nongSans;
+                    this.NongSan = nongSans;
 
 
                     JSONArray nongsandbdata = (JSONArray) JSONValue.parse(nongsandacbietDataString);
@@ -883,7 +937,7 @@ public class User {
                         NongSanDacBiet nsdb = new NongSanDacBiet(id, soluong);
                         nongSandbs.add(nsdb);
                     }
-                    this.session.user.NongSanDacBiet = nongSandbs;
+                    this.NongSanDacBiet = nongSandbs;
 
 
                 }
@@ -891,35 +945,35 @@ public class User {
         }
 
         // Nếu không có dữ liệu, tạo mặc định cho người chơi
-        if (this.session.user.landItems.isEmpty()) {
+        if (this.landItems.isEmpty()) {
             // Tạo mặc định cho 6 ô đất
             List<LandItem> defaultLandItems = new ArrayList<>();
             for (int i = 0; i < 6; i++) {
                 defaultLandItems.add(new LandItem(0, -1,-1, 0, false, false, false, LocalDateTime.now())); // Cây mặc định
             }
-            this.session.user.landItems = defaultLandItems;
+            this.landItems = defaultLandItems;
         }
 
-        if (this.session.user.Animal.isEmpty()) {
+        if (this.Animal.isEmpty()) {
             // Không có vật nuôi, nên không cần thêm gì
-            this.session.user.Animal = new ArrayList<>();
+            this.Animal = new ArrayList<>();
         }
 
-        if (this.session.user.hatgiong.isEmpty()) {
+        if (this.hatgiong.isEmpty()) {
             // Không có vật nuôi, nên không cần thêm gì
-            this.session.user.hatgiong = new ArrayList<>();
+            this.hatgiong = new ArrayList<>();
         }
-        if (this.session.user.PhanBon.isEmpty()) {
+        if (this.PhanBon.isEmpty()) {
             // Không có vật nuôi, nên không cần thêm gì
-            this.session.user.PhanBon = new ArrayList<>();
+            this.PhanBon = new ArrayList<>();
         }
-        if (this.session.user.NongSan.isEmpty()) {
+        if (this.NongSan.isEmpty()) {
             // Không có vật nuôi, nên không cần thêm gì
-            this.session.user.NongSan = new ArrayList<>();
+            this.NongSan = new ArrayList<>();
         }
-        if (this.session.user.NongSanDacBiet.isEmpty()) {
+        if (this.NongSanDacBiet.isEmpty()) {
             // Không có vật nuôi, nên không cần thêm gì
-            this.session.user.NongSanDacBiet = new ArrayList<>();
+            this.NongSanDacBiet = new ArrayList<>();
         }
 
     }

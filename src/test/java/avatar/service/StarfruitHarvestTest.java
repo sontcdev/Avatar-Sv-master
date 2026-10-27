@@ -39,11 +39,44 @@ public class StarfruitHarvestTest {
             assertEquals(0, user.getStarfruitQuantity());
             assertEquals(180, user.NongSanDacBiet.get(0).getSoluong());
             assertEquals(1, user.saves);
+            Message harvest = session.messages.stream().filter(m -> m.getCommand() == Cmd.HARVEST_STARFRUIT).findFirst().orElseThrow(AssertionError::new);
+            Message decoded = new Message(harvest.getCommand(), harvest.getData());
+            assertEquals(215, decoded.reader().readShort());
+            assertEquals(180, decoded.reader().readShort());
+            assertEquals(0, decoded.reader().available());
             assertTrue(session.messages.stream().anyMatch(m -> m.getCommand() == 60));
             handler.onMessage(new Message(Cmd.HARVEST_STARFRUIT, new byte[0]));
             assertEquals(180, user.NongSanDacBiet.get(0).getSoluong());
             assertEquals(1, user.saves);
         }
+    }
+    @Test public void elapsedTimeRegeneratesFruitWithoutWritingOnRead() throws Exception {
+        SavedUser user = new SavedUser();
+        user.setStarfruitQuantity(0);
+        user.setStarfruitLastHarvestMs(System.currentTimeMillis() - 30 * 60_000L);
+        assertEquals(90, user.getStarfruitQuantity());
+        assertEquals(0, user.saves);
+        assertEquals(90, user.harvestStarfruit());
+        assertEquals(0, user.getStarfruitQuantity());
+        assertEquals(1, user.saves);
+        assertEquals(0, user.harvestStarfruit());
+    }
+    @Test public void regrowthCapsAtCapacityAndRejectsFutureClock() throws Exception {
+        SavedUser user = new SavedUser(); user.setStarfruitQuantity(0);
+        user.setStarfruitLastHarvestMs(System.currentTimeMillis() - 120 * 60_000L);
+        assertEquals(180, user.getStarfruitQuantity());
+        user.setStarfruitLastHarvestMs(System.currentTimeMillis() + 60_000L);
+        assertEquals(0, user.getStarfruitQuantity());
+        assertEquals(0, user.harvestStarfruit());
+    }
+    @Test public void failedRegrowthHarvestRestoresClockAndStock() throws Exception {
+        SavedUser user = new SavedUser(); user.fail = true; user.setStarfruitQuantity(0);
+        long anchor = System.currentTimeMillis() - 30 * 60_000L;
+        user.setStarfruitLastHarvestMs(anchor);
+        try { user.harvestStarfruit(); fail("Expected database failure"); } catch (SQLException expected) { }
+        assertEquals(anchor, user.getStarfruitLastHarvestMs());
+        assertEquals(90, user.getStarfruitQuantity());
+        assertTrue(user.NongSanDacBiet.isEmpty());
     }
     @Test public void failedSaveRestoresFruitAndExistingStock() throws Exception {
         SavedUser user = new SavedUser(); user.fail = true;

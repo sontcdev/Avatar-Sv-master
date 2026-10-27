@@ -85,10 +85,15 @@ public class ParkService extends Service {
         try {
             int userId = ms.reader().readInt(); // id người nhận
             User user = UserManager.getInstance().find(userId);
-            ms = new Message(-19);
+            if (user == null || userId == session.user.getId()) {
+                serverDialog("Người nhận lời mời không hợp lệ hoặc hiện không online.");
+                return;
+            }
+            ms = new Message(Cmd.AVATAR_REQUEST_ADD_FRIEND);
             DataOutputStream ds = ms.writer();
-            ds.writeInt(userId);
-            ds.writeBoolean(false);
+            ds.writeInt(session.user.getId());
+            ds.writeUTF(session.user.getUsername());
+            ds.writeUTF(session.user.getUsername() + " muốn kết bạn với bạn.");
             ds.flush();
             user.session.sendMessage(ms);
         } catch (IOException e) {

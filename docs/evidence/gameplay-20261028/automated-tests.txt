@@ -1,0 +1,10 @@
+Java 17; mvn -q test: 28 passed, 2 opt-in DB tests skipped.
+Then disposable DB recreated; mvn -q -Davatar.test.isolatedFarmDb=true -Davatar.database.config=<private isolated config> -Dtest=FarmPersistenceTest,AttendancePersistenceTest test: 2 passed.
+Combined latest reports:
+avatar.server.SessionLifecycleTest tests=3 failures=0 errors=0 skipped=0
+avatar.service.AttendancePersistenceTest tests=1 failures=0 errors=0 skipped=0
+avatar.service.FarmPersistenceTest tests=1 failures=0 errors=0 skipped=0
+avatar.service.FarmVisitTest tests=1 failures=0 errors=0 skipped=0
+avatar.service.GameplayFeedbackTest tests=15 failures=0 errors=0 skipped=0
+avatar.service.SocialProtocolTest tests=3 failures=0 errors=0 skipped=0
+avatar.service.StarfruitHarvestTest tests=6 failures=0 errors=0 skipped=0

@@ -1,0 +1,5 @@
+2acd54325d55a403750d46aaa5ab2bb3ebf14e0c2cab7d96b4370e0393d57154  server.jar
+0ca62ce7bd152de8355d8b4fea67827fa8b0cdf319a1f76c10fc96db6758640f  pre-attendance.sql
+bb8f00b4b14a1d9d6b6a5962ca76d8d1443a2f14a27428b891051039dea4a90a  pre-regrowth.sql
+1
+starfruit_last_harvest_ms	bigint(20)	NO		0

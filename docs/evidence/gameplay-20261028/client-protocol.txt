@@ -1,0 +1,24 @@
+FarmMsgHandler: 55
+FarmMsgHandler: 56
+FarmMsgHandler: 60
+FarmMsgHandler: 50
+FarmMsgHandler: 61
+STAGING_METRIC heapUsed=15460632 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=18970000000
+STAGING_METRIC heapUsed=15460632 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=19110000000
+FarmMsgHandler: 82
+FarmMsgHandler: 82
+FarmMsgHandler: -80
+FarmMsgHandler: 82
+FarmMsgHandler: -80
+STAGING_METRIC heapUsed=15460632 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=19280000000
+STAGING_METRIC heapUsed=15460632 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=19480000000
+FarmMsgHandler: 82
+FarmMsgHandler: 82
+FarmMsgHandler: 82
+STAGING_METRIC heapUsed=15460632 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=19630000000
+FarmMsgHandler: 85
+STAGING_METRIC heapUsed=15460632 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=20110000000
+STAGING_METRIC heapUsed=15460632 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=20270000000
+FarmMsgHandler: 84
+STAGING_METRIC heapUsed=16509208 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=20430000000
+STAGING_METRIC heapUsed=16509208 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=20590000000

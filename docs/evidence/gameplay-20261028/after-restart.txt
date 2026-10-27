@@ -1,0 +1,11 @@
+    PID   RSS NLWP     ELAPSED
+ 320233 119656  89       00:59
+rchar: 6524788
+wchar: 205516
+syscr: 2066
+syscw: 5887
+read_bytes: 0
+write_bytes: 278528
+cancelled_write_bytes: 0
+MainPID=313665
+NRestarts=0

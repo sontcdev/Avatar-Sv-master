@@ -24,6 +24,7 @@ public class FarmPersistenceTest {
             connection.createStatement().execute("CREATE TABLE farm_data (user_id INT PRIMARY KEY, land_data LONGTEXT, animal_data LONGTEXT, hatgiong LONGTEXT, phanbon LONGTEXT, nongsan LONGTEXT, nongsandacbiet LONGTEXT)");
             // Exercise the same additive migration as deploy, including repeat application.
             for (int i = 0; i < 2; i++) connection.createStatement().execute("ALTER TABLE farm_data ADD COLUMN IF NOT EXISTS starfruit_quantity SMALLINT UNSIGNED NOT NULL DEFAULT 180");
+            for (int i = 0; i < 2; i++) connection.createStatement().execute("ALTER TABLE farm_data ADD COLUMN IF NOT EXISTS starfruit_last_harvest_ms BIGINT NOT NULL DEFAULT 0");
             connection.createStatement().execute("CREATE TABLE farmitems (id INT PRIMARY KEY, name VARCHAR(40), time INT, quantity INT, sell INT)");
             connection.createStatement().execute("INSERT INTO farmitems VALUES (5, 'test crop', 5, 120, 20)");
             PartManager.getInstance().loadFarmItemData();
@@ -41,9 +42,10 @@ public class FarmPersistenceTest {
                 user.NongSan.add(new NongSan(3, 4));
                 assertEquals(120, user.harvestCrop(1));
                 assertEquals(180, user.harvestStarfruit());
-                User reloaded = new User(); reloaded.setId(7); reloaded.setSession(session); session.user = reloaded;
+                User reloaded = new User(); reloaded.setId(7);
                 reloaded.loadFarmData(7);
                 assertNull(reloaded.landItems.get(0).getPlantedTime());
+                assertEquals(user.getStarfruitLastHarvestMs(), reloaded.getStarfruitLastHarvestMs());
                 assertEquals(0, reloaded.getStarfruitQuantity());
                 assertEquals(180, reloaded.NongSanDacBiet.get(0).getSoluong());
                 assertEquals(2, reloaded.PhanBon.get(0).getSoluong());
@@ -52,6 +54,7 @@ public class FarmPersistenceTest {
                 assertEquals(-1, reloaded.landItems.get(1).getType());
                 try { reloaded.harvestCrop(1); fail("Cleared crop must not credit again"); }
                 catch (IllegalArgumentException expected) { }
+                reloaded.setSession(session); session.user = reloaded;
                 reloaded.setXu(5000);
                 session.messages.clear();
                 Message purchase = new Message(Cmd.BUY_ITEM_HOUSE);

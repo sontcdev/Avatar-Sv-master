@@ -1,0 +1,4 @@
+STAGING_METRIC heapUsed=11376440 heapCommitted=33554432 heapMax=134217728 javaThreads=65 processCpuNs=16130000000
+STAGING_METRIC heapUsed=12425016 heapCommitted=33554432 heapMax=134217728 javaThreads=67 processCpuNs=16570000000
+Max_used_connections	4
+Threads_connected	3

@@ -155,11 +155,11 @@ public class AvatarService extends Service {
         }
     }
 
-    public void chatTo(String sender, String content,int type) {
+    public void chatTo(String sender, String content, int senderId) {
         try {
             Message ms = new Message(Cmd.CHAT_TO);
             DataOutputStream ds = ms.writer();
-            ds.writeInt(type);
+            ds.writeInt(senderId);
             ds.writeUTF(sender);
             ds.writeUTF(content);
             ds.flush();
@@ -173,10 +173,13 @@ public class AvatarService extends Service {
         try {
             int receiverId = ms.reader().readInt();
             String content = ms.reader().readUTF();
-            int senderId = this.session.user.getId(); // ID của người gửi yêu cầu
+            User sender = session.user;
             User receiver = UserManager.getInstance().find(receiverId);
-            User sender = UserManager.getInstance().find(receiverId);
-            receiver.getAvatarService().chatTo(sender.getUsername(), content,1);
+            if (receiver == null) {
+                serverDialog("Người chơi này hiện không online.");
+                return;
+            }
+            receiver.getAvatarService().chatTo(sender.getUsername(), content, sender.getId());
         } catch (IOException ex) {
             logger.error("chatTo ", ex);
         }

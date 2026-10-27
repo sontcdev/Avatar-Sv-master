@@ -52,6 +52,12 @@ public class FarmService extends Service {
             serverDialog("Chưa lưu được thu hoạch khế. Vui lòng thử lại sau.");
             return;
         }
+        if (harvested > 0) {
+            Message result = new Message(Cmd.HARVEST_STARFRUIT);
+            result.writer().writeShort(215);
+            result.writer().writeShort(harvested);
+            sendMessage(result);
+        }
         Message refresh = new Message(Cmd.JOIN);
         refresh.writer().writeInt(session.user.getId());
         try {
@@ -415,52 +421,67 @@ public class FarmService extends Service {
 
     public void joinFarm(Message ms) throws IOException, SQLException {
         int userId = ms.reader().readInt();
-        viewedFarmId = userId;
-        ms = new Message(Cmd.JOIN);
-        DataOutputStream ds = ms.writer();
-        ds.writeInt(userId);
-
-
-        int landSize = this.session.user.landItems.size();
-        ds.writeByte(landSize);  // Ghi số lượng ô đất
-
-        // Ghi thông tin các ô đất (cây)
-        for (int i = 0; i < landSize; ++i) {
-            LandItem landItem =  this.session.user.landItems.get(i);
-            if (landItem.getType() >= 0) {
-                ds.writeByte(landItem.getType());  //id
-                writeInfoCell(ds, landItem);
-            } else {
-                ds.writeByte(-1);  // Không có cây trong ô đất này
+        viewedFarmId = -1;
+        User owner = userId == session.user.getId() ? session.user
+                : avatar.server.UserManager.getInstance().find(userId);
+        if (owner == null) {
+            try (Connection connection = DbManager.getInstance().getConnection();
+                 PreparedStatement query = connection.prepareStatement("SELECT user_id FROM players WHERE user_id = ?")) {
+                query.setInt(1, userId);
+                try (ResultSet result = query.executeQuery()) {
+                    if (!result.next()) { serverDialog("Không tìm thấy nông trại này."); return; }
+                }
             }
+            owner = new User(); owner.setId(userId); owner.loadFarmData(userId);
         }
-        ds.writeByte(this.session.user.Animal.size());  // Ghi số lượng động vật
-        for (Animal animal : this.session.user.Animal) {
-            ds.writeByte(animal.getId());  // Ghi ID động vật (có thể là `animal.getType()` hoặc ID khác)
-            writeInfoAnimal(ds, animal);  // Ghi thông tin về động vật vào DataOutputStream
+        synchronized (owner) {
+            viewedFarmId = userId;
+            ms = new Message(Cmd.JOIN);
+            DataOutputStream ds = ms.writer();
+            ds.writeInt(userId);
+
+
+            int landSize = owner.landItems.size();
+            ds.writeByte(landSize);  // Ghi số lượng ô đất
+
+            // Ghi thông tin các ô đất (cây)
+            for (int i = 0; i < landSize; ++i) {
+                LandItem landItem =  owner.landItems.get(i);
+                if (landItem.getType() >= 0) {
+                    ds.writeByte(landItem.getType());  //id
+                    writeInfoCell(ds, landItem);
+                } else {
+                    ds.writeByte(-1);  // Không có cây trong ô đất này
+                }
+            }
+            ds.writeByte(owner.Animal.size());  // Ghi số lượng động vật
+            for (Animal animal : owner.Animal) {
+                ds.writeByte(animal.getId());  // Ghi ID động vật (có thể là `animal.getType()` hoặc ID khác)
+                writeInfoAnimal(ds, animal);  // Ghi thông tin về động vật vào DataOutputStream
+            }
+
+            // Ghi thông tin khác
+            ds.writeByte(10);// chỉnh kích cỡ chuồng bò
+            ds.writeByte(10);//chỉnh kích cỡ hồ cá
+            ds.writeShort(10);  //cấp độ cây khế
+            ds.writeShort(43);//43//img cay khe
+            ds.writeShort(46);//46//img qua khe
+            ds.writeShort(owner.getStarfruitQuantity());  // Số khế còn trên cây
+            ds.writeShort(0);//
+            ds.writeShort(0);//0
+            ds.writeShort(0);//0
+
+            // Ghi trạng thái các ô đất
+            for (int i = 0; i < landSize; ++i) {
+                ds.writeByte(1);  // Trạng thái ô đất
+            }
+
+            ds.writeShort(3);//nấu ăn
+            ds.writeShort(5);
+            ds.flush();
+
+            this.session.sendMessage(ms);
         }
-
-        // Ghi thông tin khác
-        ds.writeByte(10);// chỉnh kích cỡ chuồng bò
-        ds.writeByte(10);//chỉnh kích cỡ hồ cá
-        ds.writeShort(10);  //cấp độ cây khế
-        ds.writeShort(43);//43//img cay khe
-        ds.writeShort(46);//46//img qua khe
-        ds.writeShort(this.session.user.getStarfruitQuantity());  // Số khế còn trên cây
-        ds.writeShort(0);//
-        ds.writeShort(0);//0
-        ds.writeShort(0);//0
-
-        // Ghi trạng thái các ô đất
-        for (int i = 0; i < landSize; ++i) {
-            ds.writeByte(1);  // Trạng thái ô đất
-        }
-
-        ds.writeShort(3);//nấu ăn
-        ds.writeShort(5);
-        ds.flush();
-
-        this.session.sendMessage(ms);
     }
 
 
