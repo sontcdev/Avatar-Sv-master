@@ -1,0 +1,139 @@
+Non-admin account created; credentials saved at /etc/avatar2d/test-account-avatartest.txt
+/var/backups/avatar2d/20261027T095440-306559
+[::ffff:100.112.0.62]:19128
+PASS: -27 handshake and XOR key negotiation
+28
+5496
+[::ffff:100.112.0.62]:19128
+PASS: -27 handshake and XOR key negotiation
+28
+5496
+
+Service runtime metrics:
+MainPID=306585
+NRestarts=0
+MemoryCurrent=102584320
+CPUUsageNSec=10848169000
+TasksCurrent=87
+ActiveState=active
+SubState=running
+
+Database validation (no credentials):
+10.11.14-MariaDB-0ubuntu0.24.04.1
+34
+0
+1
+0
+innodb_buffer_pool_size	134217728
+Slow_queries	0
+Threads_connected	4
+Threads_running	1
+
+Recent startup log:
+move 216, y = 97
+Boss 1 khu 7 map 7
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 2
+ParkMsgHandler: 50
+weather: 2
+map: 2 area: 0 x: 0 y: 0
+add boss khu :0
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 204, y = 85
+Boss 0 khu 8 map 2
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 2
+ParkMsgHandler: 50
+weather: 2
+map: 2 area: 4 x: 0 y: 0
+add boss khu :4
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 204, y = 85
+Boss 1 khu 4 map 2
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 3
+ParkMsgHandler: 50
+weather: 2
+map: 3 area: 5 x: 0 y: 0
+add boss khu :5
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 288, y = 97
+Boss 0 khu 3 map 3
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 3
+ParkMsgHandler: 50
+weather: 2
+map: 3 area: 6 x: 0 y: 0
+add boss khu :6
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 288, y = 97
+Boss 1 khu 0 map 3
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 5
+ParkMsgHandler: 50
+weather: 2
+map: 5 area: 1 x: 0 y: 0
+add boss khu :1
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 188, y = 89
+Boss 0 khu 2 map 5
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 5
+ParkMsgHandler: 50
+weather: 2
+map: 5 area: 0 x: 0 y: 0
+add boss khu :0
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 188, y = 89
+Boss 1 khu 7 map 5
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 8
+ParkMsgHandler: 50
+weather: 2
+map: 8 area: 4 x: 0 y: 0
+add boss khu :4
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 264, y = 69
+Boss 0 khu 1 map 8
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 8
+ParkMsgHandler: 50
+weather: 2
+map: 8 area: 0 x: 0 y: 0
+add boss khu :0
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 264, y = 69
+Boss 1 khu 3 map 8
+Disconnect client: Client 15
+Disconnect client: Client 16
+
+Other workload state:
+  UNIT LOAD ACTIVE SUB DESCRIPTION
+
+0 loaded units listed.
+
+Provision/deploy/backup/restart checks finished. Android gameplay remains pending.

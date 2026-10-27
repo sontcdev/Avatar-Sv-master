@@ -1,0 +1,112 @@
+/var/backups/avatar2d/20261027T120131-313570
+● avatar2d.service - Private Avatar 2D game server
+     Loaded: loaded (/etc/systemd/system/avatar2d.service; enabled; preset: enabled)
+     Active: active (running) since Tue 2026-10-27 12:01:37 UTC; 1min 5s ago
+   Main PID: 313665 (java)
+      Tasks: 86 (limit: 256)
+     Memory: 105.4M (max: 768.0M available: 662.5M peak: 112.1M)
+        CPU: 12.394s
+     CGroup: /system.slice/avatar2d.service
+             └─313665 /usr/bin/java -Xms128m -Xmx512m -XX:+ExitOnOutOfMemoryError -Davatar.database.config=/etc/avatar2d/database.properties -jar server.jar
+
+Oct 27 12:01:37 sontc systemd[1]: Started avatar2d.service - Private Avatar 2D game server.
+map: 2 area: 5 x: 0 y: 0
+add boss khu :5
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 204, y = 85
+Boss 0 khu 9 map 2
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 2
+ParkMsgHandler: 50
+weather: 2
+map: 2 area: 7 x: 0 y: 0
+add boss khu :7
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 204, y = 85
+Boss 1 khu 7 map 2
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 3
+ParkMsgHandler: 50
+weather: 2
+map: 3 area: 2 x: 0 y: 0
+add boss khu :2
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 288, y = 97
+Boss 0 khu 2 map 3
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 3
+ParkMsgHandler: 50
+weather: 2
+map: 3 area: 4 x: 0 y: 0
+add boss khu :4
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 288, y = 97
+Boss 1 khu 3 map 3
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 5
+ParkMsgHandler: 50
+weather: 2
+map: 5 area: 4 x: 0 y: 0
+add boss khu :4
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 188, y = 89
+Boss 0 khu 4 map 5
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 5
+ParkMsgHandler: 50
+weather: 2
+map: 5 area: 5 x: 0 y: 0
+add boss khu :5
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 188, y = 89
+Boss 1 khu 3 map 5
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 8
+ParkMsgHandler: 50
+weather: 2
+map: 8 area: 2 x: 0 y: 0
+add boss khu :2
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 264, y = 69
+Boss 0 khu 7 map 8
+Session created with ID: 0
+getHandler: 9
+joinmaopboss 8
+ParkMsgHandler: 50
+weather: 2
+map: 8 area: 0 x: 0 y: 0
+add boss khu :0
+ParkMsgHandler: 54
+move 0, y = 0
+ParkMsgHandler: 54
+move 264, y = 69
+Boss 1 khu 4 map 8
+endGame không cho cược game ID 54710
+Kết thúc phiên với ID: 54710 với kết quả: khóa
+khóa cuoc
+endGame không cho cược game ID 54710
+Kết thúc phiên với ID: 54710 với kết quả:  5, 4, 2 11 Tài
+Không có cược nào cho phiên 54710
+đã trả thưởng
+Kết quả phiên 54710:  5, 4, 2 11 Tài
+Bắt đầu phiên mới với ID: 54711

@@ -483,7 +483,7 @@ public class Boss extends User {
         try {
             // Tạo một Socket (thay thế bằng thông tin kết nối thực tế)
             Socket socket = new Socket();
-            socket.connect(new InetSocketAddress("localhost", 19128)); // Thay thế bằng địa chỉ IP và cổng thực tế
+            socket.connect(ServerManager.getListenerAddress(), 5000);
             int sessionId = boss.getId(); // Ví dụ về ID, có thể là bất kỳ giá trị nào phù hợp
             Session session = new Session(socket, sessionId);
             session.ip = "127.0.0.1";

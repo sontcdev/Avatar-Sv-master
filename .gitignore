@@ -38,3 +38,10 @@ res/
 
 ### Mac OS ###
 .DS_Store
+# Private runtime configuration and extracted artifacts
+.secrets/
+.private/
+artifacts/
+logs/*.log*
+__pycache__/
+*.pyc

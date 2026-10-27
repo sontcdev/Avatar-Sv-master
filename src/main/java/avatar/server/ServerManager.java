@@ -49,18 +49,22 @@ public class ServerManager {
     public static String resHDPath;
     public static String resMediumPath;
     public static int numClients;
-    public static ArrayList<Session> clients;
+    public static List<Session> clients;
+    private static String bindAddress;
+    private static int maxClients;
     protected static ServerSocket server;
-    protected static boolean start;
+    protected static volatile boolean start;
     protected static int id;
     private static boolean debug;
 
     private static void loadConfigFile() {
-        try {
-            FileInputStream input = new FileInputStream(new File("config.properties"));
+        try (FileInputStream input = new FileInputStream("config.properties")) {
             Properties props = new Properties();
             props.load(new InputStreamReader(input, StandardCharsets.UTF_8));
             ServerManager.port = Short.parseShort(props.getProperty("server.port"));
+            bindAddress = props.getProperty("server.bind", "127.0.0.1");
+            maxClients = Integer.parseInt(props.getProperty("server.max.clients", "20"));
+            if (maxClients < 1 || maxClients > 100) throw new IllegalArgumentException("Invalid server.max.clients");
             ServerManager.cityName = props.getProperty("game.city.name");
             ServerManager.active = Boolean.parseBoolean(props.getProperty("server.active"));
             ServerManager.debug = Boolean.parseBoolean(props.getProperty("server.debug"));
@@ -76,8 +80,7 @@ public class ServerManager {
             ServerManager.resHDPath = props.getProperty("game.resources.hd.path");
             ServerManager.resMediumPath = props.getProperty("game.resources.medium.path");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new IllegalStateException("Cannot load game configuration", e);
         }
     }
 
@@ -103,7 +106,7 @@ public class ServerManager {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            System.exit(0);
+            throw new IllegalStateException("Required game data failed to load", e);
         }
     }
 
@@ -215,16 +218,20 @@ public class ServerManager {
             System.out.println("Load success " + numNPC + " NPC !");
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(0);
+            throw new IllegalStateException("Required game data failed to load", e);
         }
     }
 
 
+    public static java.net.SocketAddress getListenerAddress() {
+        return server.getLocalSocketAddress();
+    }
+
     protected static void start() {
         System.out.println("Start socket port = " + ServerManager.port);
         try {
-            ServerManager.clients = new ArrayList<>();
-            ServerManager.server = new ServerSocket(ServerManager.port);
+            ServerManager.clients = Collections.synchronizedList(new ArrayList<>());
+            ServerManager.server = new ServerSocket(ServerManager.port, 20, java.net.InetAddress.getByName(bindAddress));
             ServerManager.id = 0;
             ServerManager.numClients = 0;
             ServerManager.start = true;
@@ -244,24 +251,30 @@ public class ServerManager {
             while (ServerManager.start) {
                 try {
                     Socket client = ServerManager.server.accept();
+                    if (clients.size() >= maxClients) {
+                        client.close();
+                        continue;
+                    }
+                    client.setSoTimeout(120000);
                     Session cl = new Session(client, ++ServerManager.id);
                     ServerManager.clients.add(cl);
                     ++ServerManager.numClients;
+                    cl.startCollector();
                     log("Accept socket " + cl + " done!");
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    if (ServerManager.start) e.printStackTrace();
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Cannot bind game listener", e);
         }
     }
 
     protected static void stop() {
         if (ServerManager.start) {
             System.out.println("--->[ CLOSE ]<---");
-            close();
             ServerManager.start = false;
+            close();
             System.gc();
         }
     }
@@ -273,9 +286,7 @@ public class ServerManager {
             while (ServerManager.clients.size() > 0) {
                 Session c = ServerManager.clients.get(0);
                 c.close();
-                --ServerManager.numClients;
             }
-            ServerManager.clients = null;
             DbManager.getInstance().shutdown();
             System.gc();
             System.out.println("End socket");
@@ -292,10 +303,11 @@ public class ServerManager {
 
     public static void disconnect(Session cl) throws IOException {
         synchronized (ServerManager.clients) {
-            ServerManager.clients.remove(cl);
+            if (!ServerManager.clients.remove(cl)) return;
             --ServerManager.numClients;
             System.out.println("Disconnect client: " + cl);
 
+            if (cl.user == null) return;
             BoardInfo board = BoardManager.getInstance().findUserBoard(cl.user);
             if(board != null) {
                 ByteArrayOutputStream leaveBoard = new ByteArrayOutputStream();

@@ -30,7 +30,7 @@ public class DbManager {
     private int port;
     private String dbname;
     private String username;
-    private String passeword;
+    private String password;
     private String driver;
     private int maxConnections;
     private int minConnections;
@@ -43,8 +43,7 @@ public class DbManager {
     }
 
     private DbManager() {
-        try {
-            FileInputStream input = new FileInputStream("database.properties");
+        try (FileInputStream input = new FileInputStream(System.getProperty("avatar.database.config", "database.properties"))) {
             Properties props = new Properties();
             props.load(new InputStreamReader(input, StandardCharsets.UTF_8));
             this.driver = props.getProperty("driver");
@@ -52,11 +51,11 @@ public class DbManager {
             this.port = Integer.parseInt(props.getProperty("port"));
             this.dbname = props.getProperty("dbname");
             this.username = props.getProperty("username");
-            this.passeword = props.getProperty("passeword");
+            this.password = props.getProperty("password");
             this.maxConnections = Integer.parseInt(props.getProperty("max_connection"));
             this.minConnections = Integer.parseInt(props.getProperty("min_connection"));
         } catch (IOException ex) {
-            logger.error("init ", ex);
+            throw new IllegalStateException("Cannot load database configuration", ex);
         }
 
     }
@@ -70,7 +69,7 @@ public class DbManager {
                 config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.dbname);
                 config.setDriverClassName(this.driver);
                 config.setUsername(this.username);
-                config.setPassword(this.passeword);
+                config.setPassword(this.password);
                 config.setMinimumIdle(this.minConnections);
                 config.setMaximumPoolSize(this.maxConnections);
                 config.addDataSourceProperty("cachePrepStmts", "true");
@@ -81,7 +80,7 @@ public class DbManager {
                 logger.debug("DB Connection Pool has created.");
 
             } catch (Exception e) {
-                logger.error("DB Connection Pool Creation has failed.");
+                throw new IllegalStateException("Database pool creation failed", e);
             }
         }
     }

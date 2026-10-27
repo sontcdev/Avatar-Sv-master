@@ -26,7 +26,7 @@ public class AvatarMsgHandler extends MessageHandler {
                     break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            actionFailed(mss, e);
         }
     }
 }

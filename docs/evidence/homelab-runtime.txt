@@ -1,0 +1,24 @@
+NRestarts=0
+MemoryCurrent=110243840
+CPUUsageNSec=13298695000
+TasksCurrent=72
+ActiveState=active
+SubState=running
+  UNIT LOAD ACTIVE SUB DESCRIPTION
+
+0 loaded units listed.
+  UNIT                            LOAD   ACTIVE SUB     DESCRIPTION
+  dbus.service                    loaded active running D-Bus User Message Bus
+  epl-data-api.service            loaded active running EPL read-only PostgreSQL HTTP API
+  epl-data-tunnel.service         loaded active running EPL dedicated Cloudflare data API tunnel
+  last-train-privacy.service      loaded active running Last Train privacy policy static site
+  memora-photo-storage.service    loaded active running MEMORAE private original photo storage
+  novel-admin-cloudflared.service loaded active running Novel admin HMAC protected remotely managed Cloudflare tunnel
+  novel-admin-dispatcher.service  loaded active running Novel admin explicit-job dispatcher
+  novel-admin.service             loaded active running Novel admin localhost backend
+
+Legend: LOAD   → Reflects whether the unit definition was properly loaded.
+        ACTIVE → The high-level unit activation state, i.e. generalization of SUB.
+        SUB    → The low-level unit activation state, values depend on unit type.
+
+8 loaded units listed.

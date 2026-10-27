@@ -111,7 +111,7 @@ public class User {
     private int scores;// điểm sk
     private List<Item> wearing;
     public List<Item> chests;
-    public List<Item> chestsHome;
+    public List<Item> chestsHome = new ArrayList<>();
 
 
     /// /fam
@@ -121,6 +121,57 @@ public class User {
     public List<NongSan> NongSan = new ArrayList<>();
     public List<PhanBon> PhanBon = new ArrayList<>();
     public List<NongSanDacBiet> NongSanDacBiet = new ArrayList<>();
+    // shortcut: preserve the existing initial crop; regrowth needs game rules before enabling it.
+    private int starfruitQuantity = 180;
+
+    public synchronized int harvestCrop(int index) throws SQLException {
+        if (index < 0 || index >= landItems.size()) throw new IllegalArgumentException("Ô đất không hợp lệ.");
+        LandItem land = landItems.get(index);
+        farmItem crop = avatar.item.PartManager.getInstance().findFarmitemByID(land.getType());
+        if (crop == null) throw new IllegalArgumentException("Ô đất trống hoặc cây chưa có dữ liệu thu hoạch.");
+        if (land.getPlantedTime() == null || land.getMinutesSincePlanted() < crop.getTime())
+            throw new IllegalArgumentException("Cây chưa đến thời gian thu hoạch.");
+        int quantity = (int) ((long) crop.getQuantity() * Math.max(0, Math.min(100, land.getSucKhoe())) / 100);
+        if (quantity <= 0) throw new IllegalArgumentException("Cây không có nông sản để thu hoạch.");
+        NongSan stock = NongSan.stream().filter(item -> item.getId() == crop.getId()).findFirst().orElse(null);
+        int oldStock = stock == null ? 0 : stock.getSoluong();
+        if (oldStock < 0 || quantity > Short.MAX_VALUE - oldStock)
+            throw new IllegalArgumentException("Kho nông sản đã đầy.");
+        boolean added = stock == null;
+        if (added) { stock = new NongSan(crop.getId(), 0); NongSan.add(stock); }
+        stock.setSoluong(oldStock + quantity);
+        int oldType = land.getType();
+        land.setType(-1);
+        try { saveFarmData(id); }
+        catch (SQLException failure) {
+            land.setType(oldType);
+            if (added) NongSan.remove(stock); else stock.setSoluong(oldStock);
+            throw failure;
+        }
+        return quantity;
+    }
+
+    public synchronized int harvestStarfruit() throws SQLException {
+        if (starfruitQuantity <= 0) return 0;
+        NongSanDacBiet stock = NongSanDacBiet.stream().filter(item -> item.getId() == 215).findFirst().orElse(null);
+        int oldStock = stock == null ? 0 : stock.getSoluong();
+        if (oldStock < 0 || starfruitQuantity > Short.MAX_VALUE - oldStock) {
+            throw new SQLException("Starfruit inventory exceeds client capacity");
+        }
+        boolean added = stock == null;
+        if (added) { stock = new NongSanDacBiet(215, 0); NongSanDacBiet.add(stock); }
+        int quantity = starfruitQuantity;
+        stock.setSoluong(oldStock + quantity);
+        starfruitQuantity = 0;
+        try {
+            saveFarmData(id);
+        } catch (SQLException failure) {
+            starfruitQuantity = quantity;
+            if (added) NongSanDacBiet.remove(stock); else stock.setSoluong(oldStock);
+            throw failure;
+        }
+        return quantity;
+    }
 /// /////
     private Zone zone;
     private short x, y;
@@ -603,7 +654,7 @@ public class User {
         }
     }
 
-    public void saveFarmData(int userId) throws SQLException {
+    public synchronized void saveFarmData(int userId) throws SQLException {
         // Chuẩn bị dữ liệu để lưu vào cơ sở dữ liệu
         JSONArray landData = new JSONArray();
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -657,7 +708,7 @@ public class User {
             JSONObject phanBonObject = new JSONObject();
             phanBonObject.put("id", phanBon.getId());
             phanBonObject.put("soluong", phanBon.getSoluong());
-            phanbonData.add(phanbonData);
+            phanbonData.add(phanBonObject);
         }
 
         JSONArray nongsanData = new JSONArray();
@@ -665,7 +716,7 @@ public class User {
             JSONObject nongSanObject = new JSONObject();
             nongSanObject.put("id", nongSan.getId());
             nongSanObject.put("soluong", nongSan.getSoluong());
-            nongsanData.add(nongsanData);
+            nongsanData.add(nongSanObject);
         }
 
         JSONArray nongsandacbietData = new JSONArray();
@@ -673,13 +724,13 @@ public class User {
             JSONObject nongsandacbietObject = new JSONObject();
             nongsandacbietObject.put("id", nongsandacbiet.getId());
             nongsandacbietObject.put("soluong", nongsandacbiet.getSoluong());
-            phanbonData.add(phanbonData);
+            nongsandacbietData.add(nongsandacbietObject);
         }
 
 
         // Cập nhật cơ sở dữ liệu với dữ liệu đã tạo
-        String query = "INSERT INTO `farm_data` (user_id, land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet) VALUES (?, ?, ?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE land_data = ?, animal_data = ?, hatgiong = ?, phanbon = ?, nongsan = ?, nongsandacbiet = ?";
+        String query = "INSERT INTO `farm_data` (user_id, land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE land_data = ?, animal_data = ?, hatgiong = ?, phanbon = ?, nongsan = ?, nongsandacbiet = ?, starfruit_quantity = ?";
         try (Connection connection = DbManager.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -699,19 +750,21 @@ public class User {
             ps.setString(5, phanbonDataString);
             ps.setString(6, nongsanDataString);
             ps.setString(7, nongsandacbietDataString);
-            ps.setString(8, landDataString);
-            ps.setString(9, animalDataString);
-            ps.setString(10, hatgiongDataString);
-            ps.setString(11, phanbonDataString);
-            ps.setString(12, nongsanDataString);
-            ps.setString(13, nongsandacbietDataString);
+            ps.setInt(8, starfruitQuantity);
+            ps.setString(9, landDataString);
+            ps.setString(10, animalDataString);
+            ps.setString(11, hatgiongDataString);
+            ps.setString(12, phanbonDataString);
+            ps.setString(13, nongsanDataString);
+            ps.setString(14, nongsandacbietDataString);
+            ps.setInt(15, starfruitQuantity);
             ps.executeUpdate();
         }
     }
 
     public void loadFarmData(int userId) throws SQLException {
 
-        String query = "SELECT land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet FROM `farm_data` WHERE user_id = ?";
+        String query = "SELECT land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity FROM `farm_data` WHERE user_id = ?";
 
         try (Connection connection = DbManager.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
@@ -719,6 +772,7 @@ public class User {
 
             try (ResultSet res = ps.executeQuery()) {
                 if (res.next()) {
+                    starfruitQuantity = res.getInt("starfruit_quantity");
                     String landDataString = res.getString("land_data");
                     String animalDataString = res.getString("animal_data");
                     String hatgiongDataString = res.getString("hatgiong");
@@ -743,7 +797,8 @@ public class User {
                         boolean isHarvestable = (Boolean) obj.get("isHarvestable");
 
                         String plantedTimeStr = (String) obj.get("plantedTime");
-                        LocalDateTime plantedTime = LocalDateTime.parse(plantedTimeStr, formatter);
+                        LocalDateTime plantedTime = plantedTimeStr == null || "not_planted".equals(plantedTimeStr)
+                                ? null : LocalDateTime.parse(plantedTimeStr, formatter);
 
                         LandItem landItem = new LandItem(growthTime, type,suckhoe, resourceCount, isWatered, isFertilized, isHarvestable, plantedTime);
                         landItems.add(landItem);
@@ -826,7 +881,7 @@ public class User {
                         int soluong = ((Long) obj.get("soluong")).intValue();
 
                         NongSanDacBiet nsdb = new NongSanDacBiet(id, soluong);
-                        NongSanDacBiet.add(nsdb);
+                        nongSandbs.add(nsdb);
                     }
                     this.session.user.NongSanDacBiet = nongSandbs;
 

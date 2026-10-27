@@ -1,0 +1,3 @@
+PASS: -27 handshake and XOR key negotiation
+/var/folders/3f/9vdr43354x589_78_t1mcy740000gn/T/tmp0cajqt3e/client.jar
+PASS: EOF handling, framed handshake, single-class private patch, public endpoint rejection

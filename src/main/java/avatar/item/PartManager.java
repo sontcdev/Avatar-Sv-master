@@ -162,9 +162,9 @@ public class PartManager {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
-                int time = rs.getInt("so_phut_chin");
-                int quantity = rs.getInt("san_luong_khi_chin");
-                int sell = rs.getInt("gia_san_pham");
+                int time = rs.getInt("time");
+                int quantity = rs.getInt("quantity");
+                int sell = rs.getInt("sell");
                 farmItems.add(farmItem
                         .builder()
                         .id(id)

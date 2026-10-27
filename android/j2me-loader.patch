@@ -1,0 +1,365 @@
+diff --git a/app/build.gradle b/app/build.gradle
+index c2c0702..08df5c0 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -13,7 +13,7 @@ android {
+         applicationId "ru.playsoftware.j2meloader"
+         minSdk MIN_SDK
+         targetSdk TARGET_SDK
+-        versionCode 101
++        versionCode 103
+         versionName "1.8.2"
+         resValue 'string', 'app_name', rootProject.name
+         vectorDrawables.useSupportLibrary = true
+@@ -29,10 +29,10 @@ android {
+                 storePassword System.getenv('BITRISEIO_ANDROID_KEYSTORE_PASSWORD')
+             } else {
+                 Properties keystoreProps = new Properties()
+-                keystoreProps.load(new FileInputStream(rootProject.file("keystore.properties")))
++                if (rootProject.file('keystore.properties').exists()) keystoreProps.load(new FileInputStream(rootProject.file('keystore.properties')))
+                 keyAlias keystoreProps['keyAlias']
+                 keyPassword keystoreProps['keyPassword']
+-                storeFile file(keystoreProps['storeFile'])
++                if (keystoreProps['storeFile']) storeFile file(keystoreProps['storeFile'])
+                 storePassword keystoreProps['storePassword']
+             }
+         }
+@@ -40,8 +40,8 @@ android {
+ 
+     buildTypes {
+         release {
+-            minifyEnabled true
+-            shrinkResources true
++            minifyEnabled false
++            shrinkResources false
+             signingConfig signingConfigs.release
+         }
+         debug {
+@@ -89,7 +89,7 @@ android {
+             def props = getMidletManifestProperties()
+             def midletName = props.getValue('MIDlet-Name').trim()
+             def apkName = midletName.replaceAll('[/\\\\:*?\"<>|]', '').replace(' ', '_')
+-            applicationId "com.example.androidlet.${apkName.toLowerCase()}"
++            applicationId "vn.io.memora.avatar"
+             versionName = props.getValue('MIDlet-Version')
+             resValue 'string', 'app_name', midletName
+             midletArchivesBaseName = apkName
+@@ -129,6 +129,7 @@ android {
+ 
+     buildFeatures {
+         viewBinding true
++        buildConfig true
+     }
+ }
+ 
+@@ -153,6 +154,8 @@ def getMidletManifestProperties() {
+ }
+ 
+ dependencies {
++    midletImplementation files('libs/avatar.jar')
++    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+     def roomVersion = '2.5.2'
+     def cameraxVersion = "1.3.0-beta01"
+     def autoServiceVersion = "1.0"
+diff --git a/app/src/main/cpp/Android.mk b/app/src/main/cpp/Android.mk
+index 4d411c8..0d30134 100644
+--- a/app/src/main/cpp/Android.mk
++++ b/app/src/main/cpp/Android.mk
+@@ -20,7 +20,7 @@ ifeq ($(NDK_DEBUG),1)
+ endif
+ 
+ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+-    LOCAL_ARM_NEON := false
++    LOCAL_ARM_NEON := true
+ endif
+ 
+ include $(BUILD_SHARED_LIBRARY)
+@@ -41,7 +41,7 @@ ifeq ($(NDK_DEBUG),1)
+ endif
+ 
+ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+-    LOCAL_ARM_NEON := false
++    LOCAL_ARM_NEON := true
+ endif
+ 
+ include $(BUILD_SHARED_LIBRARY)
+diff --git a/app/src/main/cpp/m3g/src/m3g_rendercontext.inl b/app/src/main/cpp/m3g/src/m3g_rendercontext.inl
+index ba50f50..845b485 100644
+--- a/app/src/main/cpp/m3g/src/m3g_rendercontext.inl
++++ b/app/src/main/cpp/m3g/src/m3g_rendercontext.inl
+@@ -272,7 +272,7 @@ static EGLSurface m3gCreateWindowSurface(M3Genum format,
+                                          M3GNativeWindow wnd)
+ {
+     EGLSurface surf;
+-    EGLConfig config = m3gQueryEGLConfig(format, bufferBits, EGL_WINDOW_BIT, NULL);
++    EGLConfig config = m3gQueryEGLConfig(format, bufferBits, EGL_WINDOW_BIT, 0);
+     
+     if (!config) {
+         return NULL;
+@@ -353,7 +353,7 @@ static EGLSurface m3gCreatePBufferSurface(M3Genum format,
+     attrib[3] = height;
+     attrib[4] = EGL_NONE;
+     
+-    config = m3gQueryEGLConfig(format, bufferBits, EGL_PBUFFER_BIT, NULL);
++    config = m3gQueryEGLConfig(format, bufferBits, EGL_PBUFFER_BIT, 0);
+     if (!config) {
+         return NULL;
+     }
+diff --git a/app/src/main/java/javax/microedition/lcdui/Canvas.java b/app/src/main/java/javax/microedition/lcdui/Canvas.java
+index deb8126..59ed89e 100644
+--- a/app/src/main/java/javax/microedition/lcdui/Canvas.java
++++ b/app/src/main/java/javax/microedition/lcdui/Canvas.java
+@@ -362,7 +362,12 @@ public abstract class Canvas extends Displayable {
+ 		} else {
+ 			scaledDisplayHeight = displayHeight;
+ 		}
+-		if (virtualWidth > 0) {
++        if (!ru.playsoftware.j2meloader.BuildConfig.FULL_EMULATOR && virtualWidth == 0 && virtualHeight == 0) {
++            // Keep legacy game text readable while matching either device orientation.
++            int shortSide = Math.max(1, Math.min(displayWidth, scaledDisplayHeight));
++            width = Math.max(1, displayWidth * 320 / shortSide);
++            height = Math.max(1, scaledDisplayHeight * 320 / shortSide);
++        } else if (virtualWidth > 0) {
+ 			if (virtualHeight > 0) {
+ 				/*
+ 				 * the width and height of the canvas are strictly set
+diff --git a/app/src/main/java/javax/microedition/lcdui/keyboard/VirtualKeyboard.java b/app/src/main/java/javax/microedition/lcdui/keyboard/VirtualKeyboard.java
+index d770308..f90aa42 100644
+--- a/app/src/main/java/javax/microedition/lcdui/keyboard/VirtualKeyboard.java
++++ b/app/src/main/java/javax/microedition/lcdui/keyboard/VirtualKeyboard.java
+@@ -178,6 +178,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
+ 	private View overlayView;
+ 	private boolean obscuresVirtualScreen;
+ 	private boolean visible = true;
++	private boolean userEnabled = true;
+ 	private int layoutEditMode = LAYOUT_EOF;
+ 	private int editedIndex;
+ 	private float offsetX;
+@@ -904,9 +905,19 @@ public class VirtualKeyboard implements Overlay, Runnable {
+ 		return keySize;
+ 	}
+ 
++	public void setUserEnabled(boolean enabled) {
++		if (!enabled) {
++			for (int i = 0; i < associatedKeys.length; i++) pointerReleased(i, 0, 0);
++			cancel();
++		}
++		userEnabled = enabled;
++		if (enabled) show();
++		overlayView.postInvalidate();
++	}
++
+ 	@Override
+ 	public void paint(CanvasWrapper g) {
+-		if (visible) {
++		if (userEnabled && visible) {
+ 			for (VirtualKey key : keypad) {
+ 				if (key.visible) {
+ 					key.paint(g);
+@@ -917,6 +928,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
+ 
+ 	@Override
+ 	public boolean pointerPressed(int pointer, float x, float y) {
++		if (!userEnabled) return false;
+ 		switch (layoutEditMode) {
+ 			case LAYOUT_EOF:
+ 				if (pointer > associatedKeys.length) {
+@@ -969,6 +981,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
+ 
+ 	@Override
+ 	public boolean pointerDragged(int pointer, float x, float y) {
++		if (!userEnabled) return false;
+ 		switch (layoutEditMode) {
+ 			case LAYOUT_EOF:
+ 				if (pointer > associatedKeys.length) {
+@@ -1041,6 +1054,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
+ 
+ 	@Override
+ 	public boolean pointerReleased(int pointer, float x, float y) {
++		if (!userEnabled) return false;
+ 		if (layoutEditMode == LAYOUT_EOF) {
+ 			if (pointer > associatedKeys.length) {
+ 				return false;
+diff --git a/app/src/main/java/javax/microedition/shell/MicroActivity.java b/app/src/main/java/javax/microedition/shell/MicroActivity.java
+index f7db78d..a1cbd6d 100644
+--- a/app/src/main/java/javax/microedition/shell/MicroActivity.java
++++ b/app/src/main/java/javax/microedition/shell/MicroActivity.java
+@@ -176,6 +176,16 @@ public class MicroActivity extends AppCompatActivity {
+ 		if (vk != null) {
+ 			vk.setView(binding.overlayView);
+ 			binding.overlayView.addLayer(vk);
++			if (!BuildConfig.FULL_EMULATOR) {
++				binding.avatarKeyboardToggle.setVisibility(View.VISIBLE);
++				boolean enabled = sp.getBoolean("avatar_keyboard_visible", false);
++				binding.avatarKeyboardToggle.setChecked(enabled);
++				vk.setUserEnabled(enabled);
++				binding.avatarKeyboardToggle.setOnCheckedChangeListener((button, checked) -> {
++					vk.setUserEnabled(checked);
++					sp.edit().putBoolean("avatar_keyboard_visible", checked).apply();
++				});
++			}
+ 			if (vk.isPhone()) {
+ 				orientation = ORIENTATION_PORTRAIT;
+ 			}
+diff --git a/app/src/main/java/javax/microedition/shell/MicroLoader.java b/app/src/main/java/javax/microedition/shell/MicroLoader.java
+index 35cab72..cbc4c6f 100644
+--- a/app/src/main/java/javax/microedition/shell/MicroLoader.java
++++ b/app/src/main/java/javax/microedition/shell/MicroLoader.java
+@@ -97,9 +97,28 @@ public class MicroLoader {
+ 	public boolean init() {
+ 		File config = new File(workDir + Config.MIDLET_CONFIGS_DIR + appDirName);
+ 		this.params = ProfilesManager.loadConfig(config);
+-		if (params == null) {
+-			return false;
++		if (params == null && !BuildConfig.FULL_EMULATOR) {
++            if (!config.isDirectory() && !config.mkdirs()) return false;
++            params = new ProfileModel(config);
++            if (!ProfilesManager.saveConfig(params)) return false;
++        }
++        if (params == null) {
++            return false;
+ 		}
++        if (!BuildConfig.FULL_EMULATOR) {
++            android.content.SharedPreferences displayPrefs = context.getSharedPreferences("avatar_display", Context.MODE_PRIVATE);
++            if (!displayPrefs.getBoolean("landscape_v1", false)) {
++                params.screenWidth = 0;
++                params.screenHeight = 0;
++                params.orientation = 3;
++                params.forceFullscreen = true;
++                params.vkType = 3;
++                if (!ProfilesManager.saveConfig(params)) return false;
++                File layout = new File(config, Config.MIDLET_KEY_LAYOUT_FILE);
++                if (layout.exists() && !layout.delete()) return false;
++                displayPrefs.edit().putBoolean("landscape_v1", true).apply();
++            }
++        }
+ 		Display.initDisplay();
+ 		Graphics3D.initGraphics3D();
+ 		File cacheDir = ContextHolder.getCacheDir();
+diff --git a/app/src/main/java/org/microemu/cldc/socket/Connection.java b/app/src/main/java/org/microemu/cldc/socket/Connection.java
+index 3075f11..277239c 100644
+--- a/app/src/main/java/org/microemu/cldc/socket/Connection.java
++++ b/app/src/main/java/org/microemu/cldc/socket/Connection.java
+@@ -53,7 +53,10 @@ public class Connection implements ConnectionImplementation {
+ 			if (port == -1) {
+ 				throw new IllegalArgumentException("Port missing");
+ 			}
+-			return new SocketConnection(host, port);
++			if (!ru.playsoftware.j2meloader.BuildConfig.FULL_EMULATOR) {
++                return new WebSocketConnection();
++            }
++            throw new IOException("This APK only connects to the Avatar game service");
+ 		} else {
+ 			if (port == -1) {
+ 				return new ServerSocketConnection();
+diff --git a/app/src/main/java/ru/playsoftware/j2meloader/EmulatorApplication.java b/app/src/main/java/ru/playsoftware/j2meloader/EmulatorApplication.java
+index bcb0e0f..48dc6b3 100644
+--- a/app/src/main/java/ru/playsoftware/j2meloader/EmulatorApplication.java
++++ b/app/src/main/java/ru/playsoftware/j2meloader/EmulatorApplication.java
+@@ -63,6 +63,13 @@ public class EmulatorApplication extends Application {
+ 			MultiDex.install(this);
+ 		}
+ 		ContextHolder.setApplication(this);
++        if (!BuildConfig.FULL_EMULATOR) {
++            // The legacy MIDlet prints login fields; discard its stdout in this APK.
++            System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
++                @Override public void write(int value) { }
++                @Override public void write(byte[] data, int offset, int length) { }
++            }));
++        }
+ 		ACRA.init(this, new CoreConfigurationBuilder()
+ 				.withBuildConfigClass(BuildConfig.class)
+ 				.withParallel(false)
+diff --git a/app/src/main/res/layout/activity_micro.xml b/app/src/main/res/layout/activity_micro.xml
+index f9d698b..87fd540 100644
+--- a/app/src/main/res/layout/activity_micro.xml
++++ b/app/src/main/res/layout/activity_micro.xml
+@@ -36,4 +36,18 @@
+         android:layout_width="match_parent"
+         android:layout_height="match_parent" />
+ 
++    <ToggleButton
++        android:id="@+id/avatar_keyboard_toggle"
++        android:layout_width="88dp"
++        android:layout_height="48dp"
++        android:layout_gravity="top|center_horizontal"
++        android:textAllCaps="false"
++        android:singleLine="true"
++        android:focusable="false"
++        android:textOn="Ẩn phím"
++        android:textOff="Phím"
++        android:textSize="12sp"
++        android:alpha="0.8"
++        android:visibility="gone" />
++
+ </FrameLayout>
+\ No newline at end of file
+diff --git a/app/src/midlet/AndroidManifest.xml b/app/src/midlet/AndroidManifest.xml
+index 94e0824..45e11e2 100644
+--- a/app/src/midlet/AndroidManifest.xml
++++ b/app/src/midlet/AndroidManifest.xml
+@@ -6,6 +6,7 @@
+         <activity android:name=".MainActivity" tools:node="remove" />
+         <activity android:name="javax.microedition.shell.MicroActivity"
+             android:exported="true"
++            android:screenOrientation="sensorLandscape"
+             tools:remove="android:process"
+             tools:replace="android:exported">
+             <intent-filter>
+diff --git a/app/src/midlet/resources/MIDLET-META-INF/MANIFEST.MF b/app/src/midlet/resources/MIDLET-META-INF/MANIFEST.MF
+index 7e276e9..23e534d 100644
+--- a/app/src/midlet/resources/MIDLET-META-INF/MANIFEST.MF
++++ b/app/src/midlet/resources/MIDLET-META-INF/MANIFEST.MF
+@@ -1,7 +1,12 @@
+ Manifest-Version: 1.0
+-MIDlet-1: Midlet Port Sample, , com.example.porting.HelloMidlet
+-MIDlet-Name: Midlet Port Sample
+-MIDlet-Vendor: woesss
+-MIDlet-Version: 2.0
++Nokia-MIDlet-On-Screen-Keypad: no
++MIDlet-1: Avatar 258,/icon.png,main.GameMidlet
++MIDlet-Vendor: TeaMobi
+ MicroEdition-Configuration: CLDC-1.0
++MIDlet-Name: Avatar Homelab
++MIDlet-Permissions: javax.microedition.io.Connector.socket,javax.micro
++ edition.io.Connector.http,javax.microedition.io.Connector.sms,javax.w
++ ireless.messaging.sms.send
++MIDlet-Version: 2.5.8
+ MicroEdition-Profile: MIDP-2.0
++
+diff --git a/build.gradle b/build.gradle
+index 4fc1aa6..eb3f999 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -1,7 +1,7 @@
+ // Top-level build file where you can add configuration options common to all sub-projects/modules.
+ plugins {
+-    id 'com.android.application' version '8.5.1' apply false
+-    id 'com.android.library' version '8.5.1' apply false
++    id 'com.android.application' version '8.13.1' apply false
++    id 'com.android.library' version '8.13.1' apply false
+ }
+ 
+ task clean(type: Delete) {
+@@ -10,7 +10,7 @@ task clean(type: Delete) {
+ 
+ ext {
+     COMPILE_SDK = 34
+-    MIN_SDK = 14
++    MIN_SDK = 21
+     TARGET_SDK = 34
+-    NDK_VERSION = '22.1.7171670'
++    NDK_VERSION = '28.2.13676358'
+ }
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+index 83cdb2f..9461bae 100644
+--- a/gradle/wrapper/gradle-wrapper.properties
++++ b/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,6 @@
+ #Tue Jun 28 22:19:24 MSK 2022
+ distributionBase=GRADLE_USER_HOME
+-distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.14-bin.zip
+ distributionPath=wrapper/dists
+ zipStorePath=wrapper/dists
+ zipStoreBase=GRADLE_USER_HOME

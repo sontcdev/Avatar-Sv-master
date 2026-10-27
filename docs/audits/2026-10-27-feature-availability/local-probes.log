@@ -1,0 +1,11 @@
+FarmMsgHandler: 70
+CONFIRMED: open land accepts foreign farm ID/invalid currency with zero funds
+FarmMsgHandler: 71
+CONFIRMED: animal purchase accepts undefined type/currency with zero funds
+FarmMsgHandler: 61
+CONFIRMED: visiting another farm returns current user land/animals under requested ID
+CONFIRMED: advertised clan menu has only generic 2-byte response
+CONFIRMED: friend list returns chat/dialog placeholder, no friend list
+-104:  7
+CONFIRMED: JOIN_HOUSE_4 returns no response
+6 audit probes passed (confirm current incomplete/incorrect behavior; not game acceptance tests)

@@ -45,8 +45,13 @@ Avatar {
                 System.out.println("Shutdown Server!");
                 ServerManager.stop();
             }));
-            ServerManager.init();
-            ServerManager.start();
+            try {
+                ServerManager.init();
+                ServerManager.start();
+            } catch (Throwable failure) {
+                failure.printStackTrace();
+                System.exit(1);
+            }
         });
         T.start();
     }

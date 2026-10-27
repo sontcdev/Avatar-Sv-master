@@ -66,8 +66,8 @@ public class HomeMsgHandler extends MessageHandler {
                     super.onMessage(mss);
                     break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | RuntimeException e) {
+            actionFailed(mss, e);
         }
     }
 }

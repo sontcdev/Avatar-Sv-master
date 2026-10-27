@@ -1,0 +1,13 @@
+java.lang.IllegalStateException: Cannot load database configuration
+	at avatar.db.DbManager.<init>(DbManager.java:58)
+	at avatar.db.DbManager.getInstance(DbManager.java:40)
+	at avatar.server.ServerManager.init(ServerManager.java:115)
+	at avatar.server.Avatar.lambda$start$1(Avatar.java:49)
+	at java.base/java.lang.Thread.run(Thread.java:1516)
+Caused by: java.io.FileNotFoundException: database.properties (No such file or directory)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:185)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:139)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:109)
+	at avatar.db.DbManager.<init>(DbManager.java:46)
+	... 4 more

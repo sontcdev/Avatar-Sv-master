@@ -94,9 +94,11 @@ public class NpcHandler {
         if (z != null) {
             User u = z.find(npcId);
             if (u == null) {
+                us.getAvatarService().serverDialog("NPC không còn ở khu vực này. Vui lòng chọn lại.");
                 return;
             }
         } else {
+            us.getAvatarService().serverDialog("Chưa thể nói chuyện với NPC ở đây.");
             return;
         }
 
@@ -734,6 +736,9 @@ public class NpcHandler {
                     us.getAvatarService().openMenuOption(npcId, 0, ListDacBiet);
                     break;
                 }
+                default:
+                    us.getAvatarService().serverDialog("NPC này chưa có chức năng trên máy chủ.");
+                    break;
             }
         }
     }

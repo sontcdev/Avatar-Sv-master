@@ -60,7 +60,8 @@ public class Session implements ISession {
     public User user;
     public GlobalHandler handler;
     private IMessageHandler messageHandler;
-    public boolean connected;
+    public volatile boolean connected;
+    private boolean closed;
     public boolean login;
     private byte curR;
     private byte curW;
@@ -98,12 +99,16 @@ public class Session implements ISession {
         this.dos = new DataOutputStream(sc.getOutputStream());
         this.setHandler(new MessageHandler(this));
         this.sendThread = new Thread(this.sender = new Sender());
-        (this.collectorThread = new Thread(new MessageCollector())).start();
+        this.collectorThread = new Thread(new MessageCollector());
         this.avatarService = new AvatarService(this);
         this.farmService = new FarmService(this);
         this.homeService = new HomeService(this);
         this.parkService = new ParkService(this);
         this.service = new Service(this);
+    }
+
+    public void startCollector() {
+        this.collectorThread.start();
     }
 
     @Override
@@ -183,16 +188,20 @@ public class Session implements ISession {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
+        if (closed) return;
+        closed = true;
+        this.parkService.cancelFishing();
         try {
             if (this.user != null) {
                 this.user.close();
                 UserManager.getInstance().remove(user);
             }
             ServerManager.disconnect(this);
-            this.cleanNetwork();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            this.cleanNetwork();
         }
     }
 
@@ -2112,11 +2121,11 @@ public void NhanThuongEventXuBoss() throws IOException {
         private Deque<Message> sendingMessage;
 
         public Sender() {
-            this.sendingMessage = new ArrayDeque<Message>();
+            this.sendingMessage = new java.util.concurrent.LinkedBlockingDeque<>(1024);
         }
 
         public void AddMessage(Message message) {
-            this.sendingMessage.add(message);
+            if (!this.sendingMessage.offer(message)) close();
         }
 
         @Override
@@ -2124,7 +2133,7 @@ public void NhanThuongEventXuBoss() throws IOException {
             while (isConnected()) {
                 while (!this.sendingMessage.isEmpty()) {
                     Message message = this.sendingMessage.poll();
-                    doSendMessage(message);
+                    if (message != null) doSendMessage(message);
                 }
                 try {
                     Thread.sleep(10L);
@@ -2153,8 +2162,8 @@ public void NhanThuongEventXuBoss() throws IOException {
                 if (messageHandler != null) {
                     messageHandler.onDisconnected();
                 }
-                close();
             }
+            close();
         }
 
         private Message readMessage() {

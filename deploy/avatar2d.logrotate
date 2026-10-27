@@ -1,0 +1,10 @@
+/var/log/avatar2d/console.log /var/log/avatar2d/*.txt {
+    daily
+    maxsize 5M
+    rotate 4
+    compress
+    missingok
+    notifempty
+    copytruncate
+    su avatar2d avatar2d
+}

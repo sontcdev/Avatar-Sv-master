@@ -821,6 +821,7 @@ public class AvatarService extends Service {
     }
 
     public void openMenuOption(int userID, int menuID, String... menus) {
+        session.user.setMenus(null);
         try {
             Message ms = new Message(Cmd.MENU_OPTION);
             DataOutputStream ds = ms.writer();
@@ -838,6 +839,7 @@ public class AvatarService extends Service {
     }
 
     public void openMenuOption(int userID, int menuID, List<Menu> menus) {
+        session.user.setMenus(menus);
         try {
             Message ms = new Message(Cmd.MENU_OPTION);
             DataOutputStream ds = ms.writer();
@@ -855,6 +857,7 @@ public class AvatarService extends Service {
     }
 
     public void openUIMenu(int userID, int menuID, List<Menu> menus, String npcName, String npcChat) {
+        session.user.setMenus(menus);
         try {
             Message ms = new Message(Cmd.MENU_OPTION);
             DataOutputStream ds = ms.writer();

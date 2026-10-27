@@ -33,8 +33,10 @@ public class HomeService extends Service {
         byte x = ms.reader().readByte();
         byte y = ms.reader().readByte();
         byte type = ms.reader().readByte();
-        this.session.user.updateXu(-2000);
-        this.session.getAvatarService().updateMoney(0);
+        if (session.user.getXu() < 2000) {
+            serverDialog("Bạn không đủ 2000 xu để mua nội thất.");
+            return;
+        }
         int result = 0;
         try (Connection connection = DbManager.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement("INSERT INTO `house_player_item` (`user_id`, `house_item_id`, `x`, `y`) VALUES (?, ?, ?, ?)");) {
@@ -45,10 +47,11 @@ public class HomeService extends Service {
             ps.setByte(4, y);
             result = ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println(e.getMessage());
+            throw new IOException("Could not save house item", e);
         }
         if (result > 0) {
+            session.user.updateXu(-2000);
+            session.getAvatarService().updateMoney(0);
             ms = new Message(-74);
             DataOutputStream ds = ms.writer();
             ds.writeShort(itemId);
@@ -56,7 +59,7 @@ public class HomeService extends Service {
             ds.writeByte(y);
             ds.flush();
             this.session.sendMessage(ms);
-        }
+        } else serverDialog("Chưa lưu được nội thất. Vui lòng thử lại sau.");
     }
 
     public void sortItemHouse(Message ms) throws IOException {
@@ -79,8 +82,7 @@ public class HomeService extends Service {
             int result_update = ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println(e.getMessage());
+            throw new IOException("Could not save house item", e);
         }
     }
 
@@ -111,8 +113,7 @@ public class HomeService extends Service {
             ps.setByte(4, y);
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println(e.getMessage());
+            throw new IOException("Could not save house item", e);
         }
         ms = new Message(-66);
         DataOutputStream ds = ms.writer();
@@ -181,12 +182,13 @@ public class HomeService extends Service {
                     this.session.sendMessage(ms);
                 }
             }
+            else serverDialog("Bạn chưa có dữ liệu nhà để sửa nền.");
             if (ps != null) {
                 ps.close();
             }
             res.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new IOException("Could not save house map", e);
         }
     }
 
@@ -253,7 +255,7 @@ public class HomeService extends Service {
 
         ms = new Message(Cmd.CUSTOM_CHEST);
         DataOutputStream ds = ms.writer();
-        ds.writeShort(lstChest.size());
+        ds.writeShort((int) lstChest.stream().filter(item -> item.getId() != 40).count());
         for (Item item : lstChest) {
             if(item.getId() != 40){
                 ds.writeShort(item.getId());
@@ -321,6 +323,10 @@ public class HomeService extends Service {
             Item Home = this.session.user.findItemInChestsHome(Itemid);
             Item chest = this.session.user.findItemInChests(Itemid);
 
+            if (Home == null) {
+                serverDialog("Vật phẩm không còn trong rương nhà. Vui lòng mở lại rương.");
+                return;
+            }
             if (chest != null && Home != null) {
                 this.session.user.getAvatarService().serverDialog("error -2");
                 return;

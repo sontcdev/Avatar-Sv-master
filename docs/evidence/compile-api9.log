@@ -1,0 +1,48 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.kitakeyos:Avatar2D >-----------------------
+[INFO] Building Avatar2D 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ Avatar2D ---
+[INFO] Deleting /Volumes/sontc/sources/others/avatar2d/target
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ Avatar2D ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ Avatar2D ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 86 source files with javac [debug release 9] to target/classes
+[INFO] /Volumes/sontc/sources/others/avatar2d/src/main/java/avatar/server/Utils.java: /Volumes/sontc/sources/others/avatar2d/src/main/java/avatar/server/Utils.java uses or overrides a deprecated API.
+[INFO] /Volumes/sontc/sources/others/avatar2d/src/main/java/avatar/server/Utils.java: Recompile with -Xlint:deprecation for details.
+[INFO] /Volumes/sontc/sources/others/avatar2d/src/main/java/avatar/model/User.java: Some input files use unchecked or unsafe operations.
+[INFO] /Volumes/sontc/sources/others/avatar2d/src/main/java/avatar/model/User.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ Avatar2D ---
+[INFO] skip non existing resourceDirectory /Volumes/sontc/sources/others/avatar2d/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ Avatar2D ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug release 9] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.4:test (default-test) @ Avatar2D ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junit4.JUnit4Provider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running avatar.server.SessionLifecycleTest
+Disconnect client: Client 1
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.054 s -- in avatar.server.SessionLifecycleTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.856 s
+[INFO] Finished at: 2026-10-27T16:28:48+07:00
+[INFO] ------------------------------------------------------------------------

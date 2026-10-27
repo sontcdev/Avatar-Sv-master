@@ -1,0 +1,20 @@
+[Unit]
+Description=Avatar HTTPS WebSocket bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sontc/avatar2d-public
+ExecStart=/home/sontc/avatar2d-public/venv/bin/python /home/sontc/avatar2d-public/avatar-ws-bridge.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+MemoryMax=192M
+TasksMax=32
+CPUWeight=10
+
+[Install]
+WantedBy=default.target

@@ -74,6 +74,10 @@ public class FarmMsgHandler extends MessageHandler {
                     this.service.doRequestslot(mss);
                     break;
                 }
+                case Cmd.HARVEST_STARFRUIT: {
+                    this.service.harvestStarfruit();
+                    break;
+                }
                 case Cmd.TREE_HARVEST: {
                     this.service.treeHarvest(mss);
                     break;
@@ -110,10 +114,27 @@ public class FarmMsgHandler extends MessageHandler {
                     this.service.serverDialog("Mở rộng nuôi cá đang xây dựng");
                     break;
                 }
-                case Cmd.COOKING: {
-                   // this.service.huy("Hủy Nấu Ăn Nhanh tutu");
+                case Cmd.COOKING:
+                case Cmd.HARVEST_COOK:
+                case Cmd.NAU_NHANH:
+                case Cmd.USING_ITEM:
+                case Cmd.PRICE_ANIMAL:
+                case Cmd.SELL_ANIMAL:
+                case Cmd.HARVEST_ANIMAL:
+                case Cmd.INFO_CELL:
+                case Cmd.INFO_ANIMAL:
+                case Cmd.UPDATE_STARFRUIL:
+                case Cmd.UPDATE_STARTFRUIT_BYMONEY:
+                case Cmd.GET_INFO_STARFRUIT:
+                case Cmd.FINISH_STARFRUIT:
+                case Cmd.UPDATE_LAND:
+                case Cmd.UPDATE_STORE:
+                case Cmd.STEAL_INFO:
+                case Cmd.STEAL:
+                case Cmd.STEAL_STORE:
+                case Cmd.LICH_SU_BI_TROM:
+                    this.service.serverDialog("Chức năng nông trại này chưa được hỗ trợ trên máy chủ.");
                     break;
-                }
                 case Cmd.COMMUNICATE: {
                     // this.service.serverDialog("lãi buôn");
                     NpcHandler.handlerCommunicate(Npc.ID_ADD+NpcName.LAI_BUON,this.client.user);
@@ -123,10 +144,8 @@ public class FarmMsgHandler extends MessageHandler {
                     super.onMessage(mss);
                     break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | SQLException | RuntimeException e) {
+            actionFailed(mss, e);
         }
     }
 }

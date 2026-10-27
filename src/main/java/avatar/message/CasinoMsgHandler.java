@@ -84,11 +84,11 @@ public class CasinoMsgHandler extends MessageHandler {
                     setMoney(mss,this.client.user);
                     break;
                 default:
-                    System.out.println("casino mess: " + mss.getCommand());
+                    super.onMessage(mss);
                     break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            actionFailed(mss, e);
         }
     }
 

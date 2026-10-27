@@ -16,7 +16,7 @@ public class Npc extends User {
 
     @Getter
     @Setter
-    private List<String> textChats;
+    private volatile List<String> textChats;
 
     private Thread autoChatBot = new Thread(() -> {
         while (true) {

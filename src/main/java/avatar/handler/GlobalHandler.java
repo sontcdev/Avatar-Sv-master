@@ -44,7 +44,7 @@ public class GlobalHandler {
         byte menuId = ms.reader().readByte();
         byte select = ms.reader().readByte();
         System.out.println("userId = " + userId + ", menuId = " + menuId + ", select = " + select);
-        menuOptionHandle(userId, menuId, select);
+        if (menuOptionHandle(userId, menuId, select)) return;
         if (userId >= 2000000000 || userId == 1) {
             //NpcHandler.handlerAction(this.us, userId, menuId, select);
             return;
@@ -108,22 +108,24 @@ public class GlobalHandler {
         }
     }
 
-    private void menuOptionHandle(int npcId, byte menuId, byte select) {
+    private boolean menuOptionHandle(int npcId, byte menuId, byte select) {
         List<Menu> menus = us.getMenus();
-        if (menus != null && select < menus.size()) {
-            Menu menu = menus.get(select);
-            if (menu.isMenu()) {
-                us.setMenus(menu.getMenus());
-                us.getAvatarService().openUIMenu(npcId, menuId + 1, menu.getMenus(), menu.getNpcName(), menu.getNpcChat());
-            } else if (menu.getAction() != null) {
-                menu.perform();
-            } else {
-                switch (menu.getId()) {
-
-                }
-            }
-            return;
+        if (menus == null) return false;
+        if (select < 0 || select >= menus.size()) {
+            us.getAvatarService().serverDialog("Lựa chọn không hợp lệ. Vui lòng mở lại menu.");
+            return true;
         }
+        Menu menu = menus.get(select);
+        if (menu.isMenu()) {
+            us.setMenus(menu.getMenus());
+            us.getAvatarService().openUIMenu(npcId, menuId + 1, menu.getMenus(), menu.getNpcName(), menu.getNpcChat());
+        } else if (menu.getAction() != null) {
+            menu.perform();
+        } else {
+            if (!"Thoát".equalsIgnoreCase(String.valueOf(menu.getName()).trim()))
+                us.getAvatarService().serverDialog("Chức năng này chưa được hỗ trợ trên máy chủ.");
+        }
+        return true;
     }
 
 

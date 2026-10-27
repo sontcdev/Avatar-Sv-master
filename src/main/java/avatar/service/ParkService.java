@@ -21,10 +21,25 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Random;
+import java.util.concurrent.*;
 
 public class ParkService extends Service {
     private final RandomCollection<Integer> randomItemList1 = new RandomCollection<>();
     short time;
+    private static final ScheduledThreadPoolExecutor fishingTimer = new ScheduledThreadPoolExecutor(1, task -> {
+        Thread thread = new Thread(task, "avatar-fishing");
+        thread.setDaemon(true);
+        return thread;
+    });
+    static { fishingTimer.setRemoveOnCancelPolicy(true); }
+    private volatile ScheduledFuture<?> pendingBite;
+
+    public void cancelFishing() {
+        ScheduledFuture<?> pending = pendingBite;
+        if (pending != null) pending.cancel(false);
+        pendingBite = null;
+    }
+
     private static final Logger logger = Logger.getLogger(AvatarService.class);
     private static final Fish a = new Fish();
     public ParkService(Session cl) {
@@ -142,15 +157,21 @@ public class ParkService extends Service {
         return true;
     }
 
-    public void handleQuangCau(Message ms) {
+    public synchronized void handleQuangCau(Message ms) {
         try {
 
+            if (pendingBite != null && !pendingBite.isDone()) {
+                serverDialog("Bạn đang chờ cá cắn câu.");
+                return;
+            }
             Item item = this.session.user.findItemInChests(448);
             if(item==null){
                 if(this.session.user.AutoFish)
                 {
-                    Item moi = new Item(448,-1,1);
-                    this.session.user.addItemToChests(moi);
+                    if (this.session.user.getXu() < 30) {
+                        serverDialog("Bạn không đủ 30 xu để mua mồi câu.");
+                        return;
+                    }
                     this.session.user.updateXu(-30);
                     this.session.user.getAvatarService().updateMoney(0);
                 }else {
@@ -158,13 +179,27 @@ public class ParkService extends Service {
                     return;
                 }
             }
-            this.session.user.removeItemFromChests(item);
+            if (item != null) this.session.user.removeItemFromChests(item);
             int userID = this.session.user.getId();
             Message response = new Message(Cmd.QUANG_CAU);
             DataOutputStream ds = response.writer();
             ds.writeInt(userID);
             ds.flush();
             this.sendMessage(response);
+            User fishingUser = session.user;
+            avatar.play.Zone fishingZone = fishingUser.getZone();
+            pendingBite = fishingTimer.schedule(() -> {
+                synchronized (ParkService.this) {
+                    pendingBite = null;
+                    if (session.isConnected() && session.user == fishingUser && fishingUser.getZone() == fishingZone) {
+                        try { onCanCau(); }
+                        catch (RuntimeException failure) {
+                            logger.error("Fishing bite failed", failure);
+                            serverDialog("Không thực hiện được câu cá. Vui lòng thử lại sau.");
+                        }
+                    }
+                }
+            }, Utils.nextInt(12000, 18000), TimeUnit.MILLISECONDS);
 
         } catch (IOException ex) {
             logger.error("handleStartFishing() ", ex);
@@ -321,6 +356,7 @@ public class ParkService extends Service {
 
 
     public void CauCaXong() {
+        cancelFishing();
         try {
             int userID = this.session.user.getId();
             Message ms = new Message(Cmd.CAU_CA_XONG);

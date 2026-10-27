@@ -21,6 +21,11 @@ public class MessageHandler implements IMessageHandler {
         if (mss != null) {
             try {
                 switch (mss.getCommand()) {
+                    case Cmd.LOGIN_NEW_GAME:
+                    case Cmd.REQUEST_REGISTER:
+                    case Cmd.REGISTER_BY_EMAIL:
+                        client.getAvatarService().serverDialog("Máy chủ chưa hỗ trợ tạo tài khoản trong game. Vui lòng đăng nhập bằng tài khoản đã cấp.");
+                        break;
                     case Cmd.JOIN_HOUSE_4: {
                         if (this.client.user != null) {
                             this.client.doJoinHouse4(mss);
@@ -317,10 +322,15 @@ public class MessageHandler implements IMessageHandler {
                         break;
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException | RuntimeException e) {
+                actionFailed(mss, e);
             }
         }
+    }
+
+    protected void actionFailed(Message message, Exception failure) {
+        org.apache.log4j.Logger.getLogger(getClass()).error("Action failed, command=" + message.getCommand(), failure);
+        client.getAvatarService().serverDialog("Không thực hiện được thao tác. Vui lòng mở lại menu hoặc thử lại sau.");
     }
 
     @Override
