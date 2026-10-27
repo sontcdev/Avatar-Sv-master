@@ -1,0 +1,6 @@
+    PID COMMAND
+ 328627 /usr/sbin/mariadbd --datadir=/home/sontc/avatar2d-gameplay-stage/data --socket=/home/sontc/avatar2d-gameplay-stage/mysql.sock --pid-file=/home/sontc/avatar2d-gameplay-stage/mysql.pid --log-error=/home/sontc/avatar2d-gameplay-stage/mysql.log --bind-address=127.0.0.1 --port=13317 --innodb-buffer-pool-size=32M --max-connections=6 --performance-schema=OFF
+ 332532 java -Xms32m -Xmx128m -XX:ActiveProcessorCount=2 -Davatar.protocol.trace=true -cp m22-server-final.jar:. GameplayProbe
+/home/sontc/avatar2d-gameplay-stage/data
+MainPID=313665
+NRestarts=0

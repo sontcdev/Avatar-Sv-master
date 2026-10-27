@@ -29,3 +29,7 @@ Production was observed at MainPID 313665/NRestarts 0 during this work; observat
 ## Final artifact restart observed
 
 The final package was reinstalled and restarted as PID 327395, hash `9ef00532c343e4dfd44db8aace5fcf67702b70e913a95f39c3150fedb8106008`. Same MIDlet 71 displayed disconnect, then authenticated again through its cached city selector and entered map 9/zone 0. See the two screenshots and runtime identity in [evidence](evidence/milestone-2-1/). This proves that restart/relogin path once; full feature persistence and sustained reconnect acceptance remain PARTIAL. Both clients also disconnected during idle/interrupted work. The listener configures a 120-second socket read timeout; the final cause of each disconnect was not captured and must not be attributed solely to that timeout.
+
+## Milestone 2.2 follow-up
+
+M2.2 captured authenticated map9/23 and graceful-restart reconnect. NPC850/map25 navigation remains blocked; screenshots, raw coordinate mapping and exact manual attendance acceptance/capture procedure are supplied. See [current report](MILESTONE_2_2_REPORT.md) and [client evidence](MILESTONE_2_2_E2E_EVIDENCE.md). Historical failures remain evidence of the earlier artifact.

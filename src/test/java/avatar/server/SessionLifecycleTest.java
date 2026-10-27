@@ -7,6 +7,24 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class SessionLifecycleTest {
+    @Test public void failedLogoutStillRemovesUserAndClosesTransport() throws Exception {
+        try (ServerSocket listener=new ServerSocket(0,1,InetAddress.getLoopbackAddress());
+             Socket peer=new Socket(listener.getInetAddress(),listener.getLocalPort());
+             Socket accepted=listener.accept()) {
+            Session session=new Session(accepted,999);
+            avatar.model.User user=new avatar.model.User() {
+                @Override public void close() { throw new IllegalStateException("Synthetic failed logout"); }
+            };
+            user.setId(999); session.user=user; session.connected=true; session.login=true;
+            avatar.server.UserManager.getInstance().add(user);
+            try {
+                session.close(); session.close();
+                assertNull(avatar.server.UserManager.getInstance().find(999));
+                assertFalse(session.connected); assertFalse(session.login); assertTrue(accepted.isClosed());
+            } finally { avatar.server.UserManager.getInstance().remove(user); }
+        }
+    }
+
     @Test public void stagingTraceCapturesIncomingPayloadWithoutConsumingIt() throws Exception {
         ServerManager.clients = Collections.synchronizedList(new ArrayList<>());
         ServerManager.numClients = 1;

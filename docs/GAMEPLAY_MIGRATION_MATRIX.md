@@ -1,5 +1,14 @@
 # Gameplay migration matrix — 2026-10-28
 
+## Milestone 2.2 — current status supersedes historical results
+
+[Chắc chắn] Baseline `98d85d7` clean; **60 unique tests pass (33 unit +27 DB)** on Java17. Stale committed inventory/currency overwrite is guarded by persisted player/farm revisions and atomic logout; ambiguous commit/resource-close failures fail closed, rejected snapshots are retained privately. Duplicate login preserves the active owner. Additive schema applied only to isolated staging; mixed old/new writers are unsupported.
+
+[Chắc chắn] Attendance remains **PARTIAL**: real client71 authenticated/rendered maps9/23/reconnected, but NPC850 map25/menu/claim was not reached. No reward/double-claim E2E evidence. Chat/friends/visits remain PARTIAL and downstream gates were not attempted. Native63 remains **PARTIAL, live BLOCKED/defaultOFF**: replay after replenishment is still reproduced. No load test or production cutover.
+
+Current [report](MILESTONE_2_2_REPORT.md), [client evidence/manual procedure](MILESTONE_2_2_E2E_EVIDENCE.md), [stale-session root cause](STALE_SESSION_ROOT_CAUSE.md). Final JAR SHA256 `18df157280dc1ee2915a4a17442a6282c31d5eb3edbbbc385e119016c8d5750a`. Sections below are historical and do not supersede this result.
+
+
 ## Milestone 2.1 — kết quả thay thế trạng thái cũ
 
 [Chắc chắn] Tiếp tục từ `79e939f48403feb054e6ce2ac509bf45d3b04929`, ban đầu worktree clean. Java 17 build đạt; **47 test khác nhau đạt: 32 unit + 15 DB opt-in**, không cộng rerun. JAR SHA256 `9ef00532c343e4dfd44db8aace5fcf67702b70e913a95f39c3150fedb8106008` trùng artifact chạy staging. Đã sửa boss/bot tự chiếm player TCP slots và null-zone khi client gửi context 8. Cùng MIDlet 71 reconnect được sau restart bản cuối, nhưng toàn bộ acceptance E2E vẫn **PARTIAL**.

@@ -231,13 +231,16 @@ public class Session implements ISession {
             }
             if (this.user != null) {
                 this.user.close();
-                UserManager.getInstance().remove(user);
             }
-            ServerManager.disconnect(this);
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
             e.printStackTrace();
         } finally {
-            if (sc != null) this.cleanNetwork();
+            if (sc != null) {
+                if (user != null) UserManager.getInstance().remove(user);
+                try { ServerManager.disconnect(this); }
+                catch (IOException failure) { failure.printStackTrace(); }
+                this.cleanNetwork();
+            }
         }
     }
 

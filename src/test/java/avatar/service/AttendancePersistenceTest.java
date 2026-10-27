@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 /** Runs only against the disposable fixture DB. */
 public class AttendancePersistenceTest {
     private User player(int id, int scores) {
-        User user = new User(); user.setId(id); user.setScores(scores);
+        User user = new User(); user.setId(id); user.setScores(scores); user.setPlayerRevision(0);
         user.setChests(new ArrayList<>()); user.setChestSlot((byte) 10); return user;
     }
     @Test public void dailyRewardIsAtomicAndReplaySafeAcrossReloadAndConcurrency() throws Exception {
@@ -24,9 +24,9 @@ public class AttendancePersistenceTest {
         ExecutorService workers = Executors.newFixedThreadPool(2);
         try (Connection connection = db.getConnection()) {
             assertEquals("avatar2d_starfruit_test", connection.getCatalog());
-            connection.createStatement().execute("CREATE TABLE players (user_id INT PRIMARY KEY, chests LONGTEXT NOT NULL, scores INT CHECK (scores < 100))");
+            connection.createStatement().execute("CREATE TABLE players (user_id INT PRIMARY KEY, chests LONGTEXT NOT NULL, scores INT CHECK (scores < 100), persistence_revision BIGINT NOT NULL DEFAULT 0)");
             for (int i = 0; i < 2; i++) connection.createStatement().execute("ALTER TABLE players ADD COLUMN IF NOT EXISTS attendance_date DATE NULL DEFAULT NULL");
-            connection.createStatement().execute("INSERT INTO players VALUES (71, '[]', 0, NULL), (92, '[]', 90, NULL)");
+            connection.createStatement().execute("INSERT INTO players (user_id,chests,scores,attendance_date) VALUES (71, '[]', 0, NULL), (92, '[]', 90, NULL)");
             User user = player(71, 0);
             Future<Boolean> first = workers.submit(user::claimDailyAttendance);
             Future<Boolean> second = workers.submit(user::claimDailyAttendance);

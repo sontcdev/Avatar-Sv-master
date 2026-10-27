@@ -1,0 +1,9 @@
+TABLE_NAME	COLUMN_NAME	COLUMN_TYPE	IS_NULLABLE	COLUMN_DEFAULT
+farm_data	persistence_revision	bigint(20)	NO	0
+players	persistence_revision	bigint(20)	NO	0
+user_id	xu	scores	chests	attendance_date	persistence_revision
+71	20000	0	[]	NULL	1
+92	20000	0	[]	NULL	0
+user_id	nongsandacbiet	starfruit_quantity	starfruit_last_harvest_ms	persistence_revision
+71	[{"id":215,"soluong":195}]	0	1793123779887	1
+92	[]	180	0	0

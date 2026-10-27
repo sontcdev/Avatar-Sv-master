@@ -1,0 +1,8 @@
+user_id	xu	scores	chests	attendance_date	persistence_revision
+71	20000	0	[]	NULL	0
+92	20000	0	[]	NULL	0
+user_id	nongsandacbiet	starfruit_quantity	starfruit_last_harvest_ms	persistence_revision
+71	[{"id":215,"soluong":195}]	0	1793123779887	0
+92	[]	180	0	0
+friendships
+0

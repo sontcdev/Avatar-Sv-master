@@ -1,0 +1,9 @@
+MainPID=313665
+NRestarts=0
+    PID COMMAND
+List of devices attached
+emulator-5554	device
+
+
+  PID ARGS
+68690 adb -L tcp:5037 fork-server server --reply-fd 4

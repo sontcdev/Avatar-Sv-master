@@ -82,6 +82,13 @@ public class User {
     private byte gender;
     public long xu;
     private boolean farmSaleUncertain;
+    private long farmRevision = -1;
+    private long playerRevision = -1;
+
+    private SQLException persistenceConflict(String scope) {
+        logger.error("Persistence conflict; retained in-memory snapshot, user=" + id + ", scope=" + scope);
+        return new SQLTransactionRollbackException("Dữ liệu đã thay đổi ở phiên khác. Vui lòng đăng nhập lại.", "40001");
+    }
 
     public synchronized int[] sellFarmProduct(int product, int price) throws SQLException {
         // shortcut: native 63 has no nonce; replay after a later harvest needs a verified protocol extension.
@@ -97,18 +104,20 @@ public class User {
             c.setAutoCommit(false);
             try {
                 long balance;
-                try (PreparedStatement p = c.prepareStatement("SELECT xu FROM players WHERE user_id=? FOR UPDATE")) {
+                try (PreparedStatement p = c.prepareStatement("SELECT xu, persistence_revision FROM players WHERE user_id=? FOR UPDATE")) {
                     p.setInt(1,id);
                     try (ResultSet r = p.executeQuery()) {
                         if (!r.next()) throw new SQLException("Missing player for sale");
                         balance = r.getLong(1);
+                        if (r.getLong(2) != playerRevision) throw persistenceConflict("sale player");
                     }
                 }
                 JSONArray stock;
-                try (PreparedStatement p = c.prepareStatement("SELECT " + column + " FROM farm_data WHERE user_id=? FOR UPDATE")) {
+                try (PreparedStatement p = c.prepareStatement("SELECT " + column + ", persistence_revision FROM farm_data WHERE user_id=? FOR UPDATE")) {
                     p.setInt(1,id);
                     try (ResultSet r = p.executeQuery()) {
                         if (!r.next()) throw new SQLException("Missing farm for sale");
+                        if (r.getLong(2) != farmRevision) throw persistenceConflict("sale farm");
                         Object parsed = JSONValue.parse(r.getString(1));
                         if (!(parsed instanceof JSONArray)) throw new SQLException("Invalid farm inventory");
                         stock = (JSONArray) parsed;
@@ -131,17 +140,18 @@ public class User {
                 int updated = Math.toIntExact(Math.addExact(balance,earned));
                 if (balance < 0 || updated < 0) throw new ArithmeticException("Invalid currency balance");
                 owned.put("soluong",0);
-                try (PreparedStatement p = c.prepareStatement("UPDATE farm_data SET " + column + "=? WHERE user_id=?")) {
-                    p.setString(1,stock.toJSONString()); p.setInt(2,id);
+                try (PreparedStatement p = c.prepareStatement("UPDATE farm_data SET " + column + "=?, persistence_revision=persistence_revision+1 WHERE user_id=? AND persistence_revision=?")) {
+                    p.setString(1,stock.toJSONString()); p.setInt(2,id); p.setLong(3,farmRevision);
                     if (p.executeUpdate() != 1) throw new SQLException("Farm sale update lost");
                 }
-                try (PreparedStatement p = c.prepareStatement("UPDATE players SET xu=? WHERE user_id=?")) {
-                    p.setInt(1,updated); p.setInt(2,id);
+                try (PreparedStatement p = c.prepareStatement("UPDATE players SET xu=?, persistence_revision=persistence_revision+1 WHERE user_id=? AND persistence_revision=?")) {
+                    p.setInt(1,updated); p.setInt(2,id); p.setLong(3,playerRevision);
                     if (p.executeUpdate() != 1) throw new SQLException("Currency sale update lost");
                 }
                 // A lost commit acknowledgement must never be overwritten by logout's stale snapshot.
                 farmSaleUncertain = true;
                 c.commit();
+                farmRevision++; playerRevision++;
                 xu = updated;
                 if (product == 215) NongSanDacBiet.stream().filter(i -> i.getId() == product).forEach(i -> i.setSoluong(0));
                 else NongSan.stream().filter(i -> i.getId() == product).forEach(i -> i.setSoluong(0));
@@ -205,6 +215,7 @@ public class User {
     }
 
     public synchronized boolean claimDailyAttendance() throws SQLException {
+        if (farmSaleUncertain) throw new SQLException("Persistence outcome requires reconnect");
         LocalDate today = LocalDate.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"));
         synchronized (chests) {
             Item ticket = chests.stream().filter(item -> item.getId() == 593).findFirst().orElse(null);
@@ -230,12 +241,37 @@ public class User {
             // The conditional write commits the reward and day together, including across reconnects.
             try (Connection connection = DbManager.getInstance().getConnection();
                  PreparedStatement update = connection.prepareStatement(
-                         "UPDATE players SET chests = ?, scores = ?, attendance_date = ? " +
-                         "WHERE user_id = ? AND (attendance_date IS NULL OR attendance_date < ?) LIMIT 1")) {
+                         "UPDATE players SET chests = ?, scores = ?, attendance_date = ?, persistence_revision=persistence_revision+1 " +
+                         "WHERE user_id = ? AND (attendance_date IS NULL OR attendance_date < ?) AND persistence_revision=? LIMIT 1")) {
                 update.setString(1, saved.toJSONString()); update.setInt(2, newScores);
                 update.setDate(3, java.sql.Date.valueOf(today)); update.setInt(4, id);
                 update.setDate(5, java.sql.Date.valueOf(today));
-                if (update.executeUpdate() == 0) return false;
+                update.setLong(6, playerRevision);
+                connection.setAutoCommit(false);
+                try {
+                    if (update.executeUpdate() == 0) {
+                        connection.rollback();
+                        try (PreparedStatement check = connection.prepareStatement("SELECT attendance_date FROM players WHERE user_id=?")) {
+                            check.setInt(1,id);
+                            try (ResultSet row = check.executeQuery()) {
+                                if (row.next() && row.getDate(1) != null && !row.getDate(1).toLocalDate().isBefore(today)) return false;
+                            }
+                        }
+                        throw persistenceConflict("attendance");
+                    }
+                    farmSaleUncertain = true;
+                    connection.commit();
+                    playerRevision++;
+                    farmSaleUncertain = false;
+                } catch (SQLException failure) {
+                    try { connection.rollback(); }
+                    catch (SQLException rollback) { farmSaleUncertain = true; failure.addSuppressed(rollback); }
+                    throw failure;
+                }
+            } catch (SQLException failure) {
+                // Resource close can fail after commit, before the RAM reward is applied.
+                farmSaleUncertain = true;
+                throw failure;
             }
             if (ticket == null) chests.add(new Item(593, -1, 1));
             else ticket.setQuantity(ticket.getQuantity() + 1);
@@ -715,17 +751,38 @@ public class User {
     }
 
     public synchronized void updateTopPhaoLuong(int luongThaPhao) {
-        this.luong += luongThaPhao;
-        this.TopPhaoLuong += 1;
-        DbManager.getInstance().executeUpdate("UPDATE `players` SET `TopPhaoLuong` = ? WHERE `user_id` = ? LIMIT 1;",
-                this.TopPhaoLuong, this.id);
+        int next = Math.addExact(TopPhaoLuong,1);
+        int nextLuong = Math.addExact(luong,luongThaPhao);
+        persistTopCounter("TopPhaoLuong",next);
+        luong = nextLuong; TopPhaoLuong = next;
     }
 
     public synchronized void updateTopPhaoXu(int xuThaPhao) {
-        this.xu += xuThaPhao;
-        this.TopPhaoXu += 1;
-        DbManager.getInstance().executeUpdate("UPDATE `players` SET `TopPhaoXu` = ? WHERE `user_id` = ? LIMIT 1;",
-                this.TopPhaoXu, this.id);
+        int next = Math.addExact(TopPhaoXu,1);
+        long nextXu = Math.addExact(xu,xuThaPhao);
+        persistTopCounter("TopPhaoXu",next);
+        xu = nextXu; TopPhaoXu = next;
+    }
+
+    private void persistTopCounter(String column, int value) {
+        if (farmSaleUncertain) throw new IllegalStateException("Persistence outcome requires reconnect");
+        try (Connection c = DbManager.getInstance().getConnection()) {
+            c.setAutoCommit(false);
+            try (PreparedStatement ps = c.prepareStatement("UPDATE players SET " + column + "=?, persistence_revision=persistence_revision+1 WHERE user_id=? AND persistence_revision=?")) {
+                ps.setInt(1,value); ps.setInt(2,id); ps.setLong(3,playerRevision);
+                if (ps.executeUpdate()!=1) throw persistenceConflict("counter");
+                farmSaleUncertain = true;
+                c.commit(); playerRevision++; farmSaleUncertain = false;
+            } catch (SQLException failure) {
+                try { c.rollback(); }
+                catch (SQLException rollback) { farmSaleUncertain = true; failure.addSuppressed(rollback); }
+                throw failure;
+            }
+        } catch (SQLException failure) {
+            // Keep logout blocked if resource close skipped the caller's RAM update.
+            farmSaleUncertain = true;
+            throw new IllegalStateException("Counter persistence failed",failure);
+        }
     }
 
 
@@ -734,11 +791,6 @@ public class User {
     }
 
     protected synchronized void saveData() {
-        if (farmSaleUncertain) { logger.error("Skipping stale logout snapshot after uncertain sale, user=" + id); return; }
-        DbManager.getInstance().executeUpdate("UPDATE `players` SET `gender` = ?, `friendly` = ?, `crazy` = ?, `stylish` = ?, `happy` = ?, `hunger` = ?, `chest_slot` = ? , `chest_home_slot` = ? WHERE `user_id` = ? LIMIT 1;",
-                this.gender, this.friendly, this.crazy, this.stylish, this.happy, this.hunger, this.chestSlot, this.chestHomeSlot, this.id);
-        DbManager.getInstance().executeUpdate("UPDATE `players` SET `xu` = ?, `luong` = ?, `luong_khoa` = ?, `xeng` = ?, `level_main` = ?, `exp_main` = ?,`scores` = ? , `xu_from_boss` = ? , `TopPhaoLuong` = ?, `TopPhaoXu` = ? WHERE `user_id` = ? LIMIT 1;",
-                this.xu, this.luong, this.luongKhoa, this.xeng, this.leverMain, this.expMain, this.scores, this.xu_from_boss, this.TopPhaoLuong, this.TopPhaoXu, this.id);
         JSONArray jChests = new JSONArray();
         for (Item item : this.chests) {
             JSONObject obj = new JSONObject();
@@ -768,20 +820,70 @@ public class User {
             jChestsHome.add(obj);
         }
 
-        DbManager.getInstance().executeUpdate("UPDATE `players` SET `chests` = ?, `wearing` = ?, `chests_home` = ? WHERE `user_id` = ? LIMIT 1;",
-                jChests.toJSONString(), jWearing.toJSONString(), jChestsHome.toJSONString(), this.id);
-        System.out.println("Save data user " + this.getUsername());
-
-        try {
-            saveFarmData(this.id);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        Object[] values = {gender,friendly,crazy,stylish,happy,hunger,chestSlot,chestHomeSlot,xu,luong,luongKhoa,xeng,leverMain,expMain,scores,xu_from_boss,TopPhaoLuong,TopPhaoXu,jChests.toJSONString(),jWearing.toJSONString(),jChestsHome.toJSONString(),id,playerRevision};
+        if (farmSaleUncertain) {
+            preserveRejectedSnapshot(values);
+            logger.error("Skipping stale logout snapshot after uncertain persistence, user=" + id);
+            return;
+        }
+        try (Connection connection = DbManager.getInstance().getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                try (PreparedStatement ps = connection.prepareStatement("UPDATE players SET gender=?,friendly=?,crazy=?,stylish=?,happy=?,hunger=?,chest_slot=?,chest_home_slot=?,xu=?,luong=?,luong_khoa=?,xeng=?,level_main=?,exp_main=?,scores=?,xu_from_boss=?,TopPhaoLuong=?,TopPhaoXu=?,chests=?,wearing=?,chests_home=?,persistence_revision=persistence_revision+1 WHERE user_id=? AND persistence_revision=?")) {
+                    for (int i=0;i<values.length;i++) ps.setObject(i+1,values[i]);
+                    if (ps.executeUpdate()!=1) throw persistenceConflict("logout player");
+                }
+                long nextFarmRevision = saveFarmData(connection,id);
+                farmSaleUncertain = true;
+                connection.commit();
+                playerRevision++; farmRevision = nextFarmRevision;
+                farmSaleUncertain = false;
+            } catch (SQLException failure) {
+                try { connection.rollback(); }
+                catch (SQLException rollback) { farmSaleUncertain = true; failure.addSuppressed(rollback); }
+                throw failure;
+            }
+        } catch (SQLException failure) {
+            preserveRejectedSnapshot(values);
+            logger.error("Logout snapshot not saved; reconciliation required, user=" + id, failure);
+            throw new IllegalStateException("Logout persistence failed for user " + id,failure);
         }
     }
 
     public synchronized void saveFarmData(int userId) throws SQLException {
         if (farmSaleUncertain) throw new SQLException("Uncertain sale; reload before saving farm");
-        // Chuẩn bị dữ liệu để lưu vào cơ sở dữ liệu
+        if (userId != id) throw new SQLException("Farm owner mismatch");
+        try (Connection connection = DbManager.getInstance().getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                long nextRevision = saveFarmData(connection,userId);
+                farmSaleUncertain = true;
+                connection.commit();
+                farmRevision = nextRevision;
+                farmSaleUncertain = false;
+            } catch (SQLException failure) {
+                try { connection.rollback(); }
+                catch (SQLException rollback) { farmSaleUncertain = true; failure.addSuppressed(rollback); }
+                throw failure;
+            }
+        }
+    }
+
+    private long saveFarmData(Connection connection, int userId) throws SQLException {
+        Object[] values = farmSnapshot();
+        String query = farmRevision < 0
+                ? "INSERT INTO farm_data (land_data,animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms,user_id,persistence_revision) VALUES (?,?,?,?,?,?,?,?,?,0)"
+                : "UPDATE farm_data SET land_data=?,animal_data=?,hatgiong=?,phanbon=?,nongsan=?,nongsandacbiet=?,starfruit_quantity=?,starfruit_last_harvest_ms=?,persistence_revision=persistence_revision+1 WHERE user_id=? AND persistence_revision=?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            for (int i=0;i<values.length;i++) ps.setObject(i+1,values[i]);
+            ps.setInt(9,userId);
+            if (farmRevision >= 0) ps.setLong(10,farmRevision);
+            if (ps.executeUpdate()!=1) throw persistenceConflict("farm");
+        }
+        return farmRevision < 0 ? 0 : Math.addExact(farmRevision,1);
+    }
+
+    private Object[] farmSnapshot() {
         JSONArray landData = new JSONArray();
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -854,45 +956,33 @@ public class User {
         }
 
 
-        // Cập nhật cơ sở dữ liệu với dữ liệu đã tạo
-        String query = "INSERT INTO `farm_data` (user_id, land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE land_data = ?, animal_data = ?, hatgiong = ?, phanbon = ?, nongsan = ?, nongsandacbiet = ?, starfruit_quantity = ?, starfruit_last_harvest_ms = ?";
-        try (Connection connection = DbManager.getInstance().getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
+        return new Object[]{landData.toJSONString(),animalData.toJSONString(),hatgiongData.toJSONString(),phanbonData.toJSONString(),nongsanData.toJSONString(),nongsandacbietData.toJSONString(),starfruitQuantity,starfruitLastHarvestMs};
+    }
 
-            // Chuyển đổi dữ liệu thành chuỗi JSON
-            String landDataString = landData.toString();
-            String animalDataString = animalData.toString();
-            String hatgiongDataString = hatgiongData.toString();
-            String phanbonDataString = phanbonData.toString();
-            String nongsanDataString = nongsanData.toString();
-            String nongsandacbietDataString = nongsandacbietData.toString();
-
-            // Cập nhật hoặc thêm mới dữ liệu vào bảng `farm_data`
-            ps.setInt(1, userId);
-            ps.setString(2, landDataString);
-            ps.setString(3, animalDataString);
-            ps.setString(4, hatgiongDataString);
-            ps.setString(5, phanbonDataString);
-            ps.setString(6, nongsanDataString);
-            ps.setString(7, nongsandacbietDataString);
-            ps.setInt(8, starfruitQuantity);
-            ps.setLong(9, starfruitLastHarvestMs);
-            ps.setString(10, landDataString);
-            ps.setString(11, animalDataString);
-            ps.setString(12, hatgiongDataString);
-            ps.setString(13, phanbonDataString);
-            ps.setString(14, nongsanDataString);
-            ps.setString(15, nongsandacbietDataString);
-            ps.setInt(16, starfruitQuantity);
-            ps.setLong(17, starfruitLastHarvestMs);
-            ps.executeUpdate();
+    private void preserveRejectedSnapshot(Object[] playerValues) {
+        try {
+            java.nio.file.Path dir = java.nio.file.Path.of("logs/persistence-conflicts");
+            java.nio.file.Files.createDirectories(dir);
+            java.nio.file.Path file = java.nio.file.Files.createTempFile(dir,id+"-",".json",
+                    java.nio.file.attribute.PosixFilePermissions.asFileAttribute(java.nio.file.attribute.PosixFilePermissions.fromString("rw-------")));
+            JSONObject snapshot = new JSONObject();
+            snapshot.put("user_id",id); snapshot.put("player_revision",playerRevision); snapshot.put("farm_revision",farmRevision);
+            snapshot.put("player_values",java.util.Arrays.asList(playerValues));
+            snapshot.put("farm_values",java.util.Arrays.asList(farmSnapshot()));
+            try (java.nio.channels.FileChannel channel = java.nio.channels.FileChannel.open(file,java.nio.file.StandardOpenOption.WRITE)) {
+                java.nio.ByteBuffer bytes = java.nio.charset.StandardCharsets.UTF_8.encode(snapshot.toJSONString());
+                while (bytes.hasRemaining()) channel.write(bytes);
+                channel.force(true);
+            }
+            logger.error("Rejected persistence snapshot requires manual reconciliation: " + file);
+        } catch (IOException | RuntimeException failure) {
+            logger.fatal("Could not retain rejected snapshot; manual recovery required, user=" + id,failure);
         }
     }
 
-    public void loadFarmData(int userId) throws SQLException {
+    public synchronized void loadFarmData(int userId) throws SQLException {
 
-        String query = "SELECT land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms FROM `farm_data` WHERE user_id = ?";
+        String query = "SELECT land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms,persistence_revision FROM `farm_data` WHERE user_id = ?";
 
         try (Connection connection = DbManager.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
@@ -900,6 +990,7 @@ public class User {
 
             try (ResultSet res = ps.executeQuery()) {
                 if (res.next()) {
+                    farmRevision = res.getLong("persistence_revision");
                     starfruitQuantity = res.getInt("starfruit_quantity");
                     starfruitLastHarvestMs = res.getLong("starfruit_last_harvest_ms");
                     String landDataString = res.getString("land_data");
@@ -1083,22 +1174,6 @@ public class User {
                     if (red.getInt("login_lock") == 1) {
                         getService().serverMessage(GameString.userLoginMany());
                         connection.rollback();  // Rollback nếu phát hiện người dùng đang đăng nhập
-                        User us = UserManager.getInstance().find(this.id);
-                        if (us != null) {
-                            // Ngắt kết nối người dùng cũ
-                            us.getService().serverMessage(GameString.userLoginMany()); // Thông báo người dùng cũ bị ngắt kết nối
-                            us.session.close(); // Đóng kết nối người dùng cũ
-                            UserManager.getInstance().remove(us); // Xóa người dùng cũ khỏi quản lý
-                        }
-                        String UNLOCK_ACCOUNT_SQL = "UPDATE users SET login_lock = 0 WHERE id = ?";
-                        try (Connection connection1 = DbManager.getInstance().getConnection();
-                             PreparedStatement ps1 = connection1.prepareStatement(UNLOCK_ACCOUNT_SQL)) {
-                            ps1.setInt(1, this.id);
-                            ps1.executeUpdate();
-                            System.out.println("Account unlocked successfully.");
-                        } catch (SQLException ex) {
-                            ex.printStackTrace();
-                        }
                         return false;
                     }
 
@@ -1137,11 +1212,6 @@ public class User {
                     User us = UserManager.getInstance().find(this.id);
                     if (us != null) {
                         getService().serverMessage(GameString.userLoginMany());
-                        us.getService().serverMessage(GameString.userLoginMany());
-                        Utils.setTimeout(() -> {
-                            us.session.close();
-                            UserManager.getInstance().remove(this);
-                        }, Utils.nextInt(1500));
                         connection.rollback();
                         return false;
                     }
@@ -1204,6 +1274,7 @@ public class User {
                     if (res.getInt("user_id") == 7) {
                         //this.id+=(Npc.ID_ADD+1000);
                     }
+                    this.playerRevision = res.getLong("persistence_revision");
                     this.leverMain = res.getInt("level_main");
                     this.expMain = res.getInt("exp_main");
                     this.gender = res.getByte("gender");

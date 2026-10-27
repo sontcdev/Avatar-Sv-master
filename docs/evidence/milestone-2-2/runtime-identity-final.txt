@@ -1,0 +1,9 @@
+a519cb42fb861814384232bec16d104b2fc0e4154bc9a7b9f61b064e2858faa8  m22-server-final.jar
+3e165157943db279cf18ed34891fb85d3e3fe52daa37ff2fb9ed04ec7e4e7ee1  m22-before-revisions.sql
+    PID COMMAND
+ 330934 java -Xms32m -Xmx128m -XX:ActiveProcessorCount=2 -Davatar.protocol.trace=true -cp m22-server-final.jar:. GameplayProbe
+/home/sontc/avatar2d-gameplay-stage
+MainPID=313665
+NRestarts=0
+LISTEN 0      52                                127.0.0.1:13317      0.0.0.0:*    users:(("mariadbd",pid=328627,fd=18))
+LISTEN 0      20                       [::ffff:127.0.0.1]:19129            *:*    users:(("java",pid=330934,fd=9))

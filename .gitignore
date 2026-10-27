@@ -45,3 +45,6 @@ artifacts/
 logs/*.log*
 __pycache__/
 *.pyc
+
+# Private rejected snapshots require operator reconciliation, never Git.
+logs/persistence-conflicts/
