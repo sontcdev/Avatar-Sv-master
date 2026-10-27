@@ -2,6 +2,16 @@
 
 [Chắc chắn] Đã audit và triển khai một phần trong worktree cách ly `/Volumes/sontc/sources/others/avatar2d-gameplay-migration`, nhánh `codex/gameplay-migration`. **Chưa hoàn tất toàn bộ yêu cầu; chưa có nhóm gameplay mới đạt COMPLETE theo completion rule. Không cutover production.**
 
+## Milestone 2 — kết quả hiện tại
+
+[Chắc chắn] Tiếp tục từ SHA `4b81b289dcb7f9489cb1e6de8278dfaf8cae08b4`, worktree ban đầu clean. Đã thêm friend accept/list/delete persistence bằng bảng InnoDB canonical và native63 transaction kho–xu, defaultOFF theo local approved catalog; không có giá production. Đã kiểm lại30test cũ; tổng41test khác nhau đạt (31mặc định+10DB opt-in). Bản build Java17 đạt. Chi tiết wire, client, DB và giới hạn tại [MILESTONE_2_EVIDENCE.md](MILESTONE_2_EVIDENCE.md).
+
+Hai Avatar2.5.8 client đã đăng nhập và cùng render trong khu vui chơi trên build trung gian. Chưa bắt được đầy đủ social/attendance/visit/sale flows; reconnect vẫn lỗi. **Các flow ưu tiên vẫn PARTIAL, Milestone2 chưa hoàn tất.** Native63 thiếu nonce nên replay sau lần thu hoạch mới chưa được giải quyết; live sales giữ OFF. Không load test khi functional gate chưa đạt.
+
+Đã restore dump staging35bảng vào DB riêng, checksum players/farm_data khớp khi writer dừng. Production backup vẫn chưa có quyền thực hiện; xem [quy trình chờ admin duyệt và rollback](PRODUCTION_BACKUP_READINESS.md). Không migrate/deploy/restart production.
+
+Các phần bên dưới giữ bằng chứng Milestone1 và đã hiệu chỉnh các chỗ bị thay thế bởi implementation Milestone2; số test/client harvest trong phần lịch sử không được tính là chứng minh flow mới.
+
 ## Baseline và quyết định
 
 Original dirty master dựa trên `d8d5f26688465724d9955dc5045e9545a0dba91b` được giữ nguyên; local tracked/untracked project changes được bảo toàn tại baseline `be61e59` trong worktree mới, không lấy ignored secrets/logs/artifacts. Primary donor `970a9f9b30eb655943e455616b44bea3656d6166`, secondary `a30f3693756221c688f1350e748d7beb03470e41` được clone ngoài repo. Primary package build đạt trên Java17; chưa chạy donor runtime hoặc migrate dữ liệu người chơi sang donor.
@@ -12,14 +22,14 @@ Không tìm thấy LICENSE/COPYING/NOTICE cấp quyền tại hai SHA đã kiể
 
 ## Thay đổi đã triển khai — PARTIAL, có giới hạn
 
-- Chat riêng -6: response dùng senderID xác thực thay ID1; offline receiver trả thông báo. Invite -21: int inviter, UTF name, UTF prompt đúng native client, guard self/offline. Chưa có friend accept/delete/list persistence, privacy hoặc inbox offline.
+- Chat riêng -6: response dùng senderID xác thực thay ID1; offline receiver trả thông báo. Invite -21: int inviter, UTF name, UTF prompt đúng native client, guard self/offline. Milestone2 đã thêm accept/delete/list persistence; client E2E, privacy và inbox offline chưa đạt.
 - Khế: hồi3/phút, tối đa180 trong60phút, dùng epoch millisecond lưu cùng row farm_data/kho; không scheduler mỗi player. Giữ legacy chưa hái, không refill vô điều kiện khi join. Harvest native85 short215/shortquantity; đồng bộ User, giới hạn kho, rollback RAM nếu DB fail. Đây là quy tắc local capacity180, không phải bảng nâng level donor.
 - Thăm trại: encode đúng owner online hoặc snapshot offline, không lấy farm visitor rồi gắn ID người khác; load/save farm dùng chính User instance, không phụ thuộc session.user. Context invalidated trước lookup; visitor không được hái khế owner. Chưa hoàn thiện privacy/stealing/offline-client E2E.
 - Điểm danh NPC850: vé593 +20score theo ngày Asia/Ho_Chi_Minh; một conditional SQL UPDATE ghi chests/scores/date cùng lúc, chống nhận lại/concurrency, không giữ reward nếu DB fail. Kiểm catalog vé/type, slot, quantity và overflow. Chưa có real-client click điểm danh; còn giả định single active writer/session của target.
 
 Không coi các sửa trên là chứng minh transaction safety cho mọi inventory/currency writer legacy hoặc nhiều server cùng DB.
 
-## Kiểm thử tự động
+## Kiểm thử tự động — lịch sử Milestone1
 
 Java17 Corretto17.0.18; Maven mặc định trên máy dùng JDK khác nên các lệnh được đặt JAVA_HOME rõ ràng.
 
@@ -31,7 +41,7 @@ Java17 Corretto17.0.18; Maven mặc định trên máy dùng JDK khác nên các
 
 Evidence tối thiểu không chứa config/password nằm tại [automated-tests.txt](evidence/gameplay-20261028/automated-tests.txt). Không gọi unit packet capture là client E2E.
 
-## Client thật và staging
+## Client thật và staging — lịch sử Milestone1
 
 Game riêng loopback19129, MariaDB10.11 instance user-owned loopback13317, DB `avatar2d_gameplay_stage`; static tables từ target, tài khoản tổng hợp stage71, không copy user production. Resources staging hiện có được tham chiếu qua symlink. JAR được upload và hash đối chiếu: `2acd54325d55a403750d46aaa5ab2bb3ebf14e0c2cab7d96b4370e0393d57154` (formatting-only FarmService sau build không thay logic).
 
@@ -44,7 +54,7 @@ Client Avatar2.5.8 riêng tên AvatarStage trên J2ME Loader1.8.2, Android emula
 ![Khế hồi sau restart](evidence/gameplay-20261028/client-starfruit-regrown-after-restart.png)
 ![Hái lần tiếp theo sau restart](evidence/gameplay-20261028/client-starfruit-reharvest-after-restart.png)
 
-Client reconnect ngay sau restart gặp “Kết nối thất bại”; khởi chạy mới MIDlet và chọn lại Bảo Bình đăng nhập thành công. Chưa kết luận nguyên nhân reconnect cũ. Vòng client mới→reload→elapsed regrowth→harvest sau restart đạt; sale và upgrade chưa đạt, nên nhóm khế vẫn PARTIAL. Command87/menu thông tin vẫn trả unsupported; bán63/catalog giá215 vẫn thiếu. Attendance, social hai client, farm owner khác/offline, cooking/animals/upgrade/stealing, minigames, clans, auction và wedding chưa đạt client E2E.
+Client reconnect ngay sau restart gặp “Kết nối thất bại”; khởi chạy mới MIDlet và chọn lại Bảo Bình đăng nhập thành công. Chưa kết luận nguyên nhân reconnect cũ. Vòng client mới→reload→elapsed regrowth→harvest sau restart đạt; sale và upgrade chưa đạt, nên nhóm khế vẫn PARTIAL. Command87/menu thông tin vẫn trả unsupported; Milestone2 đã thêm bán63 defaultOFF nhưng catalog production và client sale E2E vẫn thiếu. Attendance, social hai client, farm owner khác/offline, cooking/animals/upgrade/stealing, minigames, clans, auction và wedding chưa đạt client E2E.
 
 ## Tài nguyên và backup
 
@@ -56,14 +66,18 @@ Staging đã dump trước từng DDL; pre-attendance restore thành công sang 
 
 ## Các phần còn thiếu/chặn
 
-1. **Economy/catalog:** target farmitems trống và khác schema donor; chưa có giá215, animal/recipe/support/capacity chuẩn đã được cấp quyền và kiểm chứng. Không seed bằng dữ liệu đoán. Sale phải atomic kho–tiền, chống replay/overflow và xử lý crash trước khi bật.
-2. **Protocol:** 19command farm nhiều request/response chưa chốt; các constant83/94/95/96/97/98 không chứng minh donor handler. Friend accept native khác donor custom popup; NPC ID761/858/859/861 va chạm ý nghĩa. Cần xác minh riêng từng flow.
+1. **Economy/catalog:** target farmitems trống và khác schema donor; chưa có giá215, animal/recipe/support/capacity chuẩn đã được cấp quyền và kiểm chứng. Không seed bằng dữ liệu đoán. Milestone2 có transaction kho–tiền/overflow/rollback tests; replay sau nhập kho mới, uncertain-commit fault injection và client sale/restart còn chặn bật live.
+2. **Protocol:** 19command farm nhiều request/response chưa chốt; các constant83/94/95/96/97/98 không chứng minh donor handler. Friend accept/list/delete đã triển khai native/custom-list theo client bundled nhưng chưa client E2E; NPC ID761/858/859/861 va chạm ý nghĩa. Cần xác minh riêng từng flow.
 3. **State/data:** clan procedures chưa có migration/role tests; card games cần transplant model lớn hoặc implementation mới, full multi-client game và reward ledger; auction cần durable settlement/idempotency/offline awards; wedding cần consent và cả hai spouse persistent. Không bật từ menu/stub hoặc ID cứng.
 4. **Runtime:** chưa xử lý reconnect tại cùng MIDlet đang mở, chưa chứng minh daily click, selling, đầy đủ crop/animal loop và game completion; chưa đủ10users/stability. Các test hiện tại không thay các bước này.
 5. **Deployment:** không có verified production backup/restore và quyền cutover; giữ production nguyên trạng. Quyền source donor cũng chưa xác minh.
 
 Các blocker trên là công việc còn lại, không phải yêu cầu đã hoàn thành. Hướng tiếp tục: chốt catalog/contract, xử lý từng flow theo priority trong ma trận, bổ sung tests và client evidence; chỉ sau đó xét cutover. Hướng dẫn vận hành thử nghiệm tại [scripts/staging](../scripts/staging/README.md).
 
-## Trạng thái bàn giao
+## Trạng thái bàn giao Milestone1 — lịch sử
 
 [Chắc chắn] Sau kiểm tra đã dừng đúng JVM staging và MariaDB instance thử nghiệm, đóng hai SSH tunnels13317/19128 và gỡ adb reverse; không để root bootstrap DB hoạt động. Data, private config, artifact và backup được giữ trong thư mục staging user-owned để xem lại. Snapshot cuối chỉ còn listener game production19128, MainPID313665/NRestarts0. Hash tracked diff checkout gốc vẫn bằng baseline patch `c31dac0e498aab840a22f09b499a101ec76b8fff66300b21bfde936f8c66ddbf`.
+
+## Trạng thái bàn giao Milestone2
+
+Implementation được giữ trong cùng migration branch; không mở branch/worktree mới. Các file evidence mới không chứa credential/dump production. Staging chỉ dùng synthetic users; trước bàn giao dừng đúng JVM/DB thử nghiệm và gỡ tunnel/reverse do phiên này tạo. Dữ liệu/backup private được giữ để tái kiểm. Không có feature mới COMPLETE/WORKING; kết quả kiểm chứng và blocker nằm trong MILESTONE_2_EVIDENCE.md.

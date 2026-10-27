@@ -1,0 +1,15 @@
+Milestone 2 — Java17 Corretto17.0.18, isolated staging only.
+Baseline SHA: 4b81b289dcb7f9489cb1e6de8278dfaf8cae08b4
+Final package: exit0; 31 passed, 10 opt-in DB tests skipped.
+Opt-in sales/friendship run: exit0; results below.
+name=avatar.service.FarmSalePersistenceTest tests=7 failures=0 errors=0 skipped=0
+name=avatar.service.FriendshipPersistenceTest tests=1 failures=0 errors=0 skipped=0
+Regression DB run: m2-baseline-db-final.log exit0; FarmPersistenceTest=1 pass, AttendancePersistenceTest=1 pass.
+Distinct tests executed across separate runs: 41 passed, 0 failures, 0 errors.
+No unit/integration test is counted as real-client E2E.
+Synthetic test-only prices: item215=7 xu, item7=2 xu; not production prices.
+Trace socket regression: SessionLifecycleTest=4 pass (includes incoming payload/handler preservation); no authenticated client E2E implied.
+Final package SHA256: bc2c05dc4ee6085fbbba1c35b033297a7c4beb8bf1bcb873f168aa3e4fa8def7
+Staging runtime artifact SHA256: a39360149756a77c83172055c4bc68996d8e2ee41422215a44c31ce7c073f860
+Final guard hardening was package-tested locally after staging shutdown, not revalidated on client.
+Sales gate test also checks enabled=false, missing approval and malformed price leave state unchanged.

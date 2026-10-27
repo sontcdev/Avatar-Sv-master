@@ -7,6 +7,41 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class SessionLifecycleTest {
+    @Test public void stagingTraceCapturesIncomingPayloadWithoutConsumingIt() throws Exception {
+        ServerManager.clients = Collections.synchronizedList(new ArrayList<>());
+        ServerManager.numClients = 1;
+        java.io.PrintStream original = System.out;
+        String previous = System.getProperty("avatar.protocol.trace");
+        java.io.ByteArrayOutputStream trace = new java.io.ByteArrayOutputStream();
+        try (ServerSocket listener = new ServerSocket(0, 1, InetAddress.getLoopbackAddress());
+             Socket peer = new Socket(listener.getInetAddress(), listener.getLocalPort())) {
+            Session session = new Session(listener.accept(), 3);
+            ServerManager.clients.add(session);
+            session.user = new avatar.model.User(); session.user.setId(71);
+            java.util.concurrent.CountDownLatch received = new java.util.concurrent.CountDownLatch(1);
+            java.util.concurrent.atomic.AtomicInteger target = new java.util.concurrent.atomic.AtomicInteger();
+            session.setHandler(new avatar.message.MessageHandler(session) {
+                @Override public void onMessage(avatar.network.Message message) {
+                    try { target.set(message.reader().readInt()); }
+                    catch (java.io.IOException failure) { throw new AssertionError(failure); }
+                    finally { received.countDown(); }
+                }
+            });
+            try {
+                System.setProperty("avatar.protocol.trace","true"); System.setOut(new java.io.PrintStream(trace));
+                session.startCollector();
+                java.io.DataOutputStream output = new java.io.DataOutputStream(peer.getOutputStream());
+                output.writeByte(-61); output.writeShort(4); output.writeInt(92); output.flush();
+                assertTrue(received.await(2,java.util.concurrent.TimeUnit.SECONDS));
+                assertEquals(92,target.get());
+                assertTrue(trace.toString(java.nio.charset.StandardCharsets.UTF_8).contains("cmd=-61 bytes=4 hex=0000005c"));
+            } finally { session.user = null; session.close(); }
+        } finally {
+            System.setOut(original);
+            if (previous == null) System.clearProperty("avatar.protocol.trace");
+            else System.setProperty("avatar.protocol.trace",previous);
+        }
+    }
     @Test
     public void bossUsesActualListenerInsteadOfHardcodedLoopbackPort() throws Exception {
         try (ServerSocket listener = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {

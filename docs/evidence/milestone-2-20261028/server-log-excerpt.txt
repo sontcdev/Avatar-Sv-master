@@ -1,0 +1,7 @@
+Sanitized staging log excerpts, intermediate build. Synthetic accounts only.
+The -6 packets below are automatic Admin messages at login (sender id1), NOT player private chat.
+They do not prove the requested social flows. RECV payloads from this build were invalidly traced as empty and are omitted.
+GAMEPLAY_PACKET QUEUED user=71 context=MessageHandler cmd=-6 bytes=50 hex=00000001000541646d696e002542e1baa16e206368c6b061207468616d206769612076c3a06f206e68c3b36d206ec3a06f2e
+Disconnect client: User stage71
+GAMEPLAY_PACKET QUEUED user=92 context=MessageHandler cmd=-6 bytes=50 hex=00000001000541646d696e002542e1baa16e206368c6b061207468616d206769612076c3a06f206e68c3b36d206ec3a06f2e
+Disconnect client: User stage92

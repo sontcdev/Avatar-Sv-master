@@ -1,0 +1,28 @@
+Quiesced restore comparison BEFORE final JVM restart (captured during restore):
+Source and restored DB: 35 tables each.
+players: 1715480917 / 1715480917
+farm_data: 3907078398 / 3907078398
+
+Observer snapshot AFTER final JVM restart follows. Source players changed during runtime;
+do not compare this live checksum with the older restored snapshot as a restore failure.
+user_id	xu	scores	attendance_date
+71	20000	0	NULL
+92	20000	0	NULL
+user_id	nongsandacbiet	starfruit_quantity	starfruit_last_harvest_ms
+71	[{"id":215,"soluong":195}]	0	1793123779887
+92	[]	180	0
+friendships
+0
+Table	Checksum
+avatar2d_gameplay_stage.players	2807410735
+avatar2d_m2_restore_check.players	1715480917
+avatar2d_gameplay_stage.farm_data	3907078398
+avatar2d_m2_restore_check.farm_data	3907078398
+a39360149756a77c83172055c4bc68996d8e2ee41422215a44c31ce7c073f860  /home/sontc/avatar2d-gameplay-stage/m2-server.jar
+52b920137beba3bc8464f8c3f95c5b886644c6707a94af8daadd61b8b1f4b1c7  /home/sontc/avatar2d-gameplay-stage/m2-quiesced.sql
+MainPID=313665
+NRestarts=0
+
+Cleanup observer: staging JVM323771 and MariaDB321405 stopped; only production19128 remains listening among19128/19129/13317.
+Production MainPID313665/NRestarts0 unchanged. SSH tunnels36580/38510 closed, reverse removed, own emulator5556 stopped.
+Original checkout tracked diff SHA256 unchanged: c31dac0e498aab840a22f09b499a101ec76b8fff66300b21bfde936f8c66ddbf

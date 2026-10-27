@@ -123,7 +123,22 @@ public class Session implements ISession {
 
     @Override
     public void sendMessage(Message message) {
+        if (Boolean.getBoolean("avatar.protocol.trace")) traceGameplay("QUEUED",message,message.getData());
         this.sender.AddMessage(message);
+    }
+
+    private void traceGameplay(String direction, Message message, byte[] data) {
+        if (user == null || !Boolean.getBoolean("avatar.protocol.trace")) return;
+        switch (message.getCommand()) {
+            case -6: case -21: case -19: case -18: case -81: case -61: case -59: case -1:
+            case 60: case 61: case 63: case 85:
+                if (data == null) data = new byte[0];
+                System.out.println("GAMEPLAY_PACKET " + direction + " user=" + user.getId() + " context=" + messageHandler.getClass().getSimpleName()
+                        + " cmd=" + message.getCommand() + " bytes=" + data.length + " hex="
+                        + java.util.HexFormat.of().formatHex(data,0,Math.min(data.length,512)));
+                break;
+            default: break;
+        }
     }
 
     protected synchronized void doSendMessage(Message m) {
@@ -1953,13 +1968,9 @@ public void NhanThuongEventXuBoss() throws IOException {
     }
 
     public void requestFriendList(Message ms) throws IOException {
-
-        this.user.getAvatarService().chatTo("admin","ok",-1);
-        this.user.getAvatarService().serverDialog("comingsion");
-        return;
-//        ms = new Message(Cmd.CUSTOM_LIST);
-//        DataOutputStream ds = ms.writer();
-//        ds.flush();
+        if (user == null) return;
+        try { parkService.sendFriendList(); }
+        catch (SQLException failure) { throw new IOException("Cannot load friends",failure); }
     }
 
     public void joinHouse(Message ms) throws IOException {
@@ -2192,6 +2203,7 @@ public void NhanThuongEventXuBoss() throws IOException {
                     }
                 }
                 Message msg = new Message(cmd, data);
+                traceGameplay("RECV",msg,data);
                 return msg;
             } catch (Exception e) {
             }

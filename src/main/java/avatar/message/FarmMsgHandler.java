@@ -20,7 +20,7 @@ public class FarmMsgHandler extends MessageHandler {
 
     public FarmMsgHandler(Session client) {
         super(client);
-        this.service = new FarmService(client);
+        this.service = client.getFarmService();
     }
 
     @Override

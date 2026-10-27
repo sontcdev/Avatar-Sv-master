@@ -1,0 +1,5 @@
+# Disabled template. No production prices have been supplied or approved.
+enabled=false
+approval=
+# Set price.<product ID>=<positive integer xu per item> only after written approval.
+# Synthetic fixtures use item 215 at 7 xu; that value is NOT a production price.

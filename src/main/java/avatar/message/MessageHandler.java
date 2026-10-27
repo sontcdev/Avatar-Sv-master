@@ -21,6 +21,12 @@ public class MessageHandler implements IMessageHandler {
         if (mss != null) {
             try {
                 switch (mss.getCommand()) {
+                    case Cmd.ADD_FRIEND:
+                        if (client.user != null) client.getParkService().answerFriendInvitation(mss);
+                        break;
+                    case Cmd.CUSTOM_LIST:
+                        if (client.user != null) client.getParkService().friendListAction(mss);
+                        break;
                     case Cmd.LOGIN_NEW_GAME:
                     case Cmd.REQUEST_REGISTER:
                     case Cmd.REGISTER_BY_EMAIL:
@@ -235,7 +241,7 @@ public class MessageHandler implements IMessageHandler {
                         break;
                     }
                     case Cmd.REQUEST_FRIENDLIST: {
-                        this.client.requestFriendList(mss);
+                        if (client.user != null) client.getParkService().sendFriendList();
                         break;
                     }
                     case Cmd.SET_PROVIDER: {
@@ -322,7 +328,7 @@ public class MessageHandler implements IMessageHandler {
                         break;
                     }
                 }
-            } catch (IOException | RuntimeException e) {
+            } catch (IOException | java.sql.SQLException | RuntimeException e) {
                 actionFailed(mss, e);
             }
         }

@@ -9,6 +9,15 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class SocialProtocolTest {
+    @Test public void unsolicitedFriendAcceptanceCannotCreateFriendship() throws Exception {
+        GameplayFeedbackTest.withSession(receiver -> {
+            Message request = new Message(Cmd.ADD_FRIEND);
+            request.writer().writeInt(71); request.writer().writeBoolean(true);
+            new ParkMsgHandler(receiver).onMessage(new Message(Cmd.ADD_FRIEND,request.getData()));
+            assertFalse(receiver.messages.isEmpty());
+            assertEquals(Cmd.SET_MONEY_ERROR,receiver.messages.get(0).getCommand());
+        });
+    }
     @Test public void privateChatUsesAuthenticatedSenderIdAndName() throws Exception {
         GameplayFeedbackTest.withSession(sender -> GameplayFeedbackTest.withSession(receiver -> {
             sender.user.setId(71); sender.user.setUsername("Sender");

@@ -20,10 +20,16 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
 
 public class ParkService extends Service {
+    private final ConcurrentMap<Integer, Long> friendInvitations = new ConcurrentHashMap<>();
+    private List<Integer> displayedFriends = List.of();
+    private int friendListId;
     private final RandomCollection<Integer> randomItemList1 = new RandomCollection<>();
     short time;
     private static final ScheduledThreadPoolExecutor fishingTimer = new ScheduledThreadPoolExecutor(1, task -> {
@@ -89,6 +95,11 @@ public class ParkService extends Service {
                 serverDialog("Người nhận lời mời không hợp lệ hoặc hiện không online.");
                 return;
             }
+            ConcurrentMap<Integer, Long> invitations = user.session.getParkService().friendInvitations;
+            long now = System.currentTimeMillis();
+            invitations.entrySet().removeIf(entry -> now - entry.getValue() > 300000);
+            if (invitations.size() >= 32) { serverDialog("Người nhận đang có quá nhiều lời mời."); return; }
+            invitations.put(session.user.getId(),now);
             ms = new Message(Cmd.AVATAR_REQUEST_ADD_FRIEND);
             DataOutputStream ds = ms.writer();
             ds.writeInt(session.user.getId());
@@ -98,6 +109,77 @@ public class ParkService extends Service {
             user.session.sendMessage(ms);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void answerFriendInvitation(Message request) throws IOException, SQLException {
+        if (request.reader().available() != 5) { serverDialog("Yêu cầu kết bạn không hợp lệ."); return; }
+        int inviterId = request.reader().readInt(); boolean accept = request.reader().readBoolean();
+        Long invitedAt = friendInvitations.remove(inviterId);
+        User inviter = UserManager.getInstance().find(inviterId);
+        if (invitedAt == null || System.currentTimeMillis() - invitedAt > 300000 || inviter == null || inviterId == session.user.getId()) {
+            serverDialog("Lời mời không tồn tại hoặc đã hết hạn."); return;
+        }
+        if (accept) {
+            try (Connection c = DbManager.getInstance().getConnection(); PreparedStatement p = c.prepareStatement(
+                    "INSERT IGNORE INTO gameplay_friendships(user_low,user_high) VALUES (?,?)")) {
+                p.setInt(1,Math.min(inviterId,session.user.getId())); p.setInt(2,Math.max(inviterId,session.user.getId()));
+                p.executeUpdate();
+            }
+        }
+        friendAnswer(inviter,session.user,accept);
+        friendAnswer(session.user,inviter,accept);
+    }
+
+    private void friendAnswer(User recipient, User other, boolean accepted) throws IOException {
+        Message response = new Message(Cmd.ADD_FRIEND);
+        response.writer().writeInt(other.getId()); response.writer().writeUTF(other.getUsername());
+        response.writer().writeBoolean(accepted);
+        response.writer().writeUTF(accepted ? "Đã kết bạn với " + other.getUsername() : "Lời mời kết bạn đã bị từ chối.");
+        recipient.session.sendMessage(response);
+    }
+
+    public synchronized void sendFriendList() throws IOException, SQLException {
+        // shortcut: display the first 100 friends; add pagination before supporting larger lists.
+        List<Integer> ids = new ArrayList<>(); List<String> names = new ArrayList<>();
+        try (Connection c = DbManager.getInstance().getConnection(); PreparedStatement p = c.prepareStatement(
+                "SELECT u.id,u.username FROM gameplay_friendships f JOIN users u ON u.id=" +
+                "CASE WHEN f.user_low=? THEN f.user_high ELSE f.user_low END " +
+                "WHERE f.user_low=? OR f.user_high=? ORDER BY u.id LIMIT 100")) {
+            for (int i=1;i<=3;i++) p.setInt(i,session.user.getId());
+            try (ResultSet r = p.executeQuery()) { while(r.next()) { ids.add(r.getInt(1)); names.add(r.getString(2)); } }
+        }
+        displayedFriends = List.copyOf(ids); friendListId = Math.incrementExact(friendListId);
+        Message response = new Message(Cmd.CUSTOM_LIST); DataOutputStream out = response.writer();
+        out.writeUTF("friendlist"); out.writeUTF("Bạn bè"); out.writeInt(friendListId);
+        out.writeByte(1); out.writeByte(1); out.writeShort(ids.size());
+        for (int i=0;i<ids.size();i++) {
+            out.writeByte(0); out.writeInt(ids.get(i)); out.writeShort(-1); out.writeShort(-1); out.writeShort(-1);
+            out.writeUTF(names.get(i)); out.writeUTF(UserManager.getInstance().find(ids.get(i)) == null ? "Offline" : "Online");
+        }
+        out.writeByte(2); out.writeByte(1); out.writeUTF("Xóa bạn"); out.writeByte(2); out.writeUTF("Thăm nông trại");
+        sendMessage(response);
+    }
+
+    public synchronized void friendListAction(Message request) throws IOException, SQLException {
+        if (request.reader().available() != 8) { serverDialog("Lựa chọn bạn bè không hợp lệ."); return; }
+        int listId = request.reader().readInt(); int action = request.reader().readUnsignedByte();
+        int index = request.reader().readShort(); int page = request.reader().readUnsignedByte();
+        if (listId != friendListId || page != 1 || index < 0 || index >= displayedFriends.size() || (action != 1 && action != 2)) {
+            serverDialog("Danh sách bạn bè đã thay đổi hoặc lựa chọn không hợp lệ."); return;
+        }
+        int other = displayedFriends.get(index);
+        if (action == 1) {
+            try (Connection c = DbManager.getInstance().getConnection(); PreparedStatement p = c.prepareStatement(
+                    "DELETE FROM gameplay_friendships WHERE user_low=? AND user_high=?")) {
+                p.setInt(1,Math.min(other,session.user.getId())); p.setInt(2,Math.max(other,session.user.getId())); p.executeUpdate();
+            }
+            sendFriendList();
+        } else {
+            Message context = new Message(Cmd.GET_HANDLER); context.writer().writeByte(10);
+            session.getHandler(new Message(Cmd.GET_HANDLER,context.getData()));
+            Message visit = new Message(Cmd.JOIN); visit.writer().writeInt(other);
+            session.getFarmService().joinFarm(new Message(Cmd.JOIN,visit.getData()));
         }
     }
 

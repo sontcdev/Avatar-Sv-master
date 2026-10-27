@@ -71,7 +71,35 @@ public class FarmService extends Service {
     }
 
     public void sellFarmitm(User user,Message ms) throws IOException {
-        serverDialog("Bán nông sản chưa được hỗ trợ trên máy chủ.");
+        if (user != session.user || ms.reader().available() != 2) {
+            serverDialog("Yêu cầu bán nông sản không hợp lệ."); return;
+        }
+        int product = ms.reader().readShort();
+        java.util.Properties catalog = new java.util.Properties();
+        String path = System.getProperty("avatar.farm.sales.catalog");
+        if (path == null) { serverDialog("Bán nông sản chưa được bật."); return; }
+        try (java.io.Reader file = java.nio.file.Files.newBufferedReader(java.nio.file.Path.of(path))) {
+            catalog.load(file);
+            if (!"true".equals(catalog.getProperty("enabled")) || catalog.getProperty("approval", "").isBlank()) {
+                serverDialog("Bán nông sản chưa được bật hoặc chưa có giá được duyệt."); return;
+            }
+            int price = Integer.parseInt(catalog.getProperty("price." + product, "0"));
+            if (price <= 0) { serverDialog("Sản phẩm chưa có giá bán được duyệt."); return; }
+            int[] sale = user.sellFarmProduct(product,price);
+            Message response = new Message(Cmd.SELL_ITEM);
+            response.writer().writeInt(sale[0]); response.writer().writeInt(sale[1]); response.writer().writeShort(product);
+            sendMessage(response);
+        } catch (SQLException failure) {
+            logger.error("Farm sale database failure, user=" + user.getId(),failure);
+            if (user.isFarmSaleUncertain()) session.close();
+            else serverDialog("Chưa lưu được giao dịch bán. Vui lòng thử lại sau.");
+        } catch (IllegalArgumentException | ArithmeticException failure) {
+            if (user.isFarmSaleUncertain()) session.close();
+            else serverDialog("Không thể bán: kho, giá hoặc số dư không hợp lệ.");
+        } catch (IOException failure) {
+            logger.error("Farm sale catalog or response unavailable",failure);
+            serverDialog("Chưa đọc được cấu hình bán nông sản hoặc gửi kết quả.");
+        }
     }
 
 

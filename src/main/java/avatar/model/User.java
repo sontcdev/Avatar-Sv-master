@@ -81,6 +81,79 @@ public class User {
     private short idFish;
     private byte gender;
     public long xu;
+    private boolean farmSaleUncertain;
+
+    public synchronized int[] sellFarmProduct(int product, int price) throws SQLException {
+        // shortcut: native 63 has no nonce; replay after a later harvest needs a verified protocol extension.
+        if (farmSaleUncertain) throw new SQLException("Sale outcome requires reconnect");
+        if (price <= 0 || product < 0) throw new IllegalArgumentException("Giá bán hoặc sản phẩm không hợp lệ.");
+        int memoryQuantity = product == 215
+                ? NongSanDacBiet.stream().filter(i -> i.getId() == product).mapToInt(i -> i.getSoluong()).sum()
+                : NongSan.stream().filter(i -> i.getId() == product).mapToInt(i -> i.getSoluong()).sum();
+        if (memoryQuantity <= 0 || memoryQuantity > Short.MAX_VALUE)
+            throw new IllegalArgumentException("Không có nông sản hợp lệ để bán.");
+        String column = product == 215 ? "nongsandacbiet" : "nongsan";
+        try (Connection c = DbManager.getInstance().getConnection()) {
+            c.setAutoCommit(false);
+            try {
+                long balance;
+                try (PreparedStatement p = c.prepareStatement("SELECT xu FROM players WHERE user_id=? FOR UPDATE")) {
+                    p.setInt(1,id);
+                    try (ResultSet r = p.executeQuery()) {
+                        if (!r.next()) throw new SQLException("Missing player for sale");
+                        balance = r.getLong(1);
+                    }
+                }
+                JSONArray stock;
+                try (PreparedStatement p = c.prepareStatement("SELECT " + column + " FROM farm_data WHERE user_id=? FOR UPDATE")) {
+                    p.setInt(1,id);
+                    try (ResultSet r = p.executeQuery()) {
+                        if (!r.next()) throw new SQLException("Missing farm for sale");
+                        Object parsed = JSONValue.parse(r.getString(1));
+                        if (!(parsed instanceof JSONArray)) throw new SQLException("Invalid farm inventory");
+                        stock = (JSONArray) parsed;
+                    }
+                }
+                JSONObject owned = null;
+                for (Object entry : stock) {
+                    if (!(entry instanceof JSONObject)) throw new SQLException("Invalid inventory entry");
+                    JSONObject item = (JSONObject) entry;
+                    if (!(item.get("id") instanceof Long) || !(item.get("soluong") instanceof Long))
+                        throw new SQLException("Invalid inventory numbers");
+                    if (((Number)item.get("id")).longValue() == product) {
+                        if (owned != null) throw new SQLException("Duplicate product entries");
+                        owned = item;
+                    }
+                }
+                if (owned == null || ((Number)owned.get("soluong")).longValue() != memoryQuantity || balance != xu)
+                    throw new IllegalArgumentException("Kho hoặc số dư đã thay đổi. Vui lòng đăng nhập lại.");
+                int earned = Math.multiplyExact(memoryQuantity,price);
+                int updated = Math.toIntExact(Math.addExact(balance,earned));
+                if (balance < 0 || updated < 0) throw new ArithmeticException("Invalid currency balance");
+                owned.put("soluong",0);
+                try (PreparedStatement p = c.prepareStatement("UPDATE farm_data SET " + column + "=? WHERE user_id=?")) {
+                    p.setString(1,stock.toJSONString()); p.setInt(2,id);
+                    if (p.executeUpdate() != 1) throw new SQLException("Farm sale update lost");
+                }
+                try (PreparedStatement p = c.prepareStatement("UPDATE players SET xu=? WHERE user_id=?")) {
+                    p.setInt(1,updated); p.setInt(2,id);
+                    if (p.executeUpdate() != 1) throw new SQLException("Currency sale update lost");
+                }
+                // A lost commit acknowledgement must never be overwritten by logout's stale snapshot.
+                farmSaleUncertain = true;
+                c.commit();
+                xu = updated;
+                if (product == 215) NongSanDacBiet.stream().filter(i -> i.getId() == product).forEach(i -> i.setSoluong(0));
+                else NongSan.stream().filter(i -> i.getId() == product).forEach(i -> i.setSoluong(0));
+                farmSaleUncertain = false;
+                return new int[]{earned,updated};
+            } catch (SQLException | RuntimeException failure) {
+                try { c.rollback(); }
+                catch (SQLException rollbackFailure) { farmSaleUncertain = true; failure.addSuppressed(rollbackFailure); }
+                throw failure;
+            }
+        }
+    }
     public int luong;
     public int luongKhoa;
 
@@ -661,6 +734,7 @@ public class User {
     }
 
     protected synchronized void saveData() {
+        if (farmSaleUncertain) { logger.error("Skipping stale logout snapshot after uncertain sale, user=" + id); return; }
         DbManager.getInstance().executeUpdate("UPDATE `players` SET `gender` = ?, `friendly` = ?, `crazy` = ?, `stylish` = ?, `happy` = ?, `hunger` = ?, `chest_slot` = ? , `chest_home_slot` = ? WHERE `user_id` = ? LIMIT 1;",
                 this.gender, this.friendly, this.crazy, this.stylish, this.happy, this.hunger, this.chestSlot, this.chestHomeSlot, this.id);
         DbManager.getInstance().executeUpdate("UPDATE `players` SET `xu` = ?, `luong` = ?, `luong_khoa` = ?, `xeng` = ?, `level_main` = ?, `exp_main` = ?,`scores` = ? , `xu_from_boss` = ? , `TopPhaoLuong` = ?, `TopPhaoXu` = ? WHERE `user_id` = ? LIMIT 1;",
@@ -706,6 +780,7 @@ public class User {
     }
 
     public synchronized void saveFarmData(int userId) throws SQLException {
+        if (farmSaleUncertain) throw new SQLException("Uncertain sale; reload before saving farm");
         // Chuẩn bị dữ liệu để lưu vào cơ sở dữ liệu
         JSONArray landData = new JSONArray();
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
