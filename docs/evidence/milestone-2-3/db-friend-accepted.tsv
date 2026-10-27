@@ -1,0 +1,8 @@
+user_low	user_high	created_at
+71	92	2026-10-27 21:41:12
+user_id	xu	scores	chests	attendance_date	persistence_revision
+71	20000	20	[{"expired":-1,"quantity":1,"id":593}]	2026-10-28	11
+92	20000	0	[]	NULL	4
+user_id	nongsan	starfruit_quantity	starfruit_last_harvest_ms	persistence_revision
+71	[]	0	1793123779887	10
+92	[]	180	0	4

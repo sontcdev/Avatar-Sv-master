@@ -53,6 +53,10 @@ public class SessionLifecycleTest {
                 assertTrue(received.await(2,java.util.concurrent.TimeUnit.SECONDS));
                 assertEquals(92,target.get());
                 assertTrue(trace.toString(java.nio.charset.StandardCharsets.UTF_8).contains("cmd=-61 bytes=4 hex=0000005c"));
+                avatar.network.Message response = new avatar.network.Message(-9);
+                response.writer().writeUTF("SYNTHETIC_ATTENDANCE");
+                session.sendMessage(response);
+                assertTrue(trace.toString(java.nio.charset.StandardCharsets.UTF_8).contains("cmd=-9 bytes=22 hex=001453594e5448455449435f415454454e44414e4345"));
             } finally { session.user = null; session.close(); }
         } finally {
             System.setOut(original);

@@ -1,0 +1,2 @@
+
+Opt-in MariaDB regression command exit_code=0; final test-manifest.tsv records the same test PASS.

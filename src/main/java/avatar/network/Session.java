@@ -145,8 +145,8 @@ public class Session implements ISession {
     private void traceGameplay(String direction, Message message, byte[] data) {
         if (user == null || !Boolean.getBoolean("avatar.protocol.trace")) return;
         switch (message.getCommand()) {
-            case -6: case -21: case -19: case -18: case -81: case -61: case -59: case -1:
-            case 60: case 61: case 63: case 85:
+            case -9: case -6: case -21: case -19: case -18: case -81: case -61: case -59: case -1:
+            case 50: case 54: case 60: case 61: case 63: case 85:
                 if (data == null) data = new byte[0];
                 System.out.println("GAMEPLAY_PACKET " + direction + " user=" + user.getId() + " context=" + messageHandler.getClass().getSimpleName()
                         + " cmd=" + message.getCommand() + " bytes=" + data.length + " hex="

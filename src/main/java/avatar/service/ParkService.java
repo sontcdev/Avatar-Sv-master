@@ -163,8 +163,8 @@ public class ParkService extends Service {
 
     public synchronized void friendListAction(Message request) throws IOException, SQLException {
         if (request.reader().available() != 8) { serverDialog("Lựa chọn bạn bè không hợp lệ."); return; }
-        int listId = request.reader().readInt(); int action = request.reader().readUnsignedByte();
-        int index = request.reader().readShort(); int page = request.reader().readUnsignedByte();
+        int listId = request.reader().readInt(); int page = request.reader().readUnsignedByte();
+        int index = request.reader().readShort(); int action = request.reader().readUnsignedByte();
         if (listId != friendListId || page != 1 || index < 0 || index >= displayedFriends.size() || (action != 1 && action != 2)) {
             serverDialog("Danh sách bạn bè đã thay đổi hoặc lựa chọn không hợp lệ."); return;
         }

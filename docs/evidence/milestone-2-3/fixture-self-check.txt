@@ -1,0 +1,3 @@
+PASS: standalone fixture compiled with Java17; outside-staging invocation refused before server start; fixture absent from delivered JAR.
+Exception in thread "main" java.lang.IllegalStateException: Fixture requires the isolated staging directory
+	at Npc850Fixture.main(Npc850Fixture.java:14)

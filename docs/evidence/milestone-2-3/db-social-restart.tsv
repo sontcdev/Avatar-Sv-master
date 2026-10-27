@@ -1,0 +1,5 @@
+user_low	user_high	created_at
+71	92	2026-10-27 21:41:12
+user_id	xu	scores	chests	attendance_date	persistence_revision
+71	20000	20	[{"expired":-1,"quantity":1,"id":593}]	2026-10-28	12
+92	20000	0	[]	NULL	5

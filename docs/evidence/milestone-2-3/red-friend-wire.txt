@@ -1,0 +1,5 @@
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.567 s <<< FAILURE! -- in avatar.service.FriendshipPersistenceTest
+java.lang.AssertionError: Captured native visit must return the owner farm
+[ERROR] Failures:
+[ERROR]   FriendshipPersistenceTest.inviteAcceptListReloadAndDeleteUseOneMutualDurableRow:25->lambda$inviteAcceptListReloadAndDeleteUseOneMutualDurableRow$5:25->lambda$inviteAcceptListReloadAndDeleteUseOneMutualDurableRow$4:39->lambda$inviteAcceptListReloadAndDeleteUseOneMutualDurableRow$3:57 Captured native visit must return the owner farm
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0

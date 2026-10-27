@@ -1,5 +1,14 @@
 # Gameplay recovery report — 2026-10-28
 
+## Milestone 2.3 — current status supersedes historical results
+
+[Chắc chắn] Baseline `af048f6` clean; **60 unique tests pass (33 unit +27 DB)** on Java17. Real Avatar2.5.8 clients verified fixture-based NPC850 attendance (+20scores,ticket593,date), repeat and restart rejection; bidirectional private chat and reconnect repeat; friend invitation, acceptance, list across restart and deletion. Evidence spans intermediate/final artifacts and is explicitly labeled. Fixed native -81 parser page/action order using captured client bytes and failing-then-passing regression.
+
+[Chắc chắn] Natural navigation to map25 remains **PARTIAL**. Attendance overall **PARTIAL** despite successful fixture interaction. Friendship overall **PARTIAL** (artifact/restart limits); online/offline farm visit **PARTIAL**: owner92 packets received but client farm-loading EOF blocks rendered owner/permission verification. Native63 **PARTIAL, live BLOCKED/OFF**; replay characterization retained. No load test or cutover; production untouched.
+
+Current [M2.3 report](MILESTONE_2_3_REPORT.md), [NPC navigation/fixture](NPC850_NAVIGATION_ANALYSIS.md), [social UI/wire/DB evidence](CLIENT_SOCIAL_E2E_EVIDENCE.md). Final JAR SHA256 `7fbfa1800e38496873f9a719108512a6bfc0dfbb5613f012603c839f5c1a57c7`. Historical sections below do not supersede these results.
+
+
 ## Milestone 2.2 — current status supersedes historical results
 
 [Chắc chắn] Baseline `98d85d7` clean; **60 unique tests pass (33 unit +27 DB)** on Java17. Stale committed inventory/currency overwrite is guarded by persisted player/farm revisions and atomic logout; ambiguous commit/resource-close failures fail closed, rejected snapshots are retained privately. Duplicate login preserves the active owner. Additive schema applied only to isolated staging; mixed old/new writers are unsupported.

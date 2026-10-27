@@ -1,0 +1,4 @@
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.068 s <<< FAILURE! -- in avatar.server.SessionLifecycleTest
+java.lang.AssertionError
+[ERROR] Failures:
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0

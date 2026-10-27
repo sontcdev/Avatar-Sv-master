@@ -49,6 +49,19 @@ public class FriendshipPersistenceTest {
                         assertEquals(2,list.reader().readByte());
                         for(int i=0;i<2;i++){ list.reader().readByte(); list.reader().readUTF(); }
                         assertEquals(0,list.reader().available());
+                        // Captured Avatar 2.5.8 visit: list int, page byte, index short, action byte.
+                        reloaded.messages.clear();
+                        byte[] visit = java.util.HexFormat.of().parseHex("0000000101000002");
+                        assertEquals(1,listId);
+                        h.onMessage(new Message(Cmd.CUSTOM_LIST,visit));
+                        assertTrue("Captured native visit must return the owner farm",reloaded.messages.stream().anyMatch(m -> m.getCommand()==Cmd.JOIN));
+                        Message farm = reloaded.messages.stream().filter(m -> m.getCommand()==Cmd.JOIN).findFirst().orElseThrow();
+                        assertEquals(92,new Message(Cmd.JOIN,farm.getData()).reader().readInt());
+                        // A forged page must not delete the persisted friendship.
+                        h.onMessage(new Message(Cmd.CUSTOM_LIST,java.util.HexFormat.of().parseHex("0000000102000001")));
+                        try (Connection c = db.getConnection(); ResultSet r = c.createStatement().executeQuery("SELECT COUNT(*) FROM gameplay_friendships")) {
+                            assertTrue(r.next()); assertEquals(1,r.getInt(1));
+                        }
                         Message delete = new Message(Cmd.CUSTOM_LIST); delete.writer().writeInt(listId); delete.writer().writeByte(1); delete.writer().writeShort(0); delete.writer().writeByte(1);
                         h.onMessage(new Message(Cmd.CUSTOM_LIST,delete.getData()));
                         try (Connection c = db.getConnection(); ResultSet r = c.createStatement().executeQuery("SELECT COUNT(*) FROM gameplay_friendships")) {
