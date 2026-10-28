@@ -146,7 +146,7 @@ public class Session implements ISession {
         if (user == null || !Boolean.getBoolean("avatar.protocol.trace")) return;
         switch (message.getCommand()) {
             case -9: case -6: case -21: case -19: case -18: case -81: case -61: case -59: case -1:
-            case 50: case 54: case 60: case 61: case 63: case 85:
+            case 50: case 51: case 54: case 55: case 56: case 60: case 61: case 63: case 85:
                 if (data == null) data = new byte[0];
                 System.out.println("GAMEPLAY_PACKET " + direction + " user=" + user.getId() + " context=" + messageHandler.getClass().getSimpleName()
                         + " cmd=" + message.getCommand() + " bytes=" + data.length + " hex="
@@ -340,8 +340,10 @@ public class Session implements ISession {
     public void getHandler(Message ms) throws IOException {
         byte index = ms.reader().readByte();
         System.out.println("getHandler: " + index);
+        farmService.resetVisit();
 
-        if (index == 8) {
+        // Park broadcasts reuse farm resource commands (notably 55). Detach before switching context.
+        if (index == 8 || index == 10) {
             Zone zone = user.getZone();
             if (zone != null) zone.leave(user);
         }

@@ -54,9 +54,14 @@ public class FriendshipPersistenceTest {
                         byte[] visit = java.util.HexFormat.of().parseHex("0000000101000002");
                         assertEquals(1,listId);
                         h.onMessage(new Message(Cmd.CUSTOM_LIST,visit));
-                        assertTrue("Captured native visit must return the owner farm",reloaded.messages.stream().anyMatch(m -> m.getCommand()==Cmd.JOIN));
-                        Message farm = reloaded.messages.stream().filter(m -> m.getCommand()==Cmd.JOIN).findFirst().orElseThrow();
-                        assertEquals(92,new Message(Cmd.JOIN,farm.getData()).reader().readInt());
+                        assertFalse("Farm JOIN must wait until native resource initialization finishes",reloaded.messages.stream().anyMatch(m -> m.getCommand()==Cmd.JOIN));
+                        // Native kz60 asks to join self after resources; retain the selected friend.
+                        reloaded.getFarmService().joinFarm(new Message(Cmd.JOIN,
+                                java.util.HexFormat.of().parseHex("00000047")));
+                        java.util.List<Message> farms = reloaded.messages.stream().filter(m -> m.getCommand()==Cmd.JOIN).toList();
+                        assertEquals(2, farms.size());
+                        assertEquals(71,new Message(Cmd.JOIN,farms.get(0).getData()).reader().readInt());
+                        assertEquals(92,new Message(Cmd.JOIN,farms.get(1).getData()).reader().readInt());
                         // A forged page must not delete the persisted friendship.
                         h.onMessage(new Message(Cmd.CUSTOM_LIST,java.util.HexFormat.of().parseHex("0000000102000001")));
                         try (Connection c = db.getConnection(); ResultSet r = c.createStatement().executeQuery("SELECT COUNT(*) FROM gameplay_friendships")) {

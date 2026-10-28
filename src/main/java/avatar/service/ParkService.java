@@ -178,8 +178,7 @@ public class ParkService extends Service {
         } else {
             Message context = new Message(Cmd.GET_HANDLER); context.writer().writeByte(10);
             session.getHandler(new Message(Cmd.GET_HANDLER,context.getData()));
-            Message visit = new Message(Cmd.JOIN); visit.writer().writeInt(other);
-            session.getFarmService().joinFarm(new Message(Cmd.JOIN,visit.getData()));
+            session.getFarmService().prepareFriendVisit(other);
         }
     }
 

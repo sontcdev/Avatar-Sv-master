@@ -1,0 +1,246 @@
+--------- beginning of main
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)
+W/System.err( 6951): java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+W/System.err( 6951): 	at java.util.Vector.removeElementAt(Vector.java:549)
+W/System.err( 6951): 	at ba.b(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:484)
+W/System.err( 6951): 	at main.a.run(dex-id-156f8d1822739b620554b63ce45e50cb90e963c3:411)
+W/System.err( 6951): 	at java.lang.Thread.run(Thread.java:1571)

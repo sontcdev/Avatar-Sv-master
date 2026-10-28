@@ -1,5 +1,12 @@
 # Gameplay migration matrix — 2026-10-28
 
+## Milestone 2.4 — trạng thái hiện hành
+
+[Chắc chắn] Final JAR SHA256 `ce491e4c159591c540128f1cea38e9e3b373766fa257949f6265cf5b0159f268`, **61 unique tests PASS (34unit+27DB)**. Sửa park55 lọt vào farm decoder gây EOF và thứ tự native bootstrap/JOIN. Client thật cùng artifact render own71,71→92online/offline,92→71; attendance fixture92 nhận thưởng/repeat/restart rejection; chat hai chiều; delete friends và empty sau restart. Đường world-map “Nông trại” tới map25 được chứng minh bằng packet1900 và ảnh,không phải “Khu ngoại ô” map17.
+
+[Chắc chắn] Toàn milestone **PARTIAL**: visitor unauthorized85 từ UI,friend visit sau restart,chat reconnect repeat vàaccept mới chưa đủ bằng chứng cùng artifact. Không nâng trạng thái bằng unit test hay fixture relation. Native63 live **BLOCKED/OFF**;không load/cutover,production giữ nguyên. [Final report](MILESTONE_2_4_FINAL_REPORT.md), [root cause](FRIEND_FARM_EOF_ROOT_CAUSE.md), [E2E evidence](FRIEND_FARM_E2E_EVIDENCE.md). Các milestone bên dưới là lịch sử.
+
+
 ## Milestone 2.3 — current status supersedes historical results
 
 [Chắc chắn] Baseline `af048f6` clean; **60 unique tests pass (33 unit +27 DB)** on Java17. Real Avatar2.5.8 clients verified fixture-based NPC850 attendance (+20scores,ticket593,date), repeat and restart rejection; bidirectional private chat and reconnect repeat; friend invitation, acceptance, list across restart and deletion. Evidence spans intermediate/final artifacts and is explicitly labeled. Fixed native -81 parser page/action order using captured client bytes and failing-then-passing regression.

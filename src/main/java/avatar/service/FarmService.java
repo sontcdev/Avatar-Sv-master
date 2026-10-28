@@ -31,6 +31,16 @@ import java.sql.*;
 public class FarmService extends Service {
 
     private int viewedFarmId = -1;
+    private int pendingFriendFarmId = -1;
+
+    public void resetVisit() {
+        viewedFarmId = -1;
+        pendingFriendFarmId = -1;
+    }
+
+    public void prepareFriendVisit(int ownerId) {
+        pendingFriendFarmId = ownerId;
+    }
 
     private static final Logger logger = Logger.getLogger(Service.class);
 
@@ -449,6 +459,8 @@ public class FarmService extends Service {
 
     public void joinFarm(Message ms) throws IOException, SQLException {
         int userId = ms.reader().readInt();
+        int friendFarmId = pendingFriendFarmId;
+        pendingFriendFarmId = -1;
         viewedFarmId = -1;
         User owner = userId == session.user.getId() ? session.user
                 : avatar.server.UserManager.getInstance().find(userId);
@@ -509,6 +521,12 @@ public class FarmService extends Service {
             ds.flush();
 
             this.session.sendMessage(ms);
+        }
+        // Avatar 2.5.8 consumes the first JOIN as preload, then enables farm rendering.
+        if (friendFarmId >= 0) {
+            Message visit = new Message(Cmd.JOIN);
+            visit.writer().writeInt(friendFarmId);
+            joinFarm(new Message(Cmd.JOIN, visit.getData()));
         }
     }
 
