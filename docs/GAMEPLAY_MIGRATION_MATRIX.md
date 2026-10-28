@@ -1,5 +1,8 @@
 # Gameplay migration matrix — 2026-10-28
 
+Milestone 3.7: **PARTIAL/BLOCKED**; 89 distinct tests pass across baseline, isolated DB and asset runs, but native 71 and NPC acceptance remain unverified. No NPC gameplay or upgrades were implemented. [Report](MILESTONE_3_7_GAMEPLAY_REPORT.md), [NPC classifications](NPC_RECOVERY_IMPLEMENTATION.md), [native limitations](NPC_NATIVE_E2E.md).
+
+
 ## Milestone 3.4 — latest investigation
 
 [Chắc chắn] **INCOMPLETE**: crop economy and native E2E remain blocked; client bytecode clarifies visual duration and 78/79 update layouts. No gameplay implementation or staging mutation was made. [Report](MILESTONE_3_4_GAMEPLAY_REPORT.md).

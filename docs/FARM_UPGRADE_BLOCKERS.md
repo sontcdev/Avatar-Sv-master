@@ -1,0 +1,14 @@
+# Milestone 3.7: farm upgrade evidence
+
+Status for all four operations: **BLOCKED**. Evidence is target server at `74be1346d3ed39d19c50147740b74dc84f7ebbc5`, target Avatar 2.5.8 JAR SHA-256 `34bda0739fc7854f1f8b925a18f98dbdfd99424b852a7140c1f2c2042b64314e`, and the target SQL schema. The client bytecode is presentation/protocol evidence, not an authoritative economy. These are static observations, not native packet captures.
+
+| Command | Avatar 2.5.8 request / expected response | Missing authoritative server rules |
+| --- | --- | --- |
+| 84 UPDATE_STARFRUIL | `it.c(int)` writes command 84 and one value through `kj.o(int)`; response decoder `kz` offset 2144 reads phase byte; phase 0 reads UTF prompt, nonzero reads int and short, adjusts displayed balance and timer. | Level progression, price/currency, timing, ownership and persistent upgrade state. |
+| 86 UPDATE_STARTFRUIT_BYMONEY | `it.d(int)` sends 86 and one `kj.o(int)` value; decoder offset 2278 reads phase byte; phase 0 reads UTF prompt, nonzero reads int, short, int, int and updates displayed state. | Price/currency, level transition, prerequisites, persistence and time/instant-upgrade semantics. |
+| 90 UPDATE_LAND | `it.h(int,int)` sends 90 and one `kj.o(int)` value, plus another only when first value is 1; decoder offset 2388: phase 0 UTF prompt; nonzero byte, int, byte, UTF, int, int. | Ownership, land identity, allowed levels, cost, capacity before/after, required inventory and persisted model. |
+| 94 UPDATE_STORE | `it.i(int,int)` sends 94 and one `kj.o(int)` value, plus another only when first value is 1; decoder offset 2597: phase 0 UTF prompt, nonzero reads byte, int, int, UTF and updates displayed balance and store level. | Ownership, store levels and capacity before/after, costs, inventory conditions and persisted model. |
+
+`kj.o` is an obfuscated client helper; this pass does not independently establish its wire width. The separate Unity client suggests byte values, but does not prove 2.5.8 server economy or make this an observed native exchange. The 2.5.8 JOIN Lv10 literal is not a persisted player level. Existing `FarmMsgHandler` explicitly sends an unsupported dialog for these commands, rather than fabricating success.
+
+All four need target-owned progression and price/currency evidence and a verified persistence schema before implementation. If an upgrade charges or consumes items, validate farm ownership and current version, debit currency/inventory and persist the new level/capacity as one database transaction with an appropriate conditional revision/CAS; return success only after commit. A duplicate or replayed confirmation must not charge twice or advance twice, including across reconnect and restart. Exact idempotency and transaction design depends on verified original semantics. No before/after capacity, cost or economic rule can be established from the available evidence.

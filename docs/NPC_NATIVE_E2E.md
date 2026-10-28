@@ -1,0 +1,7 @@
+# Milestone 3.7: native acceptance
+
+**NOT VERIFIED.** A separate execution-owned Android AVD `AvatarM37` was launched as `emulator-5562`; ADB continued to report it offline, while its log recorded repeated `qemu_mprotect__osdep: mprotect failed: Permission denied`. The pre-existing `emulator-5554` was not used for this attempt. The owned emulator was stopped; no client installation, login, farm navigation, purchase, NPC menu, packet capture or restart acceptance was performed. Local diagnostic log: `/private/tmp/avatar2d-m37-emulator-own.log`.
+
+The BUY_ANIMAL 71 guard is therefore **native unverified**: intended dialog, actual UI compatibility, lack of a success packet, database/currency/inventory before and after, and reconnect without phantom animals were not observed. `FarmService.Buy_ANIMAL` statically only sends “Mua vật nuôi tạm ngừng: chưa xác minh được giá và quy tắc giao dịch.” and the existing regression test covers the guard, but neither substitutes for native UI and DB evidence. This is a global behavior change: all animal purchases are currently unavailable, including paths that previously appeared to create a free RAM-only animal. No free purchase was restored.
+
+No NPC is claimed as native verified; their classifications and the approval-dependent alternative are in [NPC recovery](NPC_RECOVERY_IMPLEMENTATION.md). A future acceptance run requires a functioning isolated device and stage, actual Avatar 2.5.8 interaction, correlated packet/DB before-and-after, and reconnect checks. Do not call synthetic packets native acceptance.

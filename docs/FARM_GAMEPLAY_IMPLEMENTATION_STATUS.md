@@ -1,5 +1,8 @@
 # Farm gameplay implementation status — milestone 3.6
 
+Milestone 3.7: **PARTIAL/BLOCKED**; 84/86/90/94 remain unavailable pending authoritative progression and costs. The global BUY_ANIMAL 71 guard remains in place; real-client compatibility has not been verified. See [report](MILESTONE_3_7_GAMEPLAY_REPORT.md) and [upgrade evidence](FARM_UPGRADE_BLOCKERS.md).
+
+
 Milestone 3.6 is **INCOMPLETE**. Command 71 is BLOCKED with explicit feedback; no playable animal/care loop is claimed. See [3.6 report](MILESTONE_3_6_GAMEPLAY_REPORT.md) and [current roadmap](GAMEPLAY_RECOVERY_ROADMAP.md), which supersede historical status labels below.
 
 Milestone 3.4 remains **INCOMPLETE**: no new playable feature or native crop acceptance. Client visual duration and incoming 78/79 decoding were clarified; see [report](MILESTONE_3_4_GAMEPLAY_REPORT.md). The command statuses below remain unchanged.

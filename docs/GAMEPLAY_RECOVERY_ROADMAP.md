@@ -1,5 +1,8 @@
 # Gameplay recovery roadmap — milestone 3.6
 
+Milestone 3.7: **PARTIAL/BLOCKED**. Four upgrades lack authoritative progression/economy; all 13 target NPCs lack verified original workflows. No gameplay was added. Native BUY_ANIMAL 71 and NPC UI acceptance remain unverified because the separate emulator stayed offline. See [report](MILESTONE_3_7_GAMEPLAY_REPORT.md), [upgrade blockers](FARM_UPGRADE_BLOCKERS.md), and [NPC evidence and proposed custom option](NPC_RECOVERY_IMPLEMENTATION.md).
+
+
 **INCOMPLETE.** Milestone 3.6 supersedes the historical details below: BUY_ANIMAL is now BLOCKED with explicit feedback; 89 distinct tests passed on final source across normal, isolated DB and asset invocations. No playable animal/care loop or fresh native acceptance was achieved. See [3.6 report](MILESTONE_3_6_GAMEPLAY_REPORT.md).
 
 Historical milestone 3.5: status here supersedes historical roadmap status, without upgrading earlier evidence to a fresh native verification. The milestone started at `7de246a`; the commit containing this document is the milestone Git SHA (`git log -1 --format=%H -- docs/GAMEPLAY_RECOVERY_ROADMAP.md`). Final locally built JAR SHA-256: `2555bd09294f781f43b7f745d17ff346e995d84e591fd518e5ceaa97d0e0872e`. No staging server or native client ran this artifact.
