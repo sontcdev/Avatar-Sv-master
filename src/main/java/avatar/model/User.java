@@ -459,7 +459,11 @@ public class User {
     public synchronized int harvestStarfruit() throws SQLException {
         int quantity = getStarfruitQuantity();
         if (quantity <= 0) return 0;
-        NongSanDacBiet stock = NongSanDacBiet.stream().filter(item -> item.getId() == 215).findFirst().orElse(null);
+        NongSanDacBiet stock = null;
+        for (NongSanDacBiet item : NongSanDacBiet) if (item.getId() == 215) {
+            if (stock != null) throw new SQLException("Duplicate starfruit inventory entries");
+            stock = item;
+        }
         int oldStock = stock == null ? 0 : stock.getSoluong();
         if (oldStock < 0 || quantity > Short.MAX_VALUE - oldStock || (stock == null && NongSanDacBiet.size() >= 127)) {
             throw new SQLException("Starfruit inventory exceeds client capacity");

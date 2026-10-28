@@ -86,6 +86,17 @@ public class StarfruitHarvestTest {
         assertEquals(180, user.getStarfruitQuantity());
         assertEquals(12, user.NongSanDacBiet.get(0).getSoluong());
     }
+    @Test public void duplicateStarfruitRowsRejectHarvestWithoutMutation() throws Exception {
+        SavedUser user = new SavedUser();
+        user.NongSanDacBiet.add(new NongSanDacBiet(215, 12));
+        user.NongSanDacBiet.add(new NongSanDacBiet(215, 15));
+        try { user.harvestStarfruit(); fail("Duplicate stock must fail closed"); }
+        catch (SQLException expected) { }
+        assertEquals(180, user.getStarfruitQuantity());
+        assertEquals(12, user.NongSanDacBiet.get(0).getSoluong());
+        assertEquals(15, user.NongSanDacBiet.get(1).getSoluong());
+        assertEquals(0, user.saves);
+    }
     @Test public void concurrentClicksCreditOnlyOnce() throws Exception {
         SavedUser user = new SavedUser();
         java.util.concurrent.ExecutorService workers = java.util.concurrent.Executors.newFixedThreadPool(2);
