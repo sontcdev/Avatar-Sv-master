@@ -127,6 +127,26 @@ public class GameplayFeedbackTest {
             } finally { session.getParkService().cancelFishing(); }
         });
     }
+    @Test public void animalPurchaseWithoutVerifiedPolicyNeverCreatesAnimalOrSuccess() throws Exception {
+        withSession(session -> {
+            session.user.setXu(5000); session.user.setLuong(50);
+            FarmMsgHandler handler = new FarmMsgHandler(session);
+            Message request = new Message(Cmd.BUY_ANIMAL);
+            request.writer().writeByte(1); request.writer().writeByte(1);
+            for (int i = 0; i < 2; i++) {
+                if (i == 1) {
+                    Message join = new Message(Cmd.JOIN); join.writer().writeInt(7);
+                    handler.onMessage(new Message(Cmd.JOIN, join.getData()));
+                }
+                session.messages.clear();
+                handler.onMessage(new Message(Cmd.BUY_ANIMAL, request.getData()));
+                assertTrue(session.user.Animal.isEmpty());
+                assertEquals(5000, session.user.getXu()); assertEquals(50, session.user.getLuong());
+                assertTrue(session.messages.stream().anyMatch(m -> m.getCommand() == Cmd.SET_MONEY_ERROR));
+                assertTrue(session.messages.stream().noneMatch(m -> m.getCommand() == Cmd.BUY_ANIMAL));
+            }
+        });
+    }
     @Test public void invalidSeedAndMissingShopDataReturnFeedback() throws Exception {
         withSession(session -> {
             FarmMsgHandler handler = new FarmMsgHandler(session);

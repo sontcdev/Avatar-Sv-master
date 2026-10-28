@@ -1,6 +1,8 @@
-# Gameplay recovery roadmap — milestone 3.5
+# Gameplay recovery roadmap — milestone 3.6
 
-**INCOMPLETE.** Status here supersedes historical roadmap status, without upgrading earlier evidence to a fresh native verification. The milestone started at `7de246a`; the commit containing this document is the milestone Git SHA (`git log -1 --format=%H -- docs/GAMEPLAY_RECOVERY_ROADMAP.md`). Final locally built JAR SHA-256: `2555bd09294f781f43b7f745d17ff346e995d84e591fd518e5ceaa97d0e0872e`. No staging server or native client ran this artifact.
+**INCOMPLETE.** Milestone 3.6 supersedes the historical details below: BUY_ANIMAL is now BLOCKED with explicit feedback; 89 distinct tests passed on final source across normal, isolated DB and asset invocations. No playable animal/care loop or fresh native acceptance was achieved. See [3.6 report](MILESTONE_3_6_GAMEPLAY_REPORT.md).
+
+Historical milestone 3.5: status here supersedes historical roadmap status, without upgrading earlier evidence to a fresh native verification. The milestone started at `7de246a`; the commit containing this document is the milestone Git SHA (`git log -1 --format=%H -- docs/GAMEPLAY_RECOVERY_ROADMAP.md`). Final locally built JAR SHA-256: `2555bd09294f781f43b7f745d17ff346e995d84e591fd518e5ceaa97d0e0872e`. No staging server or native client ran this artifact.
 
 Baseline Corretto 17 clean package: 87 discovered, 52 passed and 35 skipped. Separately, the 33 opt-in DB tests and the two asset-dependent tests passed: 87 distinct baseline tests passed. After the change clean package discovered 88, passed 53 and skipped 35; the 35 opt-in tests were run on the baseline, not rerun after the one-line request framing change. Protocol tools passed on the baseline. The new regression failed before the fix and passed in the final build. No new native acceptance was performed.
 
@@ -13,7 +15,7 @@ The isolated test databases were backed up before tests (SHA-256 `df949157823ebe
 | 64 PLANT_SEED | BLOCKED | Existing transaction/CAS implementation can use a populated legacy `farmitems` table, but target maturity, restrictions and other rules remain unverified. Staging catalog is empty; no rows activated. Obtain authoritative server rules/catalog. |
 | 66 TREE_HARVEST | BLOCKED | This milestone rejects packets with trailing data before mutation; the behavior has a regression test. Existing yield and maturity calculations remain unverified; request framing does not make the crop lifecycle safe. Obtain authoritative yield, health, maturity and product mapping, then test real timed native lifecycle and restart. |
 | 65 USING_ITEM | BLOCKED | Unity `FarmScr.resetAction` sends item 100 after local watering; `FarmService.doUsingItem` writes int farm, byte index, short item. Incoming 65 reads byte and short and decrements a matching inventory item. Authoritative aridity generation, water consumption, effect, persistence and compatibility with 2.5.8 remain missing. No care loop enabled. |
-| 71 BUY_ANIMAL | IMPLEMENTED_UNVERIFIED | Existing code creates a free in-memory animal with hard-coded state and sends zero balances, without demonstrated persistence or verified prices. No change was made to this existing behavior. Obtain target rules and transaction design before claiming a purchase lifecycle. |
+| 71 BUY_ANIMAL | BLOCKED | Explicit unavailable feedback replaces the free, non-durable legacy purchase. Obtain authoritative rules and transaction design; see [animal lifecycle](ANIMAL_LIFECYCLE_IMPLEMENTATION.md). |
 | 72 PRICE_ANIMAL | BLOCKED | Unity incoming decoder reads byte index and UTF text; authoritative pricing and target request behavior remain missing. |
 | 73 SELL_ANIMAL | BLOCKED | Price policy and replay-safe atomic sale missing. |
 | 74 HARVEST_ANIMAL | BLOCKED | Verified output, maturity, health and persistence rules missing. |

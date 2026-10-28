@@ -333,22 +333,7 @@ public class FarmService extends Service {
     }
 
     public void Buy_ANIMAL(Message ms) throws IOException {
-        byte n = ms.reader().readByte();//loai
-        byte type = ms.reader().readByte();//typemua
-
-        ms = new Message(Cmd.BUY_ANIMAL);
-        DataOutputStream ds = ms.writer();
-        ds.writeByte(n);
-        ds.writeInt(0);//newMoney2
-        ds.writeByte(type);
-        ds.writeInt((int) 0);
-        ds.writeInt(0);//luong
-        ds.writeInt(0);//luongK
-        ds.flush();
-        this.session.sendMessage(ms);
-
-        Animal newAnimal = new Animal(n,2000, 100, 0, 20, true, false, true); // Các giá trị mặc định
-        this.session.user.Animal.add(newAnimal);
+        serverDialog("Mua vật nuôi tạm ngừng: chưa xác minh được giá và quy tắc giao dịch.");
     }
 
     public void getBigFarm(Message ms) throws IOException {
