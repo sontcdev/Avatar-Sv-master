@@ -1,0 +1,18 @@
+{
+  "epoch": 1793170209.974496,
+  "native5": "FAIL",
+  "native10": "NOT_RUN",
+  "reason": "71 repeated target on reverse leg",
+  "calibration_before": [
+    348,
+    156
+  ],
+  "left_after": [
+    258,
+    156
+  ],
+  "right_after": [
+    258,
+    156
+  ]
+}

@@ -17,7 +17,7 @@ Offline inspection: `javap -classpath resAndProjectUnityFileGameJar/Avatar258.ja
 - `go` touch handlers add `do.a().a/b` camera offsets to these screen coordinates before tile lookup. This proves at least this client scene treats screen and map coordinates separately; it does not establish an untested park tap target as traversable.
 - `avatar.model.User.move` reads x/y/direct, directly assigns x/y/direct and broadcasts through the map service. It performs no collision check. Receiving command54 at the same x does not prove the server blocked movement, and direction-only changes are not completed movement.
 
-[Có khả năng cao] The available evidence is insufficient to identify the cause of71's unchanged coordinate after22 is unresolved: the archived evidence does not isolate loader translation, client selection/path state, obstacle handling or key duration. No server collision fix is justified by this evidence.
+[Chắc chắn] The archived evidence does not identify why71 remained unchanged after22: the archived evidence does not isolate loader translation, client selection/path state, obstacle handling or key duration. No server collision fix is justified by this evidence.
 
 ## Driver contract and next native run
 

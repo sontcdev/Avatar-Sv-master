@@ -1,0 +1,28 @@
+{
+  "epoch": 1793173776.5731153,
+  "staging_jvm_pid": 390152,
+  "staging_db_pid": 372173,
+  "sales_enabled": false,
+  "jvm_stopped": true,
+  "backup": "m27-final-before-restore.sql",
+  "gameplay_integrity_20_rows": true,
+  "friend_fixture_before_removed_after": [
+    9,
+    9,
+    0
+  ],
+  "db_stopped": true,
+  "listeners": "State  Recv-Q Send-Q                        Local Address:Port  Peer Address:PortProcess\nLISTEN 0      100                               127.0.0.1:5433       0.0.0.0:*          \nLISTEN 0      200                               127.0.0.1:5432       0.0.0.0:*          \nLISTEN 0      4096                          127.0.0.53%lo:53         0.0.0.0:*          \nLISTEN 0      4096                100.112.0.62%tailscale0:44265      0.0.0.0:*          \nLISTEN 0      511                               127.0.0.1:3101       0.0.0.0:*          \nLISTEN 0      80                                127.0.0.1:3306       0.0.0.0:*          \nLISTEN 0      4096                                0.0.0.0:22         0.0.0.0:*          \nLISTEN 0      4096                              127.0.0.1:20241      0.0.0.0:*          \nLISTEN 0      4096                              127.0.0.1:20245      0.0.0.0:*          \nLISTEN 0      4096                             127.0.0.54:53         0.0.0.0:*          \nLISTEN 0      5                                 127.0.0.1:18764      0.0.0.0:*          \nLISTEN 0      100                               127.0.0.1:18728      0.0.0.0:*          \nLISTEN 0      128                               127.0.0.1:8386       0.0.0.0:*          \nLISTEN 0      511                               127.0.0.1:3000       0.0.0.0:*          \nLISTEN 0      4096   [fd7a:115c:a1e0::8439:3f]%tailscale0:43568         [::]:*          \nLISTEN 0      4096                                   [::]:22            [::]:*          \nLISTEN 0      20                    [::ffff:100.112.0.62]:19128            *:*          \n",
+  "production": {
+    "313665": "/usr/bin/java -Xms128m -Xmx512m -XX:+ExitOnOutOfMemoryError -Davatar.database.config=/etc/avatar2d/database.properties -jar server.jar ",
+    "302726": "/usr/sbin/mariadbd "
+  },
+  "production_service": "NRestarts=0\nActiveState=active",
+  "local_owned_groups_stopped": [
+    30659,
+    21233
+  ],
+  "adb_devices_after": "List of devices attached\n\n",
+  "owned_observers_absent": true,
+  "backup_dump_modes": "600 verified"
+}

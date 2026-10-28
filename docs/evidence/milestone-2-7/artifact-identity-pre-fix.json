@@ -1,0 +1,11 @@
+{
+  "baseline_head": "292c1f166f86b5773c95916fcc3d93af3a6a41af",
+  "harness_head": "b30ead37d42bce5009f001dc312d65a916300511",
+  "artifact_sha256": "61f0b883e4ea317d49498cbd7d3a0ece36bda8cc83cbe86878e98533c8eb675c",
+  "baseline_artifact_sha256": "12c781f70a001d6b487a1614740bfe3e1702e66fbc582c0f4783c3608f4b0331",
+  "jar_entry_payload_changes": [],
+  "java_source_diff": "empty",
+  "staging_pid": 372744,
+  "cwd": "/home/sontc/avatar2d-gameplay-stage",
+  "sales_property_present": false
+}

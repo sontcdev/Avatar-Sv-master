@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/tmp/avatar2d-m27/prepare.py", line 4, in <module>
+    assert run('shell','getprop','sys.boot_completed').stdout.strip()==b'1'
+AssertionError

@@ -1,0 +1,9 @@
+{"epoch_ms": 1793172321748, "event": "start", "players": 5, "duration": 320.0, "port": 19128}
+{"epoch_ms": 1793172321749, "event": "concurrency", "requested": 5, "authenticated": 0, "active": 0, "completed_operations": 0}
+{"epoch_ms": 1793172326754, "event": "concurrency", "requested": 5, "authenticated": 0, "active": 0, "completed_operations": 0}
+{"epoch_ms": 1793172329789, "event": "player_failed", "user": 94, "error": "TimeoutError", "reason": "No correlated response for command -2"}
+{"epoch_ms": 1793172329798, "event": "player_failed", "user": 71, "error": "RuntimeError", "reason": "Workload stopped after player failure"}
+{"epoch_ms": 1793172329798, "event": "player_failed", "user": 93, "error": "RuntimeError", "reason": "Workload stopped after player failure"}
+{"epoch_ms": 1793172329798, "event": "player_failed", "user": 92, "error": "RuntimeError", "reason": "Workload stopped after player failure"}
+{"epoch_ms": 1793172329798, "event": "player_failed", "user": 95, "error": "RuntimeError", "reason": "Workload stopped after player failure"}
+{"epoch_ms": 1793172329799, "event": "complete", "players": 5, "passed": 0, "failed": 5}

@@ -1,0 +1,13 @@
+{
+  "baseline_head": "292c1f166f86b5773c95916fcc3d93af3a6a41af",
+  "harness_head": "b30ead37d42bce5009f001dc312d65a916300511",
+  "artifact_sha256": "f3bae8def8c2dd0fed2682b4e64f3a76b72d4db2a7fc033dffdf1bccd1a09400",
+  "baseline_artifact_sha256": "12c781f70a001d6b487a1614740bfe3e1702e66fbc582c0f4783c3608f4b0331",
+  "java_source_diff": "AvatarService.enter: snapshot synchronized park membership before serialization",
+  "staging_pid": 390152,
+  "cwd": "/home/sontc/avatar2d-gameplay-stage",
+  "sales_property_present": false,
+  "tested_head": "459d266fc3c63b3e304c405ed54b39f164b71b4d",
+  "final_harness_head": "e21cf2e7c5ab4a3ec64a54980a2dbfcb5275bec4",
+  "jar_build_head": "459d266fc3c63b3e304c405ed54b39f164b71b4d"
+}

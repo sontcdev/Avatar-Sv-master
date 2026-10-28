@@ -1,0 +1,329 @@
+[
+  {
+    "level": 1,
+    "first_active_sample": 1793172420100,
+    "last_active_sample": 1793172730368,
+    "active_sample_span_s": 310.268,
+    "full_active_samples": 63,
+    "successful_operations": 63,
+    "operations_per_s": 0.20305026622146016,
+    "failed_operations": 0,
+    "unexpected_disconnects": 0,
+    "session_generations": [
+      {
+        "user": 71,
+        "session": "15"
+      }
+    ],
+    "cpu_one_core_pct": 1.5499252890135529,
+    "heap_max_mib": 18.330368041992188,
+    "rss_max_mib": 115.55859375,
+    "gc_count_delta": 0,
+    "gc_ms_delta": 0,
+    "java_threads_max": 67,
+    "os_threads_max": 82,
+    "pool_active_max": 0,
+    "pool_idle_max": 4,
+    "pool_waiting_max": 0,
+    "jvm_read_bytes_delta": 0,
+    "jvm_write_bytes_delta": 536576,
+    "db_lock_wait_delta": 0,
+    "db_lock_time_ms_delta": 0,
+    "db_current_waits_max": 0,
+    "slow_queries_delta": 0,
+    "host_load1_max": 0.5,
+    "host_available_mem_min_mib": 2464.62109375,
+    "host_disk_delta": {
+      "read_bytes": 57344,
+      "write_bytes": 23235584,
+      "io_ms": 12292
+    },
+    "production": {
+      "313665": {
+        "cpu_pct_one_core": 0.32341237037681686,
+        "rss_max_mib": 132.71875,
+        "identity_present_all_samples": true
+      },
+      "302726": {
+        "cpu_pct_one_core": 0.045277731852754355,
+        "rss_max_mib": 119.90234375,
+        "identity_present_all_samples": true
+      }
+    },
+    "db_query_counter_delta": {
+      "Com_select": 37,
+      "Com_insert": 7,
+      "Com_update": 21,
+      "Com_delete": 0,
+      "Questions": 368,
+      "Queries": 368
+    },
+    "db_threads_running_max": 1,
+    "performance_schema": "OFF",
+    "private_chat_delivery": null
+  },
+  {
+    "level": 3,
+    "first_active_sample": 1793172763922,
+    "last_active_sample": 1793173074236,
+    "active_sample_span_s": 310.314,
+    "full_active_samples": 63,
+    "successful_operations": 237,
+    "operations_per_s": 0.7637425317581545,
+    "failed_operations": 0,
+    "unexpected_disconnects": 0,
+    "session_generations": [
+      {
+        "user": 71,
+        "session": "16"
+      },
+      {
+        "user": 93,
+        "session": "17"
+      },
+      {
+        "user": 92,
+        "session": "18"
+      }
+    ],
+    "cpu_one_core_pct": 2.975400515779781,
+    "heap_max_mib": 15.339302062988281,
+    "rss_max_mib": 116.8515625,
+    "gc_count_delta": 0,
+    "gc_ms_delta": 0,
+    "java_threads_max": 72,
+    "os_threads_max": 87,
+    "pool_active_max": 0,
+    "pool_idle_max": 4,
+    "pool_waiting_max": 0,
+    "jvm_read_bytes_delta": 16384,
+    "jvm_write_bytes_delta": 753664,
+    "db_lock_wait_delta": 0,
+    "db_lock_time_ms_delta": 0,
+    "db_current_waits_max": 0,
+    "slow_queries_delta": 0,
+    "host_load1_max": 0.55,
+    "host_available_mem_min_mib": 2456.16015625,
+    "host_disk_delta": {
+      "read_bytes": 53248,
+      "write_bytes": 22589952,
+      "io_ms": 10742
+    },
+    "production": {
+      "313665": {
+        "cpu_pct_one_core": 0.30250701751216197,
+        "rss_max_mib": 132.71875,
+        "identity_present_all_samples": true
+      },
+      "302726": {
+        "cpu_pct_one_core": 0.04274555682237072,
+        "rss_max_mib": 120.02734375,
+        "identity_present_all_samples": true
+      }
+    },
+    "db_query_counter_delta": {
+      "Com_select": 7,
+      "Com_insert": 7,
+      "Com_update": 21,
+      "Com_delete": 0,
+      "Questions": 342,
+      "Queries": 342
+    },
+    "db_threads_running_max": 1,
+    "performance_schema": "OFF",
+    "private_chat_delivery": {
+      "samples": 48,
+      "p50_ms": 46.236,
+      "p95_ms": 136.439,
+      "p99_ms": 150.074
+    }
+  },
+  {
+    "level": 5,
+    "first_active_sample": 1793173097295,
+    "last_active_sample": 1793173407558,
+    "active_sample_span_s": 310.263,
+    "full_active_samples": 63,
+    "successful_operations": 395,
+    "operations_per_s": 1.2731134553588408,
+    "failed_operations": 0,
+    "unexpected_disconnects": 0,
+    "session_generations": [
+      {
+        "user": 94,
+        "session": "23"
+      },
+      {
+        "user": 93,
+        "session": "22"
+      },
+      {
+        "user": 71,
+        "session": "20"
+      },
+      {
+        "user": 95,
+        "session": "21"
+      },
+      {
+        "user": 92,
+        "session": "19"
+      }
+    ],
+    "cpu_one_core_pct": 4.237218706681566,
+    "heap_max_mib": 16.339866638183594,
+    "rss_max_mib": 119.7109375,
+    "gc_count_delta": 0,
+    "gc_ms_delta": 0,
+    "java_threads_max": 77,
+    "os_threads_max": 92,
+    "pool_active_max": 0,
+    "pool_idle_max": 4,
+    "pool_waiting_max": 0,
+    "jvm_read_bytes_delta": 0,
+    "jvm_write_bytes_delta": 729088,
+    "db_lock_wait_delta": 0,
+    "db_lock_time_ms_delta": 0,
+    "db_current_waits_max": 0,
+    "slow_queries_delta": 0,
+    "host_load1_max": 0.61,
+    "host_available_mem_min_mib": 2460.28125,
+    "host_disk_delta": {
+      "read_bytes": 12288,
+      "write_bytes": 23173120,
+      "io_ms": 11046
+    },
+    "production": {
+      "313665": {
+        "cpu_pct_one_core": 0.29915405163156494,
+        "rss_max_mib": 132.71875,
+        "identity_present_all_samples": true
+      },
+      "302726": {
+        "cpu_pct_one_core": 0.039448885929437134,
+        "rss_max_mib": 120.02734375,
+        "identity_present_all_samples": true
+      }
+    },
+    "db_query_counter_delta": {
+      "Com_select": 6,
+      "Com_insert": 6,
+      "Com_update": 18,
+      "Com_delete": 0,
+      "Questions": 337,
+      "Queries": 337
+    },
+    "db_threads_running_max": 1,
+    "performance_schema": "OFF",
+    "private_chat_delivery": {
+      "samples": 80,
+      "p50_ms": 56.393,
+      "p95_ms": 381.501,
+      "p99_ms": 528.0
+    }
+  },
+  {
+    "level": 10,
+    "first_active_sample": 1793173439479,
+    "last_active_sample": 1793173749731,
+    "active_sample_span_s": 310.252,
+    "full_active_samples": 63,
+    "successful_operations": 790,
+    "operations_per_s": 2.546317187318696,
+    "failed_operations": 0,
+    "unexpected_disconnects": 0,
+    "session_generations": [
+      {
+        "user": 98,
+        "session": "25"
+      },
+      {
+        "user": 93,
+        "session": "31"
+      },
+      {
+        "user": 97,
+        "session": "29"
+      },
+      {
+        "user": 92,
+        "session": "33"
+      },
+      {
+        "user": 71,
+        "session": "27"
+      },
+      {
+        "user": 95,
+        "session": "32"
+      },
+      {
+        "user": 96,
+        "session": "30"
+      },
+      {
+        "user": 99,
+        "session": "28"
+      },
+      {
+        "user": 94,
+        "session": "26"
+      },
+      {
+        "user": 100,
+        "session": "24"
+      }
+    ],
+    "cpu_one_core_pct": 5.836473865312142,
+    "heap_max_mib": 22.33599090576172,
+    "rss_max_mib": 117.6640625,
+    "gc_count_delta": 0,
+    "gc_ms_delta": 0,
+    "java_threads_max": 85,
+    "os_threads_max": 100,
+    "pool_active_max": 0,
+    "pool_idle_max": 4,
+    "pool_waiting_max": 0,
+    "jvm_read_bytes_delta": 0,
+    "jvm_write_bytes_delta": 1691648,
+    "db_lock_wait_delta": 0,
+    "db_lock_time_ms_delta": 0,
+    "db_current_waits_max": 0,
+    "slow_queries_delta": 0,
+    "host_load1_max": 1.01,
+    "host_available_mem_min_mib": 2455.89453125,
+    "host_disk_delta": {
+      "read_bytes": 4096,
+      "write_bytes": 30116864,
+      "io_ms": 13039
+    },
+    "production": {
+      "313665": {
+        "cpu_pct_one_core": 0.2892459734148182,
+        "rss_max_mib": 132.71875,
+        "identity_present_all_samples": true
+      },
+      "302726": {
+        "cpu_pct_one_core": 0.0394426327383843,
+        "rss_max_mib": 120.02734375,
+        "identity_present_all_samples": true
+      }
+    },
+    "db_query_counter_delta": {
+      "Com_select": 8,
+      "Com_insert": 7,
+      "Com_update": 21,
+      "Com_delete": 0,
+      "Questions": 347,
+      "Queries": 347
+    },
+    "db_threads_running_max": 2,
+    "performance_schema": "OFF",
+    "private_chat_delivery": {
+      "samples": 160,
+      "p50_ms": 51.587,
+      "p95_ms": 135.935,
+      "p99_ms": 154.351
+    }
+  }
+]

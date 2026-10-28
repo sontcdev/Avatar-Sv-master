@@ -1,0 +1,23 @@
+{"epoch": 1793170380.513005, "event": "level_start", "players": 1, "pid": 28861}
+{"epoch": 1793170381.079398, "event": "stopped", "players": 1, "error": "AssertionError", "reason": "Production service changed"}
+{"epoch": 1793170411.503378, "event": "level_start", "players": 1, "pid": 29063}
+{"epoch": 1793170592.824834, "event": "stopped", "players": 1, "error": "AssertionError", "reason": "Protocol level 1 failed"}
+{"epoch": 1793170704.5637498, "event": "level_start", "players": 1, "pid": 30886}
+{"epoch": 1793171042.75184, "event": "level_pass", "players": 1, "returncode": 0}
+{"epoch": 1793171043.529, "event": "level_start", "players": 3, "pid": 32446}
+{"epoch": 1793171072.09343, "event": "stopped", "players": 3, "error": "AssertionError", "reason": "Protocol level 3 failed"}
+{"epoch": 1793171647.103464, "event": "level_start", "players": 1, "pid": 43287}
+{"epoch": 1793171983.921658, "event": "level_pass", "players": 1, "returncode": 0}
+{"epoch": 1793171984.53653, "event": "level_start", "players": 3, "pid": 45573}
+{"epoch": 1793172321.10377, "event": "level_pass", "players": 3, "returncode": 0}
+{"epoch": 1793172321.686469, "event": "level_start", "players": 5, "pid": 47761}
+{"epoch": 1793172333.120888, "event": "stopped", "players": 5, "error": "AssertionError", "reason": "Protocol level 5 failed"}
+{"epoch": 1793172405.030331, "event": "level_start", "players": 1, "pid": 48292}
+{"epoch": 1793172743.170785, "event": "level_pass", "players": 1, "returncode": 0}
+{"epoch": 1793172743.836877, "event": "level_start", "players": 3, "pid": 50240}
+{"epoch": 1793173081.605388, "event": "level_pass", "players": 3, "returncode": 0}
+{"epoch": 1793173082.220899, "event": "level_start", "players": 5, "pid": 52850}
+{"epoch": 1793173418.8038988, "event": "level_pass", "players": 5, "returncode": 0}
+{"epoch": 1793173419.3972049, "event": "level_start", "players": 10, "pid": 54843}
+{"epoch": 1793173757.351389, "event": "level_pass", "players": 10, "returncode": 0}
+{"epoch": 1793173757.3519402, "event": "all_levels_complete"}
