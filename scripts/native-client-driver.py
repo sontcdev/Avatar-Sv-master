@@ -20,18 +20,29 @@ def classify(rows, authenticated):
     text = ' '.join(r['text'] for r in rows)
     normalized = ''.join(c for c in unicodedata.normalize('NFD', text.lower())
                          if unicodedata.category(c) != 'Mn')
-    for state, terms in [('ERROR', ('not responding', 'isn’t responding', 'mat ket noi', 'disconnected', 'loi ket noi')),
+    for state, terms in [('ERROR', ('not responding', 'isn’t responding', 'loi ket noi')),
+                         ('DISCONNECTED', ('mat ket noi', 'disconnected')),
                          ('LAUNCHER', ('j2me loader',)), ('CITY', ('bao binh', 'nhom', 'thanh pho', 'chon t. pho', 'xu so than tien')),
                          ('LOGIN', ('tiep tuc', 'dang nhap', 'mat khau', 'ngoi nha hanh phuc', 'choi moi')),
                          ('WORLD_MAP', ('giai tri', 'mua sam', 'nong trai', 'sanbay', 'sinh thai')),
                          ('FRIEND_LIST', ('danh sach ban', 'danh sach',)),
                          ('CHAT', ('chat voi', 'tin nhan',)),
-                         ('FARM_LOADING', ('dang tai', 'loading',))]:
+                         ('FARM_BOOTSTRAP', ('dang tai', 'loading',))]:
         if any(term in normalized for term in terms):
             return state
     # shortcut: pixel-font OCR alone cannot prove a park or rendered farm; stop until a
     # calibrated screenshot and independent server state agree, rather than guessing.
     return 'UNKNOWN_AUTHENTICATED' if authenticated else 'UNKNOWN'
+
+
+def park_scene(source):
+    # shortcut: calibrated Avatar258 800x1280 park palette; recalibrate for other clients.
+    if source.size != (800, 1280):
+        return False
+    colors = source.convert('RGB').getcolors(source.width * source.height)
+    counts = {color: count for count, color in colors}
+    return all(counts.get(color, 0) >= minimum for color, minimum in (
+        ((93, 190, 247), 10000), ((60, 84, 77), 100), ((198, 195, 198), 10000)))
 
 
 class Driver:
@@ -58,9 +69,16 @@ class Driver:
         states = []
         for line in (self.root / 'latest-state.txt').read_text().splitlines():
             fields = line.split(',')
-            if len(fields) == 6 and int(fields[1]) == self.user:
-                states.append(list(map(int, fields)))
-        return states[-1] if states and time.time()*1000-states[-1][0] < 10000 else None
+            if len(fields) != 6 and len(fields) < 9:
+                continue
+            try:
+                state = (list(map(int, fields[:7])) + [fields[7], int(fields[8])]
+                         if len(fields) >= 9 else list(map(int, fields)))
+                if state[1] == self.user:
+                    states.append(state)
+            except ValueError:
+                continue
+        return states[-1] if states and 0 <= time.time()*1000-states[-1][0] < 10000 else None
 
     def observe(self):
         if self.adb('get-state').strip() != b'device':
@@ -71,17 +89,20 @@ class Driver:
         path.write_bytes(image)
         rows = json.loads(subprocess.check_output([str(self.root / 'ocr'), str(path)], timeout=15))
         ui = classify(rows, state is not None)
-        if ui == 'UNKNOWN_AUTHENTICATED' and state[3] == 9:
+        if ui == 'UNKNOWN_AUTHENTICATED' and state[3] == 9 and (len(state) == 6 or state[7] == 'ParkMsgHandler'):
             with Image.open(path) as source:
-                pixels = source.convert('RGB')
-                # Calibrated only for the 800x1280 map9 view, with no modal menu.
-                markers = [(400, 320, (93, 190, 247)), (400, 600, (60, 84, 77)),
-                           (380, 820, (198, 195, 198))]
-                if pixels.size == (800, 1280) and all(
-                        max(abs(a-b) for a, b in zip(pixels.getpixel((x, y)), color)) < 5
-                        for x, y, color in markers):
+                if park_scene(source):
                     ui = 'PARK'
-        result = dict(ui=ui, server=state,
+        explicit_state = 'AUTHENTICATING' if ui == 'LOGIN' else ui
+        if state is not None and len(state) == 9 and state[7] == 'FarmMsgHandler' and ui in ('UNKNOWN_AUTHENTICATED', 'FARM_BOOTSTRAP'):
+            explicit_state = 'FARM_BOOTSTRAP'
+        result = dict(ui=ui, state=explicit_state, server=state,
+                      server_evidence=(dict(epoch=state[0], user=state[1], session=state[2],
+                          map=state[3], x=state[4], y=state[5],
+                          zone=state[6] if len(state) == 9 else None,
+                          context=state[7] if len(state) == 9 else None,
+                          direct=state[8] if len(state) == 9 else None) if state else None),
+                      ui_corroboration=dict(classification=ui, park_palette=ui == 'PARK'),
                       image_sha256=hashlib.sha256(image).hexdigest(), ocr=rows)
         self.record('observe', **result)
         return result
@@ -95,11 +116,11 @@ class Driver:
         deadline = time.monotonic() + 15
         while time.monotonic() < deadline:
             after = self.observe()
-            if after['ui'] == 'PARK' and after['server'][2] == before['server'][2] and (
+            if after['ui'] == 'PARK' and after['server'] is not None and after['server'][0] > before['server'][0] and after['server'][2:4] == before['server'][2:4] and (len(before['server']) == 6 or after['server'][6:8] == before['server'][6:8]) and (
                     after['server'][4:6] != before['server'][4:6]):
                 self.record('completed', action='movement', before=before['server'], after=after['server'])
                 return after
-            if after['ui'] == 'ERROR' or after['server'] is None:
+            if after['ui'] != 'PARK' or after['server'] is None or after['server'][2:4] != before['server'][2:4]:
                 break
             time.sleep(1)
         self.record('failure', reason='movement_not_verified')
@@ -114,10 +135,10 @@ class Driver:
         deadline = time.monotonic() + 25
         while time.monotonic() < deadline:
             after = self.observe()
-            if after['ui'] == target:
+            if after['ui'] == target and (not require_auth or after['server'] is not None):
                 self.record('transition_completed', target=target)
                 return after
-            if after['ui'] == 'ERROR':
+            if after['ui'] in ('ERROR', 'DISCONNECTED'):
                 break
             time.sleep(1)
         self.record('failure', reason='transition_timeout', expected=target)
