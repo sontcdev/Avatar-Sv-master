@@ -1,6 +1,10 @@
 # Gameplay migration matrix — 2026-10-28
 
-## Milestone 3.2 — trạng thái mới nhất
+## Milestone 3.3 — trạng thái mới nhất
+
+[Chắc chắn] **PARTIAL**: native vào own farm, sửa layout inventory 60 và bắt đầu nấu recipe 3 qua 91, deadline và UI sống qua restart; sau 30 phút thật, 92 cấp Cơm×1, kho tồn tại qua restart cuối. 87 hiển thị dialog đúng dữ liệu đã biết; JOIN vẫn hiển thị level 10 legacy chưa có provenance. Crop thiếu catalog, không có native acceptance. 87 unique tests PASS (bao gồm 33 DB cô lập và asset test), Native63 OFF. [Báo cáo](MILESTONE_3_3_GAMEPLAY_REPORT.md), [cooking](COOKING_NATIVE_ACCEPTANCE.md), [crop provenance](CROP_CATALOG_PROVENANCE.md). Tất cả trạng thái các milestone dưới đây là lịch sử và được mục này cùng [status command hiện tại](FARM_GAMEPLAY_IMPLEMENTATION_STATUS.md) thay thế.
+
+## Milestone 3.2 — lịch sử
 
 [Chắc chắn] **PARTIAL**: sửa atomic planting và kiểm DB fixture, nhưng catalog cây target chưa xác minh và staging `farmitems` trống. Cooking 91/92, starfruit 87 chưa đạt native acceptance; client xác thực trên JAR cuối nhưng dừng khi chuyển khu. 86 unique PASS (53 unit + 33 DB), không có gameplay loop native hoàn chỉnh. Native63 OFF; không production/deploy. [Báo cáo](MILESTONE_3_2_GAMEPLAY_REPORT.md), [cooking](COOKING_CLIENT_E2E.md), [crop](CROP_GAMEPLAY_IMPLEMENTATION.md). Các mục milestone cũ bên dưới là lịch sử.
 

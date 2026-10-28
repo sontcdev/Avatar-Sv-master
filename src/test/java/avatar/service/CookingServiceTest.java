@@ -13,6 +13,24 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CookingServiceTest {
+    @Test public void inventoryTailMatchesNativeDecoderWithNonemptyProductsAndFertilizer() throws Exception {
+        GameplayFeedbackTest.withSession(session -> {
+            StarfruitHarvestTest.SavedUser user=install(session);
+            user.PhanBon.add(new avatar.Farm.PhanBon(5, 7));
+            user.NongSanDacBiet.add(new avatar.Farm.NongSanDacBiet(207, 2));
+            session.getFarmService().getInventory(null);
+            DataInputStream in=new Message(Cmd.INVENTORY,session.messages.get(0).getData()).reader();
+            assertEquals(0,in.readUnsignedByte());
+            assertEquals(1,in.readUnsignedByte()); assertEquals(6,in.readByte()); assertEquals(2880,in.readShort());
+            in.readInt(); in.readByte(); in.readByte();
+            assertEquals(1,in.readUnsignedByte()); assertEquals(5,in.readShort()); assertEquals(7,in.readShort());
+            assertEquals(1,in.readUnsignedByte()); assertEquals(207,in.readShort()); assertEquals(2,in.readShort());
+            in.readByte(); in.readInt(); in.readBoolean(); in.readShort(); in.readByte();
+            assertEquals(1,in.readUnsignedByte()); assertEquals(6,in.readShort()); assertEquals(2880,in.readInt());
+            assertEquals(1,in.readUnsignedByte()); assertEquals(207,in.readShort()); assertEquals(2,in.readInt());
+            assertEquals(0,in.available());
+        });
+    }
     private static final FarmCookingCatalog.Recipe RICE =
             new FarmCookingCatalog.Recipe(3,"Cơm",207,30,Map.of(6,1440));
 

@@ -429,7 +429,7 @@ public class FarmService extends Service {
 
         ds.writeByte(this.session.user.PhanBon.size());
         for (PhanBon pb : this.session.user.PhanBon) {
-            ds.writeByte(pb.getId());
+            ds.writeShort(pb.getId());
             ds.writeShort(pb.getSoluong());
         }
         /// ///////
@@ -445,8 +445,8 @@ public class FarmService extends Service {
         ds.writeByte(us.getLeverPercen());
         ds.writeByte(this.session.user.NongSan.size());
         for (NongSan ns : this.session.user.NongSan) {
-            ds.writeByte(ns.getId());
-            ds.writeShort(ns.getSoluong());
+            ds.writeShort(ns.getId());
+            ds.writeInt(ns.getSoluong());
         }
 
         /// //////

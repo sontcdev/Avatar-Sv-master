@@ -1,0 +1,32 @@
+/home/sontc/avatar2d-gameplay-stage/m33-fixed.log:GAMEPLAY_PACKET RECV epoch_ms=1793178625300 session=1 user=71 context=FarmMsgHandler cmd=60 bytes=0 hex=
+/home/sontc/avatar2d-gameplay-stage/m33-fixed.log:GAMEPLAY_PACKET QUEUED epoch_ms=1793178625304 session=1 user=71 context=FarmMsgHandler cmd=60 bytes=40 hex=0001060b4000004e200000000100d700c3010000fa000100000001000600000b400100d7000000c3
+/home/sontc/avatar2d-gameplay-stage/m33-fixed.log:STAGING_DISPATCH epoch_ms=1793178625305 session=1 user=71 cmd=60 elapsed_ns=4570050 completed=true
+/home/sontc/avatar2d-gameplay-stage/m33-fixed.log:GAMEPLAY_PACKET RECV epoch_ms=1793178625471 session=1 user=71 context=FarmMsgHandler cmd=61 bytes=4 hex=00000047
+/home/sontc/avatar2d-gameplay-stage/m33-fixed.log:GAMEPLAY_PACKET QUEUED epoch_ms=1793178625471 session=1 user=71 context=FarmMsgHandler cmd=61 bytes=38 hex=0000004706ffffffffffff000a0a000a002b002e00b400000000000001010101010100000000
+/home/sontc/avatar2d-gameplay-stage/m33-fixed.log:STAGING_DISPATCH epoch_ms=1793178625471 session=1 user=71 cmd=61 elapsed_ns=446082 completed=true
+/home/sontc/avatar2d-gameplay-stage/m33-fixed.log:FarmMsgHandler: 91
+/home/sontc/avatar2d-gameplay-stage/m33-fixed.log:GAMEPLAY_PACKET QUEUED epoch_ms=1793178645308 session=1 user=71 context=FarmMsgHandler cmd=60 bytes=40 hex=00010605a000004e200000000100d700c3010000fa0001000000010006000005a00100d7000000c3
+/home/sontc/avatar2d-gameplay-stage/m33-fixed.log:STAGING_DISPATCH epoch_ms=1793178645309 session=1 user=71 cmd=91 elapsed_ns=64244411 completed=true
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:GAMEPLAY_PACKET RECV epoch_ms=1793178696402 session=1 user=71 context=FarmMsgHandler cmd=60 bytes=0 hex=
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:GAMEPLAY_PACKET QUEUED epoch_ms=1793178696405 session=1 user=71 context=FarmMsgHandler cmd=60 bytes=40 hex=00010605a000004e200000000100d700c3010000fa0001000000010006000005a00100d7000000c3
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:STAGING_DISPATCH epoch_ms=1793178696405 session=1 user=71 cmd=60 elapsed_ns=3038899 completed=true
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:GAMEPLAY_PACKET RECV epoch_ms=1793178696515 session=1 user=71 context=FarmMsgHandler cmd=61 bytes=4 hex=00000047
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:GAMEPLAY_PACKET QUEUED epoch_ms=1793178696515 session=1 user=71 context=FarmMsgHandler cmd=61 bytes=38 hex=0000004706ffffffffffff000a0a000a002b002e00b40000000000000101010101010003001e
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:STAGING_DISPATCH epoch_ms=1793178696516 session=1 user=71 cmd=61 elapsed_ns=506634 completed=true
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:FarmMsgHandler: 87
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:STAGING_DISPATCH epoch_ms=1793178750565 session=1 user=71 cmd=87 elapsed_ns=984215 completed=true
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:GAMEPLAY_PACKET QUEUED epoch_ms=1793178750623 session=1 user=71 context=FarmMsgHandler cmd=61 bytes=38 hex=0000004706ffffffffffff000a0a000a002b002e00000000000000000101010101010003001d
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:GAMEPLAY_PACKET QUEUED epoch_ms=1793178750624 session=1 user=71 context=FarmMsgHandler cmd=60 bytes=40 hex=00010605a000004e200000000100d70177010000fa0001000000010006000005a00100d700000177
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:FarmMsgHandler: 87
+/home/sontc/avatar2d-gameplay-stage/m33-active-restart.log:STAGING_DISPATCH epoch_ms=1793178779331 session=1 user=71 cmd=87 elapsed_ns=347673 completed=true
+GAMEPLAY_PACKET QUEUED epoch_ms=1793180388537 session=2 user=71 context=FarmMsgHandler cmd=61 bytes=38 hex=0000004706ffffffffffff000a0a000a002b002e005100000000000001010101010100030001
+STAGING_DISPATCH epoch_ms=1793180388537 session=2 user=71 cmd=61 elapsed_ns=378054 completed=true
+FarmMsgHandler: 92
+GAMEPLAY_PACKET QUEUED epoch_ms=1793180499552 session=2 user=71 context=FarmMsgHandler cmd=60 bytes=50 hex=00010605a000004e200000000200d7017700cf0001010000fa0001000000010006000005a00200d70000017700cf00000001
+STAGING_DISPATCH epoch_ms=1793180499553 session=2 user=71 cmd=92 elapsed_ns=86427139 completed=true
+GAMEPLAY_PACKET RECV epoch_ms=1793180568634 session=1 user=71 context=FarmMsgHandler cmd=60 bytes=0 hex=
+GAMEPLAY_PACKET QUEUED epoch_ms=1793180568637 session=1 user=71 context=FarmMsgHandler cmd=60 bytes=50 hex=00010605a000004e200000000200d7017700cf0001010000fa0001000000010006000005a00200d70000017700cf00000001
+STAGING_DISPATCH epoch_ms=1793180568637 session=1 user=71 cmd=60 elapsed_ns=2565501 completed=true
+GAMEPLAY_PACKET RECV epoch_ms=1793180568743 session=1 user=71 context=FarmMsgHandler cmd=61 bytes=4 hex=00000047
+GAMEPLAY_PACKET QUEUED epoch_ms=1793180568743 session=1 user=71 context=FarmMsgHandler cmd=61 bytes=38 hex=0000004706ffffffffffff000a0a000a002b002e005a00000000000001010101010100000000
+STAGING_DISPATCH epoch_ms=1793180568743 session=1 user=71 cmd=61 elapsed_ns=544068 completed=true
