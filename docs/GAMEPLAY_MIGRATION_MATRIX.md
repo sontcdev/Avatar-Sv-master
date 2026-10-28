@@ -1,5 +1,9 @@
 # Gameplay migration matrix — 2026-10-28
 
+## Milestone 3.4 — latest investigation
+
+[Chắc chắn] **INCOMPLETE**: crop economy and native E2E remain blocked; client bytecode clarifies visual duration and 78/79 update layouts. No gameplay implementation or staging mutation was made. [Report](MILESTONE_3_4_GAMEPLAY_REPORT.md).
+
 ## Milestone 3.3 — trạng thái mới nhất
 
 [Chắc chắn] **PARTIAL**: native vào own farm, sửa layout inventory 60 và bắt đầu nấu recipe 3 qua 91, deadline và UI sống qua restart; sau 30 phút thật, 92 cấp Cơm×1, kho tồn tại qua restart cuối. 87 hiển thị dialog đúng dữ liệu đã biết; JOIN vẫn hiển thị level 10 legacy chưa có provenance. Crop thiếu catalog, không có native acceptance. 87 unique tests PASS (bao gồm 33 DB cô lập và asset test), Native63 OFF. [Báo cáo](MILESTONE_3_3_GAMEPLAY_REPORT.md), [cooking](COOKING_NATIVE_ACCEPTANCE.md), [crop provenance](CROP_CATALOG_PROVENANCE.md). Tất cả trạng thái các milestone dưới đây là lịch sử và được mục này cùng [status command hiện tại](FARM_GAMEPLAY_IMPLEMENTATION_STATUS.md) thay thế.

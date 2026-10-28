@@ -1,0 +1,9 @@
+# Crop catalog recovery — milestone 3.4
+
+**BLOCKED.** Target asset `res/data/farm_info.dat` from the existing target checkout has SHA-256 `d52e67ed96ca6161606d7636c9d09e23c69f3f921dafe0c6df257771caf9cbd1`. The bundled Avatar 2.5.8 JAR SHA-256 is `34bda0739fc7854f1f8b925a18f98dbdfd99424b852a7140c1f2c2042b64314e`. No catalog rows have been migrated.
+
+[Chắc chắn] `gb` reads crop `cb.e` from a signed short. `kz.a(cf,jr)` reads a signed short into `cf.d` and initializes `cf.h` to `cf.d * 60`. `go` increments `cf.h` once per second and sets the visual growth stage to 5 when it reaches `cb.e * 60 * 60`. `go.c(int)` separately calculates the initial stage using `cf.d / (cb.e * 60 / 5)`. Therefore the client interprets this field as hours for its visual growth clock and the cell age as minutes. This is client behavior, not proof of the authoritative server's harvest deadline or yield policy. For the asset rows already decoded, Cà chua ID 0 has `cb.e=4` and Lúa ID 6 has `cb.e=48`.
+
+[Chắc chắn] Client `go.a(dc)` uses crop ID below 50 to look up the same ID in the crop catalog and copy its name and `cb.h` into a display object. This does not establish the quantity credited by harvest, health effects, or land restrictions. The existing server uses a separate SQL `farmitems` table with `time`, `quantity`, and `sell`; schema names do not prove equivalence to these client fields. `plantCrop` and `harvestCrop` currently use that table and synthetic tests only. A populated table elsewhere can activate these unverified legacy rules; an empty staging table is not a global safety gate.
+
+Before migration or a real economic loop, obtain authoritative target evidence for seed-to-product mapping, yield, health, land requirements and server maturity rules, then cross-check client and persisted state. No donor data or invented rows were used.

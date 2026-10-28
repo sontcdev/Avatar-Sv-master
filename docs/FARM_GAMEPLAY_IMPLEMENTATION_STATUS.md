@@ -1,5 +1,7 @@
 # Farm gameplay implementation status — milestone 3.3
 
+Milestone 3.4 remains **INCOMPLETE**: no new playable feature or native crop acceptance. Client visual duration and incoming 78/79 decoding were clarified; see [report](MILESTONE_3_4_GAMEPLAY_REPORT.md). The command statuses below remain unchanged.
+
 Trạng thái M3.3 thay thế mọi trạng thái lịch sử bên dưới trong matrix; xem [báo cáo](MILESTONE_3_3_GAMEPLAY_REPORT.md). Trạng thái phản ánh bằng chứng hiện có, không xem unit test là native acceptance. Lệnh chưa được bật vẫn trả dialog unsupported; Native63 live sales tiếp tục OFF.
 
 | Command | Status | Căn cứ / việc còn lại |
