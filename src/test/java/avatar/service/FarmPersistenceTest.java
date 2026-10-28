@@ -31,6 +31,30 @@ public class FarmPersistenceTest {
             GameData.getInstance().loadItemfarm();
             assertEquals(120, PartManager.getInstance().findFarmitemByID(5).getQuantity());
             assertEquals(1, GameData.getInstance().getFarmItems().size());
+            User planter = new User(); planter.setId(8);
+            planter.landItems.add(new LandItem(0, -1, 0, 0, false, false, false, null));
+            planter.hatgiong.add(new HatGiong(5, 2));
+            planter.saveFarmData(8);
+            User stale = new User(); stale.setId(8); stale.loadFarmData(8);
+            planter.plantCrop(0, 5);
+            try { stale.plantCrop(0, 5); fail("Stale planting must fail"); }
+            catch (SQLException expected) { }
+            assertEquals(-1, stale.landItems.get(0).getType());
+            assertEquals(2, stale.hatgiong.get(0).getSoluong());
+            User planted = new User(); planted.setId(8); planted.loadFarmData(8);
+            assertEquals(1, planted.hatgiong.get(0).getSoluong());
+            assertEquals(5, planted.landItems.get(0).getType());
+            try { planted.harvestCrop(0); fail("Immature crop must not be harvested"); }
+            catch (IllegalArgumentException expected) { }
+            planted.landItems.get(0).setPlantedTime(LocalDateTime.now().minusMinutes(10));
+            planted.saveFarmData(8);
+            User mature = new User(); mature.setId(8); mature.loadFarmData(8);
+            assertEquals(120, mature.harvestCrop(0));
+            User harvested = new User(); harvested.setId(8); harvested.loadFarmData(8);
+            assertEquals(120, harvested.NongSan.get(0).getSoluong());
+            assertEquals(-1, harvested.landItems.get(0).getType());
+            try { harvested.harvestCrop(0); fail("Duplicate harvest must fail"); }
+            catch (IllegalArgumentException expected) { }
             try (ServerSocket listener = new ServerSocket(0, 1, InetAddress.getLoopbackAddress());
                  Socket peer = new Socket(listener.getInetAddress(), listener.getLocalPort());
                  Socket accepted = listener.accept()) {

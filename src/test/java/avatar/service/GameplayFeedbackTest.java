@@ -144,6 +144,35 @@ public class GameplayFeedbackTest {
             assertEquals(Cmd.SET_MONEY_ERROR, session.messages.get(0).getCommand());
         });
     }
+    @Test public void plantingPersistsSeedAndLandTogetherAndRollsBackFailure() throws Exception {
+        withSession(session -> {
+            StarfruitHarvestTest.SavedUser user = new StarfruitHarvestTest.SavedUser();
+            user.setId(7); user.setSession(session); session.user = user;
+            user.landItems.add(new LandItem(0, -1, 0, 0, false, false, false, null));
+            user.hatgiong.add(new HatGiong(5, 2));
+            farmItem crop = new farmItem(5, "Test crop", 5, 120, 20);
+            PartManager.getInstance().getFarmItems().add(crop);
+            try {
+                FarmMsgHandler handler = new FarmMsgHandler(session);
+                Message join = new Message(Cmd.JOIN); join.writer().writeInt(7);
+                handler.onMessage(new Message(Cmd.JOIN, join.getData()));
+                Message plant = new Message(Cmd.PLANT_SEED);
+                plant.writer().writeInt(7); plant.writer().writeByte(0); plant.writer().writeByte(5);
+                user.fail = true;
+                handler.onMessage(new Message(Cmd.PLANT_SEED, plant.getData()));
+                assertEquals(-1, user.landItems.get(0).getType());
+                assertEquals(2, user.hatgiong.get(0).getSoluong());
+                user.fail = false;
+                handler.onMessage(new Message(Cmd.PLANT_SEED, plant.getData()));
+                assertEquals(5, user.landItems.get(0).getType());
+                assertEquals(1, user.hatgiong.get(0).getSoluong());
+                assertEquals(1, user.saves);
+                handler.onMessage(new Message(Cmd.PLANT_SEED, plant.getData()));
+                assertEquals(1, user.hatgiong.get(0).getSoluong());
+                assertEquals(1, user.saves);
+            } finally { PartManager.getInstance().getFarmItems().remove(crop); }
+        });
+    }
     @Test public void cropHarvestCreditsInventoryOnceInsteadOfJustClearingTheLand() throws Exception {
         withSession(session -> {
             StarfruitHarvestTest.SavedUser user = new StarfruitHarvestTest.SavedUser();

@@ -1,6 +1,10 @@
 # Gameplay migration matrix — 2026-10-28
 
-## Milestone 2.6 — trạng thái hiện hành
+## Milestone 3.2 — trạng thái mới nhất
+
+[Chắc chắn] **PARTIAL**: sửa atomic planting và kiểm DB fixture, nhưng catalog cây target chưa xác minh và staging `farmitems` trống. Cooking 91/92, starfruit 87 chưa đạt native acceptance; client xác thực trên JAR cuối nhưng dừng khi chuyển khu. 86 unique PASS (53 unit + 33 DB), không có gameplay loop native hoàn chỉnh. Native63 OFF; không production/deploy. [Báo cáo](MILESTONE_3_2_GAMEPLAY_REPORT.md), [cooking](COOKING_CLIENT_E2E.md), [crop](CROP_GAMEPLAY_IMPLEMENTATION.md). Các mục milestone cũ bên dưới là lịch sử.
+
+## Milestone 2.6 — lịch sử
 
 [Chắc chắn] **PARTIAL;10 active CCU UNVERIFIED**. Cổng5 native thất bại tại readiness:71 không đổi tọa độ,94 đổi tọa độ nhưng camera làm driver nhận diện sai;92/93/95 có completed movement. Auth5 chỉ có100.074giây/21mẫu, không đủ300giây active; dừng,không chạy10/protocol generator. M2.5 disconnect95 vẫnUNRESOLVED. Final JAR SHA256 `12c781f70a001d6b487a1614740bfe3e1702e66fbc582c0f4783c3608f4b0331`;63uniquePASS(36unit+27DB). Có handler timing theo command,không clientRTT;DBquerytime chưa có. Native63OFF,production giữ nguyên,fixture đã restore sau writerstop. Natural-route attendance vẫnPARTIAL. [Final report](MILESTONE_2_6_FINAL_REPORT.md),[load evidence](LOAD_TEST_10_CCU_EVIDENCE.md),[performance](PERFORMANCE_LATENCY_REPORT.md).
 

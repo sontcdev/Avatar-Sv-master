@@ -1,9 +1,11 @@
-# Farm gameplay implementation status — milestone 3.1
+# Farm gameplay implementation status — milestone 3.2
 
 Trạng thái phản ánh bằng chứng hiện có, không xem unit test là native acceptance. Lệnh chưa được bật vẫn trả dialog unsupported; Native63 live sales tiếp tục OFF.
 
 | Command | Status | Căn cứ / việc còn lại |
 |---|---|---|
+| 64 PLANT_SEED | PARTIAL | Seed/land CAS cùng transaction; catalog staging trống, chưa xác minh duration/yield target hay UI. |
+| 66 TREE_HARVEST | PARTIAL | CAS/duplicate/reload có DB fixture tổng hợp; semantics target và UI chưa xác minh. |
 | 91 COOKING | VERIFIED_UNIT_DB | Đọc recipe asset target, owner/context, nguyên liệu + deadline + revision transaction; cancel `-1` chưa được hỗ trợ vì chưa biết policy hoàn nguyên. Cần native UI. |
 | 92 HARVEST_COOK | VERIFIED_UNIT_DB | Kiểm deadline, atomic credit/clear, duplicate, stale writer, rollback và reload; cần native UI. |
 | 93 NAU_NHANH | BLOCKED | Wire xác minh, giá tăng tốc chưa xác minh. |
@@ -15,7 +17,7 @@ Trạng thái phản ánh bằng chứng hiện có, không xem unit test là na
 | 79 INFO_ANIMAL | BLOCKED | Chưa xác minh đầy đủ request/response native. |
 | 84 UPDATE_STARFRUIL | BLOCKED | Thiếu điều kiện và giá upgrade được xác minh. |
 | 86 UPDATE_STARTFRUIT_BYMONEY | BLOCKED | Thiếu giá và contract economy. |
-| 87 GET_INFO_STARFRUIT | IMPLEMENTED_UNVERIFIED | Request rỗng; client bỏ qua response 87. Server gửi dialog chuẩn về state/capacity hiện có, owner-only; unit PASS, chưa xác minh UI thực. |
+| 87 GET_INFO_STARFRUIT | IMPLEMENTED_UNVERIFIED | Request rỗng; client bỏ qua response 87. Server gửi dialog chuẩn về state/capacity hiện có, owner-only; không có level, unit PASS, chưa xác minh UI thực. |
 | 90 UPDATE_LAND | BLOCKED | Thiếu quy tắc cấp đất và giá. |
 | 94 UPDATE_STORE | BLOCKED | Thiếu giá và quy tắc sức chứa. |
 | 83 FINISH_STARFRUIT | BLOCKED | Thiếu contract và policy. |

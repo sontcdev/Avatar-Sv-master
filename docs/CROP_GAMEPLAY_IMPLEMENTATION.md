@@ -1,0 +1,9 @@
+# Crop gameplay — milestone 3.2
+
+**PARTIAL.** Native bytecode `it.a(int,int,int)` ghi command 64 với `int farmId, byte cell, byte seed`; `it` harvest ghi command 66 với `int farmId, byte cell`. Server hiện phản hồi 64 cùng ba trường và 66 `byte cell, short quantity`, rồi inventory 60. Response chưa được xác nhận bằng tương tác native trong milestone này.
+
+64 yêu cầu farm được xem là farm của session, ô hợp lệ và trống, có hạt và dòng catalog `farmitems` với thời gian/sản lượng dương. `User.plantCrop` đồng bộ trên user, trừ một hạt và thay ô đất trong cùng farm snapshot, dùng transaction và revision đã có; rollback RAM khi SQLException, fail closed khi commit không rõ. Writer logout cũng dùng revision và transaction hiện hữu. 66 kiểm cùng quyền, độ chín theo `farmitems.time`, credit theo `quantity * health / 100`, xóa ô và lưu cùng snapshot; duplicate bị từ chối. Các quy tắc thu hoạch này là legacy, chưa được đối chiếu với ý nghĩa catalog target; không coi chúng là economy được phê duyệt.
+
+Test đầu tiên chứng minh bản cũ mất hạt và đổi ô khi ghi thất bại; bản sửa PASS. DB test cô lập dùng một dòng catalog **tổng hợp** (ID 5, 5 phút, 120 sản phẩm), trồng → reload → từ chối non → đổi thời gian fixture → reload → harvest → reload → duplicate, và snapshot stale bị từ chối/khôi phục. Không dùng fixture này làm bằng chứng thời gian thực hoặc sản lượng target. Test quyền farm, failure và regression visit có trong suite.
+
+Catalog `res/data/farm_info.dat` target có dữ liệu cây nhưng chưa xác minh ý nghĩa các trường thời gian/sản lượng/loại đất; bảng `farmitems` staging trống. Không có căn cứ nạp các giá trị đó hay khẳng định vòng trồng cây target hoạt động. Các giao dịch mở đất và mua hạt legacy vẫn cần xác minh economy; bản sửa không phê duyệt giá hay policy của chúng. Cần giải mã native UI/decoder và đối chiếu nguồn authoritative trước khi nghiệm thu vòng cây thực.

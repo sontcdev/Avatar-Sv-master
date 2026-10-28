@@ -347,6 +347,27 @@ public class User {
         }
     }
 
+    public synchronized void plantCrop(int index, int seedId) throws SQLException {
+        if (farmSaleUncertain) throw new SQLException("Persistence outcome requires reconnect");
+        if (index < 0 || index >= landItems.size()) throw new IllegalArgumentException("Ô đất không hợp lệ.");
+        LandItem previous = landItems.get(index);
+        if (previous.getType() >= 0) throw new IllegalArgumentException("Ô đất này đã có cây.");
+        HatGiong seed = findhatgiong(seedId);
+        farmItem crop = avatar.item.PartManager.getInstance().findFarmitemByID(seedId);
+        if (seed == null || seed.getSoluong() <= 0 || crop == null || crop.getTime() <= 0 || crop.getQuantity() <= 0)
+            throw new IllegalArgumentException("Không có hạt giống hoặc dữ liệu cây hợp lệ.");
+        landItems.set(index, new LandItem(0, seedId, 100, 0, false, false, false, LocalDateTime.now()));
+        seed.setSoluong(seed.getSoluong() - 1);
+        long previousRevision = farmRevision;
+        try { saveFarmData(id); }
+        catch (SQLException failure) {
+            if (farmRevision != previousRevision) farmSaleUncertain = true;
+            landItems.set(index, previous);
+            seed.setSoluong(seed.getSoluong() + 1);
+            throw failure;
+        }
+    }
+
     public synchronized int harvestCrop(int index) throws SQLException {
         if (index < 0 || index >= landItems.size()) throw new IllegalArgumentException("Ô đất không hợp lệ.");
         LandItem land = landItems.get(index);

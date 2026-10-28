@@ -162,6 +162,7 @@ public class FarmService extends Service {
     //trồng cây
 // Phương thức trồng cây
     public void plandSeed(Message ms) throws IOException, SQLException {
+        if (ms.reader().available() != 6) throw new IllegalArgumentException("Yêu cầu trồng cây không hợp lệ.");
         int idUser = ms.reader().readInt();
         int indexCell = ms.reader().readByte();
         int idSeed = ms.reader().readByte();
@@ -170,32 +171,7 @@ public class FarmService extends Service {
             serverDialog("Bạn chỉ có thể trồng cây ở nông trại của mình.");
             return;
         }
-        HatGiong hd = this.session.user.findhatgiong(idSeed);
-        if (hd == null || hd.getSoluong() <= 0 || indexCell < 0 || indexCell >= session.user.landItems.size()) {
-            serverDialog("Không có hạt giống hoặc ô đất không hợp lệ.");
-            return;
-        }
-        if (session.user.landItems.get(indexCell).getType() >= 0) {
-            serverDialog("Ô đất này đã có cây.");
-            return;
-        }
-        // Kiểm tra ô đất có tồn tại trong danh sách không
-        if (indexCell >= 0 && indexCell < this.session.user.landItems.size() && hd.getSoluong()>0 ) {
-            // Lấy ô đất tại vị trí indexCell và cập nhật thông tin
-            LandItem landItem = this.session.user.landItems.get(indexCell);
-            landItem.setPlantedTime(LocalDateTime.now());
-            landItem.setType(idSeed); // Đặt mã cây mới
-            hd.setSoluong(hd.getSoluong()-1);
-            landItem.setSucKhoe(100);
-            landItem.setGrowthTime(0); // Reset thời gian tăng trưởng, vì cây mới vừa trồng
-            landItem.setResourceCount(0); // Đặt số lượng tài nguyên về 0, vì cây mới chưa có tài nguyên
-            landItem.setWatered(false); // Đặt trạng thái tưới nước ban đầu
-            landItem.setFertilized(false); // Đặt trạng thái bón phân ban đầu
-            landItem.setHarvestable(false); // Đặt trạng thái chưa thể thu hoạch
-        } else {
-            // Nếu ô đất không tồn tại, có thể xử lý ngoại lệ hoặc thông báo lỗi
-            System.out.println("Ô đất không tồn tại hoặc indexCell không hợp lệ.");
-        }
+        session.user.plantCrop(indexCell, idSeed);
 
         // Tạo Message và gửi thông tin trồng cây
         ms = new Message(Cmd.PLANT_SEED);
