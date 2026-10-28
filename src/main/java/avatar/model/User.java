@@ -207,6 +207,73 @@ public class User {
     // shortcut: retain local capacity 180; add level-specific capacity only with a verified economy catalog.
     private int starfruitQuantity = 180;
     private long starfruitLastHarvestMs;
+    private int cookingRecipe;
+    private long cookingReadyMs;
+    private int cookingOutputId;
+
+    public synchronized int cookingRemainingMinutes(long now) {
+        return cookingRecipe == 0 ? 0 : (int) Math.min(Short.MAX_VALUE,
+                Math.max(0, cookingReadyMs - now + 59_999L) / 60_000L);
+    }
+
+    public synchronized void startCooking(FarmCookingCatalog.Recipe recipe, long now) throws SQLException {
+        if (farmSaleUncertain) throw new SQLException("Persistence outcome requires reconnect");
+        if (cookingRecipe != 0) throw new IllegalArgumentException("Bạn đang nấu một món ăn.");
+        if (recipe == null || now <= 0) throw new IllegalArgumentException("Công thức không hợp lệ.");
+        long ready = Math.addExact(now, Math.multiplyExact((long) recipe.durationMinutes(), 60_000L));
+        for (java.util.Map.Entry<Integer,Integer> ingredient : recipe.ingredients().entrySet()) {
+            int count = 0, quantity = 0;
+            for (NongSan stock : NongSan) if (stock.getId() == ingredient.getKey()) { count++; quantity = stock.getSoluong(); }
+            for (NongSanDacBiet stock : NongSanDacBiet) if (stock.getId() == ingredient.getKey()) { count++; quantity = stock.getSoluong(); }
+            if (count != 1 || quantity < ingredient.getValue() || quantity > Short.MAX_VALUE)
+                throw new IllegalArgumentException("Kho không đủ nguyên liệu hoặc dữ liệu kho không hợp lệ.");
+        }
+        for (java.util.Map.Entry<Integer,Integer> ingredient : recipe.ingredients().entrySet()) {
+            for (NongSan stock : NongSan) if (stock.getId() == ingredient.getKey()) stock.setSoluong(stock.getSoluong() - ingredient.getValue());
+            for (NongSanDacBiet stock : NongSanDacBiet) if (stock.getId() == ingredient.getKey()) stock.setSoluong(stock.getSoluong() - ingredient.getValue());
+        }
+        cookingRecipe = recipe.id(); cookingOutputId = recipe.outputId(); cookingReadyMs = ready;
+        long previousRevision = farmRevision;
+        try { saveFarmData(id); }
+        catch (SQLException failure) {
+            if (farmRevision != previousRevision) farmSaleUncertain = true;
+            for (java.util.Map.Entry<Integer,Integer> ingredient : recipe.ingredients().entrySet()) {
+                for (NongSan stock : NongSan) if (stock.getId() == ingredient.getKey()) stock.setSoluong(stock.getSoluong() + ingredient.getValue());
+                for (NongSanDacBiet stock : NongSanDacBiet) if (stock.getId() == ingredient.getKey()) stock.setSoluong(stock.getSoluong() + ingredient.getValue());
+            }
+            cookingRecipe = 0; cookingOutputId = 0; cookingReadyMs = 0;
+            throw failure;
+        }
+    }
+
+    public synchronized int collectCooking(long now) throws SQLException {
+        if (farmSaleUncertain) throw new SQLException("Persistence outcome requires reconnect");
+        if (cookingRecipe <= 0 || cookingOutputId <= 0 || cookingReadyMs <= 0 || now < cookingReadyMs)
+            throw new IllegalArgumentException("Món ăn chưa sẵn sàng để thu hoạch.");
+        NongSanDacBiet stock = null;
+        for (NongSanDacBiet item : NongSanDacBiet) if (item.getId() == cookingOutputId) {
+            if (stock != null) throw new IllegalArgumentException("Dữ liệu kho không hợp lệ.");
+            stock = item;
+        }
+        int oldQuantity = stock == null ? 0 : stock.getSoluong();
+        if (oldQuantity < 0 || oldQuantity >= Short.MAX_VALUE || (stock == null && NongSanDacBiet.size() >= 127))
+            throw new IllegalArgumentException("Kho đã đầy.");
+        int recipe = cookingRecipe, output = cookingOutputId; long ready = cookingReadyMs;
+        boolean added = stock == null;
+        if (added) { stock = new NongSanDacBiet(output, 0); NongSanDacBiet.add(stock); }
+        stock.setSoluong(oldQuantity + 1);
+        cookingRecipe = 0; cookingOutputId = 0; cookingReadyMs = 0;
+        long previousRevision = farmRevision;
+        try { saveFarmData(id); }
+        catch (SQLException failure) {
+            if (farmRevision != previousRevision) farmSaleUncertain = true;
+            if (added) NongSanDacBiet.remove(stock); else stock.setSoluong(oldQuantity);
+            cookingRecipe = recipe; cookingOutputId = output; cookingReadyMs = ready;
+            throw failure;
+        }
+        return output;
+    }
+
 
     public synchronized int getStarfruitQuantity() {
         if (starfruitLastHarvestMs <= 0) return Math.max(0, Math.min(180, starfruitQuantity));
@@ -872,12 +939,12 @@ public class User {
     private long saveFarmData(Connection connection, int userId) throws SQLException {
         Object[] values = farmSnapshot();
         String query = farmRevision < 0
-                ? "INSERT INTO farm_data (land_data,animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms,user_id,persistence_revision) VALUES (?,?,?,?,?,?,?,?,?,0)"
-                : "UPDATE farm_data SET land_data=?,animal_data=?,hatgiong=?,phanbon=?,nongsan=?,nongsandacbiet=?,starfruit_quantity=?,starfruit_last_harvest_ms=?,persistence_revision=persistence_revision+1 WHERE user_id=? AND persistence_revision=?";
+                ? "INSERT INTO farm_data (land_data,animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms,cooking_recipe,cooking_ready_ms,cooking_output_id,user_id,persistence_revision) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,0)"
+                : "UPDATE farm_data SET land_data=?,animal_data=?,hatgiong=?,phanbon=?,nongsan=?,nongsandacbiet=?,starfruit_quantity=?,starfruit_last_harvest_ms=?,cooking_recipe=?,cooking_ready_ms=?,cooking_output_id=?,persistence_revision=persistence_revision+1 WHERE user_id=? AND persistence_revision=?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             for (int i=0;i<values.length;i++) ps.setObject(i+1,values[i]);
-            ps.setInt(9,userId);
-            if (farmRevision >= 0) ps.setLong(10,farmRevision);
+            ps.setInt(12,userId);
+            if (farmRevision >= 0) ps.setLong(13,farmRevision);
             if (ps.executeUpdate()!=1) throw persistenceConflict("farm");
         }
         return farmRevision < 0 ? 0 : Math.addExact(farmRevision,1);
@@ -956,7 +1023,7 @@ public class User {
         }
 
 
-        return new Object[]{landData.toJSONString(),animalData.toJSONString(),hatgiongData.toJSONString(),phanbonData.toJSONString(),nongsanData.toJSONString(),nongsandacbietData.toJSONString(),starfruitQuantity,starfruitLastHarvestMs};
+        return new Object[]{landData.toJSONString(),animalData.toJSONString(),hatgiongData.toJSONString(),phanbonData.toJSONString(),nongsanData.toJSONString(),nongsandacbietData.toJSONString(),starfruitQuantity,starfruitLastHarvestMs,cookingRecipe,cookingReadyMs,cookingOutputId};
     }
 
     private void preserveRejectedSnapshot(Object[] playerValues) {
@@ -982,7 +1049,7 @@ public class User {
 
     public synchronized void loadFarmData(int userId) throws SQLException {
 
-        String query = "SELECT land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms,persistence_revision FROM `farm_data` WHERE user_id = ?";
+        String query = "SELECT land_data, animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms,cooking_recipe,cooking_ready_ms,cooking_output_id,persistence_revision FROM `farm_data` WHERE user_id = ?";
 
         try (Connection connection = DbManager.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
@@ -993,6 +1060,9 @@ public class User {
                     farmRevision = res.getLong("persistence_revision");
                     starfruitQuantity = res.getInt("starfruit_quantity");
                     starfruitLastHarvestMs = res.getLong("starfruit_last_harvest_ms");
+                    cookingRecipe = res.getInt("cooking_recipe");
+                    cookingReadyMs = res.getLong("cooking_ready_ms");
+                    cookingOutputId = res.getInt("cooking_output_id");
                     String landDataString = res.getString("land_data");
                     String animalDataString = res.getString("animal_data");
                     String hatgiongDataString = res.getString("hatgiong");

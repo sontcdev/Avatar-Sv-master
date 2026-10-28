@@ -150,3 +150,7 @@ Có13 ID thiếu handler gameplay trong target (50,315,335,425,465,525,535,540,5
 ## Chốt phạm vi chứng minh
 
 [Chắc chắn] Unit/DB test xác minh contract social/63/85, friend persistence, sale atomic/rollback/concurrency/overflow, owner snapshot online, timer/rollback/concurrency khế, attendance atomic conditional update. Các hàng PARTIAL còn cần client thật và restart; các hàng MISSING/STUB không được tính là di chuyển xong. Source P có ích để định vị nghiệp vụ nhưng chưa đủ điều kiện code reuse hay staged replacement. Xem MIGRATION_REPORT và MIGRATION_ARCHITECTURE_DECISION để biết các gate còn lại.
+
+## Milestone 3.1 update
+
+Cooking 91/92 đã triển khai và VERIFIED_UNIT_DB; 87 đã triển khai với unit test nhưng chưa có native UI acceptance. Không coi milestone hoặc playable loop đã hoàn tất: xem [trạng thái 19 lệnh](FARM_GAMEPLAY_IMPLEMENTATION_STATUS.md), [bằng chứng client](FARM_CLIENT_E2E_EVIDENCE.md) và [báo cáo](MILESTONE_3_1_GAMEPLAY_REPORT.md). M2.7 chứng minh 10 active TCP protocol clients hơn 5 phút; native 5/10 vẫn chưa được xác nhận.

@@ -27,7 +27,7 @@ public class FarmSalePersistenceTest {
             c.createStatement().execute("DROP TABLE IF EXISTS farm_data");
             c.createStatement().execute("DROP TABLE IF EXISTS players");
             c.createStatement().execute("CREATE TABLE players (user_id INT PRIMARY KEY, xu BIGINT NOT NULL CHECK (xu < 1000000), persistence_revision BIGINT NOT NULL DEFAULT 0) ENGINE=InnoDB");
-            c.createStatement().execute("CREATE TABLE farm_data (user_id INT PRIMARY KEY, land_data LONGTEXT, animal_data LONGTEXT, hatgiong LONGTEXT, phanbon LONGTEXT, nongsan LONGTEXT, nongsandacbiet LONGTEXT, starfruit_quantity INT DEFAULT 180, starfruit_last_harvest_ms BIGINT DEFAULT 0, persistence_revision BIGINT NOT NULL DEFAULT 0) ENGINE=InnoDB");
+            c.createStatement().execute("CREATE TABLE farm_data (user_id INT PRIMARY KEY, land_data LONGTEXT, animal_data LONGTEXT, hatgiong LONGTEXT, phanbon LONGTEXT, nongsan LONGTEXT, nongsandacbiet LONGTEXT, cooking_recipe INT DEFAULT 0, cooking_ready_ms BIGINT DEFAULT 0, cooking_output_id INT DEFAULT 0, starfruit_quantity INT DEFAULT 180, starfruit_last_harvest_ms BIGINT DEFAULT 0, persistence_revision BIGINT NOT NULL DEFAULT 0) ENGINE=InnoDB");
             c.createStatement().execute("INSERT INTO players (user_id,xu) VALUES (9001,100)");
         }
         catalog = Files.createTempFile("synthetic-farm-prices", ".properties");

@@ -115,7 +115,11 @@ public class FarmMsgHandler extends MessageHandler {
                     break;
                 }
                 case Cmd.COOKING:
+                    this.service.cook(mss); break;
                 case Cmd.HARVEST_COOK:
+                    this.service.collectCooking(mss); break;
+                case Cmd.GET_INFO_STARFRUIT:
+                    this.service.starfruitInfo(mss); break;
                 case Cmd.NAU_NHANH:
                 case Cmd.USING_ITEM:
                 case Cmd.PRICE_ANIMAL:
@@ -125,7 +129,6 @@ public class FarmMsgHandler extends MessageHandler {
                 case Cmd.INFO_ANIMAL:
                 case Cmd.UPDATE_STARFRUIL:
                 case Cmd.UPDATE_STARTFRUIT_BYMONEY:
-                case Cmd.GET_INFO_STARFRUIT:
                 case Cmd.FINISH_STARFRUIT:
                 case Cmd.UPDATE_LAND:
                 case Cmd.UPDATE_STORE:

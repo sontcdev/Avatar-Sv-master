@@ -21,7 +21,7 @@ public class FarmPersistenceTest {
         DbManager db = DbManager.getInstance(); db.start();
         try (Connection connection = db.getConnection()) {
             assertEquals("avatar2d_starfruit_test", connection.getCatalog());
-            connection.createStatement().execute("CREATE TABLE farm_data (user_id INT PRIMARY KEY, land_data LONGTEXT, animal_data LONGTEXT, hatgiong LONGTEXT, phanbon LONGTEXT, nongsan LONGTEXT, nongsandacbiet LONGTEXT, persistence_revision BIGINT NOT NULL DEFAULT 0)");
+            connection.createStatement().execute("CREATE TABLE farm_data (user_id INT PRIMARY KEY, land_data LONGTEXT, animal_data LONGTEXT, hatgiong LONGTEXT, phanbon LONGTEXT, nongsan LONGTEXT, nongsandacbiet LONGTEXT, cooking_recipe INT DEFAULT 0, cooking_ready_ms BIGINT DEFAULT 0, cooking_output_id INT DEFAULT 0, persistence_revision BIGINT NOT NULL DEFAULT 0)");
             // Exercise the same additive migration as deploy, including repeat application.
             for (int i = 0; i < 2; i++) connection.createStatement().execute("ALTER TABLE farm_data ADD COLUMN IF NOT EXISTS starfruit_quantity SMALLINT UNSIGNED NOT NULL DEFAULT 180");
             for (int i = 0; i < 2; i++) connection.createStatement().execute("ALTER TABLE farm_data ADD COLUMN IF NOT EXISTS starfruit_last_harvest_ms BIGINT NOT NULL DEFAULT 0");

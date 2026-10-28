@@ -1,0 +1,27 @@
+# Farm gameplay implementation status — milestone 3.1
+
+Trạng thái phản ánh bằng chứng hiện có, không xem unit test là native acceptance. Lệnh chưa được bật vẫn trả dialog unsupported; Native63 live sales tiếp tục OFF.
+
+| Command | Status | Căn cứ / việc còn lại |
+|---|---|---|
+| 91 COOKING | VERIFIED_UNIT_DB | Đọc recipe asset target, owner/context, nguyên liệu + deadline + revision transaction; cancel `-1` chưa được hỗ trợ vì chưa biết policy hoàn nguyên. Cần native UI. |
+| 92 HARVEST_COOK | VERIFIED_UNIT_DB | Kiểm deadline, atomic credit/clear, duplicate, stale writer, rollback và reload; cần native UI. |
+| 93 NAU_NHANH | BLOCKED | Wire xác minh, giá tăng tốc chưa xác minh. |
+| 65 USING_ITEM | BLOCKED | Có catalog item nhưng thiếu semantics tác động và giới hạn. |
+| 72 PRICE_ANIMAL | BLOCKED | Cần xác minh giá bán và request/response thực. |
+| 73 SELL_ANIMAL | BLOCKED | Thiếu policy giá, vòng đời animal và atomic economy. |
+| 74 HARVEST_ANIMAL | BLOCKED | Thiếu state/timer/product contract hoàn chỉnh. |
+| 78 INFO_CELL | BLOCKED | Chưa xác minh đầy đủ request/response native. |
+| 79 INFO_ANIMAL | BLOCKED | Chưa xác minh đầy đủ request/response native. |
+| 84 UPDATE_STARFRUIL | BLOCKED | Thiếu điều kiện và giá upgrade được xác minh. |
+| 86 UPDATE_STARTFRUIT_BYMONEY | BLOCKED | Thiếu giá và contract economy. |
+| 87 GET_INFO_STARFRUIT | IMPLEMENTED_UNVERIFIED | Request rỗng; client bỏ qua response 87. Server gửi dialog chuẩn về state/capacity hiện có, owner-only; unit PASS, chưa xác minh UI thực. |
+| 90 UPDATE_LAND | BLOCKED | Thiếu quy tắc cấp đất và giá. |
+| 94 UPDATE_STORE | BLOCKED | Thiếu giá và quy tắc sức chứa. |
+| 83 FINISH_STARFRUIT | BLOCKED | Thiếu contract và policy. |
+| 95 STEAL_INFO | BLOCKED | Chưa xác minh contract/quota. |
+| 96 STEAL | BLOCKED | Thiếu atomic hai farm, quota, anti-replay và history. |
+| 97 STEAL_STORE | BLOCKED | Thiếu contract và atomic hai farm. |
+| 98 LICH_SU_BI_TROM | BLOCKED | Thiếu schema và contract lịch sử được xác minh. |
+
+Catalog thật `res/data/farm_info.dat` có 30 công thức; parser đọc toàn bộ cấu trúc và tham chiếu đầu vào/đầu ra, fail closed nếu không hợp lệ. Asset không được đưa vào Git. Cooking dùng ảnh chụp output trong DB để không cấp sản phẩm khác nếu catalog thay đổi; khi thu hoạch kiểm tra lại recipe/output hiện hành. Protocol không có nonce: gói start cũ phát lại sau khi thu hoạch có thể bắt đầu một mẻ mới và trả đủ nguyên liệu; không tuyên bố chống replay hoàn hảo.

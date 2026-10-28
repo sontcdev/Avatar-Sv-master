@@ -32,6 +32,7 @@ public class FarmService extends Service {
 
     private int viewedFarmId = -1;
     private int pendingFriendFarmId = -1;
+    private FarmCookingCatalog cookingCatalog;
 
     public void resetVisit() {
         viewedFarmId = -1;
@@ -48,6 +49,51 @@ public class FarmService extends Service {
         super(cl);
     }
 
+
+    public void cook(Message request) throws IOException, SQLException {
+        if (viewedFarmId != session.user.getId()) {
+            serverDialog("Bạn chỉ có thể nấu ở nông trại của mình."); return;
+        }
+        if (request.reader().available() != 2) throw new IllegalArgumentException("Yêu cầu nấu ăn không hợp lệ.");
+        int recipeId = request.reader().readShort();
+        if (recipeId == -1) {
+            serverDialog("Chưa hỗ trợ hủy món đang nấu."); return;
+        }
+        if (cookingCatalog == null) cookingCatalog = FarmCookingCatalog.parse(Avatar.getFile("res/data/farm_info.dat"));
+        synchronized (session.user) {
+            session.user.startCooking(cookingCatalog.recipe(recipeId), System.currentTimeMillis());
+            Message result = new Message(Cmd.COOKING);
+            result.writer().writeShort(session.user.getCookingRecipe());
+            result.writer().writeShort(session.user.cookingRemainingMinutes(System.currentTimeMillis()));
+            sendMessage(result);
+            getInventory(null);
+        }
+    }
+
+    public void collectCooking(Message request) throws IOException, SQLException {
+        if (viewedFarmId != session.user.getId()) {
+            serverDialog("Bạn chỉ có thể thu hoạch món ăn ở nông trại của mình."); return;
+        }
+        if (request.reader().available() != 0) throw new IllegalArgumentException("Yêu cầu thu hoạch không hợp lệ.");
+        synchronized (session.user) {
+            if (cookingCatalog == null) cookingCatalog = FarmCookingCatalog.parse(Avatar.getFile("res/data/farm_info.dat"));
+            FarmCookingCatalog.Recipe recipe = cookingCatalog.recipe(session.user.getCookingRecipe());
+            if (recipe == null || recipe.outputId() != session.user.getCookingOutputId())
+                throw new IllegalArgumentException("Công thức đã thay đổi; vui lòng liên hệ quản trị viên.");
+            session.user.collectCooking(System.currentTimeMillis());
+            // The native decoder credits one output before the authoritative inventory refresh.
+            sendMessage(new Message(Cmd.HARVEST_COOK));
+            getInventory(null);
+        }
+    }
+
+    public void starfruitInfo(Message request) throws IOException {
+        if (viewedFarmId != session.user.getId()) {
+            serverDialog("Bạn chỉ có thể xem thông tin cây khế của mình."); return;
+        }
+        if (request.reader().available() != 0) throw new IllegalArgumentException("Yêu cầu thông tin khế không hợp lệ.");
+        serverDialog("Cây khế: " + session.user.getStarfruitQuantity() + "/180 quả. Khế hồi đầy sau 60 phút kể từ lần thu hoạch.");
+    }
 
     public void harvestStarfruit() throws IOException {
         if (viewedFarmId != session.user.getId()) {
@@ -516,8 +562,8 @@ public class FarmService extends Service {
                 ds.writeByte(1);  // Trạng thái ô đất
             }
 
-            ds.writeShort(3);//nấu ăn
-            ds.writeShort(5);
+            ds.writeShort(owner.getCookingRecipe());
+            ds.writeShort(owner.cookingRemainingMinutes(System.currentTimeMillis()));
             ds.flush();
 
             this.session.sendMessage(ms);
