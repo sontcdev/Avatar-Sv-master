@@ -299,59 +299,27 @@ public class FarmService extends Service {
 //        this.session.sendMessage(ms);
     }
 
-    public void Buy_item_farm(Message ms) throws IOException {
-        short id = ms.reader().readShort();
-        byte n = ms.reader().readByte();
-        byte type = ms.reader().readByte();
-        System.out.println("item farm id "+id+" sl "+n+" type sell"+type);
-
-        farmItem itemf = PartManager.getInstance().findFarmitemByID(id);
-        if (n <= 0 || n > 99 || (type != 0 && type != 1) || itemf == null || itemf.getSell() <= 0) {
-            serverDialog("Vật phẩm nông trại chưa có dữ liệu bán hoặc số lượng không hợp lệ.");
-            return;
-        }
-
-        long price = (long) itemf.getSell() * n;
-        if (price > Integer.MAX_VALUE) {
-            serverDialog("Giá vật phẩm vượt giới hạn giao dịch.");
-            return;
-        }
-        if(type == 1){
-            if(this.session.user.getXu()<price){
-                this.session.user.getAvatarService().serverDialog("bạn không đủ xu");
-                return;
+    public void Buy_item_farm(Message request) throws IOException, SQLException {
+        if (request.reader().available() != 4) throw new IllegalArgumentException("Yêu cầu mua không hợp lệ.");
+        int id = request.reader().readShort();
+        int quantity = request.reader().readByte();
+        int currency = request.reader().readByte();
+        synchronized (session.user) {
+            int previousXu = Math.toIntExact(session.user.getXu());
+            try { session.user.buyFarmSeed(id, quantity, currency); }
+            catch (SQLException failure) {
+                if (session.user.isFarmSaleUncertain()) session.close();
+                throw failure;
             }
-        } else{
-            if(this.session.user.getLuong()<price){
-                this.session.user.getAvatarService().serverDialog("bạn không đủ lượng");
-                return;
-            }
+            Message response = new Message(Cmd.BUY_ITEM);
+            DataOutputStream out = response.writer();
+            out.writeShort(id); out.writeByte(quantity);
+            out.writeInt(previousXu);
+            out.writeByte(currency);
+            out.writeInt(Math.toIntExact(session.user.getXu()));
+            out.writeInt(session.user.getLuong()); out.writeInt(session.user.getLuongKhoa());
+            sendMessage(response);
         }
-
-        HatGiong hdid = this.session.user.findhatgiong(id);
-        if(hdid != null){
-            if((hdid.getSoluong()+n) >99){
-                this.session.user.getAvatarService().serverDialog("số lượng nhiều rồi");
-                return;
-            }
-        }
-
-        ms = new Message(62);
-        DataOutputStream ds = ms.writer();
-        ds.writeShort(id);
-        ds.writeByte(n);
-        ds.writeInt((int) this.session.user.getXu());//.newMoney
-        if (type == 1) this.session.user.updateXu(-price);
-        else this.session.user.updateLuong(-(int) price);
-        ds.writeByte(type);
-        ds.writeInt((int) this.session.user.getXu());
-        ds.writeInt(this.session.user.getLuong());//luong
-        ds.writeInt(0);//luongK
-        ds.flush();
-        this.session.sendMessage(ms);
-
-        if (hdid == null) this.session.user.hatgiong.add(new HatGiong(id,n));
-        else hdid.setSoluong(hdid.getSoluong() + n);
     }
 
     public void Buy_ANIMAL(Message ms) throws IOException {

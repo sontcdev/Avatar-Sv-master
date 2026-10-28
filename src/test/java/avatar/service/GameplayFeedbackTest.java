@@ -267,7 +267,7 @@ public class GameplayFeedbackTest {
             assertEquals(Cmd.SET_MONEY_ERROR, session.messages.get(0).getCommand());
         });
     }
-    @Test public void farmPurchaseUsesSelectedCurrencyAndMergesSeedStock() throws Exception {
+    @Test public void farmPurchaseRejectsNegativeQuantityWithoutMutation() throws Exception {
         withSession(session -> {
             session.user.setXu(1000); session.user.setLuong(100);
             session.user.hatgiong.add(new HatGiong(5, 2));
@@ -275,10 +275,10 @@ public class GameplayFeedbackTest {
             PartManager.getInstance().getFarmItems().add(seed);
             try {
                 Message purchase = new Message(Cmd.BUY_ITEM);
-                purchase.writer().writeShort(5); purchase.writer().writeByte(2); purchase.writer().writeByte(0);
+                purchase.writer().writeShort(5); purchase.writer().writeByte(-2); purchase.writer().writeByte(0);
                 new FarmMsgHandler(session).onMessage(new Message(Cmd.BUY_ITEM, purchase.getData()));
-                assertEquals(1000, session.user.getXu()); assertEquals(60, session.user.getLuong());
-                assertEquals(1, session.user.hatgiong.size()); assertEquals(4, session.user.hatgiong.get(0).getSoluong());
+                assertEquals(1000, session.user.getXu()); assertEquals(100, session.user.getLuong());
+                assertEquals(1, session.user.hatgiong.size()); assertEquals(2, session.user.hatgiong.get(0).getSoluong());
             } finally { PartManager.getInstance().getFarmItems().remove(seed); }
         });
     }

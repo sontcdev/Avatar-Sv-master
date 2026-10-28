@@ -90,6 +90,57 @@ public class User {
         return new SQLTransactionRollbackException("Dữ liệu đã thay đổi ở phiên khác. Vui lòng đăng nhập lại.", "40001");
     }
 
+    public synchronized void buyFarmSeed(int seedId, int quantity, int currency) throws SQLException {
+        if (farmSaleUncertain) throw new SQLException("Persistence outcome requires reconnect");
+        farmItem item = avatar.item.PartManager.getInstance().findFarmitemByID(seedId);
+        if (seedId < 0 || seedId > 127 || quantity <= 0 || quantity > 99 || (currency != 0 && currency != 1)
+                || item == null || item.getSell() <= 0) throw new IllegalArgumentException("Hạt giống hoặc số lượng không hợp lệ.");
+        long cost = Math.multiplyExact((long) item.getSell(), quantity);
+        if (cost > Integer.MAX_VALUE || xu < 0 || xu > Integer.MAX_VALUE || luong < 0)
+            throw new IllegalArgumentException("Số dư hoặc giá không hợp lệ.");
+        HatGiong stock = null;
+        for (HatGiong seed : hatgiong) if (seed.getId() == seedId) {
+            if (stock != null) throw new IllegalArgumentException("Kho hạt giống bị trùng.");
+            stock = seed;
+        }
+        int oldQuantity = stock == null ? 0 : stock.getSoluong();
+        if (oldQuantity < 0 || oldQuantity > 99 - quantity || (stock == null && hatgiong.size() >= 127))
+            throw new IllegalArgumentException("Kho hạt giống đã đầy.");
+        if ((currency == 1 ? xu : luong) < cost) throw new IllegalArgumentException("Không đủ tiền mua hạt giống.");
+        long oldXu = xu; int oldLuong = luong;
+        HatGiong purchased = stock == null ? new HatGiong(seedId, 0) : stock;
+        boolean added = stock == null;
+        try (Connection connection = DbManager.getInstance().getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                try (PreparedStatement update = connection.prepareStatement("UPDATE players SET xu=?,luong=?,persistence_revision=persistence_revision+1 WHERE user_id=? AND persistence_revision=? AND xu=? AND luong=?")) {
+                    update.setLong(1, currency == 1 ? xu - cost : xu);
+                    update.setInt(2, currency == 0 ? Math.toIntExact(luong - cost) : luong);
+                    update.setInt(3, id); update.setLong(4, playerRevision); update.setLong(5, xu); update.setInt(6, luong);
+                    if (update.executeUpdate() != 1) throw persistenceConflict("seed purchase player");
+                }
+                if (added) hatgiong.add(purchased);
+                purchased.setSoluong(oldQuantity + quantity);
+                long nextFarmRevision = saveFarmData(connection, id);
+                farmSaleUncertain = true;
+                connection.commit();
+                farmRevision = nextFarmRevision; playerRevision++;
+                xu = currency == 1 ? oldXu - cost : oldXu;
+                luong = currency == 0 ? Math.toIntExact(oldLuong - cost) : oldLuong;
+                farmSaleUncertain = false;
+            } catch (SQLException | RuntimeException failure) {
+                if (added) hatgiong.remove(purchased); else purchased.setSoluong(oldQuantity);
+                try { connection.rollback(); }
+                catch (SQLException rollback) { farmSaleUncertain = true; failure.addSuppressed(rollback); }
+                throw failure;
+            }
+        } catch (SQLException failure) {
+            // A close failure after commit must also prevent stale logout writes.
+            if (purchased.getSoluong() != oldQuantity) farmSaleUncertain = true;
+            throw failure;
+        }
+    }
+
     public synchronized int[] sellFarmProduct(int product, int price) throws SQLException {
         // shortcut: native 63 has no nonce; replay after a later harvest needs a verified protocol extension.
         if (farmSaleUncertain) throw new SQLException("Sale outcome requires reconnect");
