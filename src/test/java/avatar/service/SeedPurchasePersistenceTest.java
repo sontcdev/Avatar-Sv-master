@@ -16,7 +16,12 @@ public class SeedPurchasePersistenceTest {
         Field field = DbManager.class.getDeclaredField("hikariDataSource"); field.setAccessible(true);
         DbManager db = DbManager.getInstance(); assertNull(field.get(db));
         HikariDataSource pool = new HikariDataSource();
-        pool.setJdbcUrl("jdbc:h2:mem:seed_purchase;MODE=MySQL"); field.set(db, pool);
+        String url = System.getProperty("avatar.test.seedPurchaseUrl");
+        if (url != null && !url.matches("jdbc:mysql://127\\.0\\.0\\.1:[0-9]+/avatar2d_seed_purchase_test"))
+            throw new IllegalArgumentException("Only an isolated loopback seed test database is allowed");
+        pool.setJdbcUrl(url == null ? "jdbc:h2:mem:seed_purchase;MODE=MySQL" : url);
+        if (url != null) pool.setUsername("root");
+        field.set(db, pool);
         farmItem seed = new farmItem(5, "fixture", 5, 10, 20);
         PartManager.getInstance().getFarmItems().add(seed);
         try {
@@ -28,7 +33,19 @@ public class SeedPurchasePersistenceTest {
             User user = new User(); user.setId(7); user.setXu(100); user.setLuong(50);
             Field revision = User.class.getDeclaredField("playerRevision"); revision.setAccessible(true); revision.setLong(user, 0);
             user.saveFarmData(7);
-            user.buyFarmSeed(5, 2, 1);
+            GameplayFeedbackTest.withSession(session -> {
+                session.user = user; user.setSession(session);
+                avatar.network.Message request = new avatar.network.Message(avatar.constants.Cmd.BUY_ITEM);
+                request.writer().writeShort(5); request.writer().writeByte(2); request.writer().writeByte(1);
+                new avatar.message.FarmMsgHandler(session).onMessage(new avatar.network.Message(avatar.constants.Cmd.BUY_ITEM, request.getData()));
+                avatar.network.Message response = session.messages.stream()
+                        .filter(m -> m.getCommand() == avatar.constants.Cmd.BUY_ITEM).findFirst().orElseThrow(AssertionError::new);
+                var decoded = new avatar.network.Message(response.getCommand(), response.getData()).reader();
+                assertEquals(5, decoded.readShort()); assertEquals(2, decoded.readByte());
+                assertEquals(100, decoded.readInt()); assertEquals(1, decoded.readByte());
+                assertEquals(60, decoded.readInt()); assertEquals(50, decoded.readInt());
+                assertEquals(0, decoded.readInt()); assertEquals(0, decoded.available());
+            });
             assertEquals(60, user.getXu()); assertEquals(50, user.getLuong());
             user.buyFarmSeed(5, 1, 0);
             assertEquals(30, user.getLuong()); assertEquals(3, user.hatgiong.get(0).getSoluong());
