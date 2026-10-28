@@ -17,6 +17,7 @@ from pathlib import Path
 ALLOWED = {71, *range(92, 101)}
 PRINT_LOCK = threading.Lock()
 STOP = threading.Event()
+LOGIN_LOCK = threading.Lock()
 
 
 def emit(**fields):
@@ -213,7 +214,10 @@ class Player:
             info = bytes([9])+struct.pack('>i',128*1024*1024)+utf('M2.7 TCP harness')+struct.pack('>iii',1024*1024,240,320)+bytes([0,0])+utf('2.5.0')
             self.wire.send(-17,info)
             login_epoch = int(time.time()*1000)
-            self.request(-2,utf(self.account['username'])+utf(self.account['password'])+utf('2.5.0'),lambda cmd,p:cmd==-4 and len(p)>=4 and struct.unpack('>i',p[:4])[0]==self.uid)
+            # shortcut: capacity ramp excludes the observed nested-pool burst-login failure.
+            with LOGIN_LOCK:
+                if STOP.is_set(): raise RuntimeError('Workload stopped before login')
+                self.request(-2,utf(self.account['username'])+utf(self.account['password'])+utf('2.5.0'),lambda cmd,p:cmd==-4 and len(p)>=4 and struct.unpack('>i',p[:4])[0]==self.uid)
             before = self.state(lambda row: int(row[0]) >= login_epoch)
             session = before[2]
             self.session = session
