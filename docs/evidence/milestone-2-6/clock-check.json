@@ -1,0 +1,6 @@
+{
+  "local_before": 1793167671.432361,
+  "remote": 1793167673.693665,
+  "local_after": 1793167673.6720252,
+  "note": "post-run check only; no historical NTP bound or TCP packet capture"
+}

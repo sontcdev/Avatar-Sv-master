@@ -1,8 +1,14 @@
 # Gameplay migration matrix — 2026-10-28
 
+## Milestone 2.6 — trạng thái hiện hành
+
+[Chắc chắn] **PARTIAL;10 active CCU UNVERIFIED**. Cổng5 native thất bại tại readiness:71 không đổi tọa độ,94 đổi tọa độ nhưng camera làm driver nhận diện sai;92/93/95 có completed movement. Auth5 chỉ có100.074giây/21mẫu, không đủ300giây active; dừng,không chạy10/protocol generator. M2.5 disconnect95 vẫnUNRESOLVED. Final JAR SHA256 `12c781f70a001d6b487a1614740bfe3e1702e66fbc582c0f4783c3608f4b0331`;63uniquePASS(36unit+27DB). Có handler timing theo command,không clientRTT;DBquerytime chưa có. Native63OFF,production giữ nguyên,fixture đã restore sau writerstop. Natural-route attendance vẫnPARTIAL. [Final report](MILESTONE_2_6_FINAL_REPORT.md),[load evidence](LOAD_TEST_10_CCU_EVIDENCE.md),[performance](PERFORMANCE_LATENCY_REPORT.md).
+
+## Milestone 2.5 — lịch sử
+
 [Chắc chắn] **Milestone2.5 tổng thể PARTIAL**: functional acceptance đạt trong phạm vi fixture đã nêu; tải1/3 có cửa sổ native hoạt động trên5phút, mức5 giữ auth322giây nhưng vòng UI chưa đủ tin cậy, mức10 dừng khi auth10→8. **Chưa xác nhận10 active CCU**; p95 chưa đo được. Không dùng số kết nối để thay acceptance hoạt động.
 
-## Milestone 2.5 — trạng thái hiện hành
+## Milestone 2.5 — functional evidence
 
 [Chắc chắn] Final JAR SHA256 `2c93ede1f6082474b7ab3a419301e9542e5969e745cf961322f71d3e8019f2bf`, **62 unique PASS (35unit+27DB)**. Fresh native UI friend invite/accept/list/restart/delete/restart-empty, chat mới hai chiều sau reconnect, friend farm online/offline/restart/reverse và authenticated server-dispatch unauthorized85 rejection đã được chứng minh cùng artifact. Native UI giấu harvest của owner khi là visitor; không gọi injection là UI85. Fresh93 nhận593×1/+20scores, duplicate UI bị từ chối, reward giữ qua restart; NPC interaction dùng staging spawn fixture, chỉ route map25 là tự nhiên. Complete natural-route claim vẫn chưa chứng minh.
 

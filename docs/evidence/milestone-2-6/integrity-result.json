@@ -1,0 +1,129 @@
+{
+  "gameplay_columns": "identical",
+  "rows": 20,
+  "revisions": [
+    {
+      "scope": "player",
+      "user": 71,
+      "revision_before": 38,
+      "revision_after": 39
+    },
+    {
+      "scope": "player",
+      "user": 92,
+      "revision_before": 30,
+      "revision_after": 31
+    },
+    {
+      "scope": "player",
+      "user": 93,
+      "revision_before": 7,
+      "revision_after": 8
+    },
+    {
+      "scope": "player",
+      "user": 94,
+      "revision_before": 1,
+      "revision_after": 2
+    },
+    {
+      "scope": "player",
+      "user": 95,
+      "revision_before": 1,
+      "revision_after": 2
+    },
+    {
+      "scope": "player",
+      "user": 96,
+      "revision_before": 1,
+      "revision_after": 1
+    },
+    {
+      "scope": "player",
+      "user": 97,
+      "revision_before": 1,
+      "revision_after": 1
+    },
+    {
+      "scope": "player",
+      "user": 98,
+      "revision_before": 1,
+      "revision_after": 1
+    },
+    {
+      "scope": "player",
+      "user": 99,
+      "revision_before": 1,
+      "revision_after": 1
+    },
+    {
+      "scope": "player",
+      "user": 100,
+      "revision_before": 1,
+      "revision_after": 1
+    },
+    {
+      "scope": "farm",
+      "user": 71,
+      "revision_before": 37,
+      "revision_after": 38
+    },
+    {
+      "scope": "farm",
+      "user": 92,
+      "revision_before": 29,
+      "revision_after": 30
+    },
+    {
+      "scope": "farm",
+      "user": 93,
+      "revision_before": 5,
+      "revision_after": 6
+    },
+    {
+      "scope": "farm",
+      "user": 94,
+      "revision_before": 0,
+      "revision_after": 1
+    },
+    {
+      "scope": "farm",
+      "user": 95,
+      "revision_before": 0,
+      "revision_after": 1
+    },
+    {
+      "scope": "farm",
+      "user": 96,
+      "revision_before": 0,
+      "revision_after": 0
+    },
+    {
+      "scope": "farm",
+      "user": 97,
+      "revision_before": 0,
+      "revision_after": 0
+    },
+    {
+      "scope": "farm",
+      "user": 98,
+      "revision_before": 0,
+      "revision_after": 0
+    },
+    {
+      "scope": "farm",
+      "user": 99,
+      "revision_before": 0,
+      "revision_after": 0
+    },
+    {
+      "scope": "farm",
+      "user": 100,
+      "revision_before": 0,
+      "revision_after": 0
+    }
+  ],
+  "friendships_before": 0,
+  "owned_fixture_rows": 4,
+  "friendships_after_restore": 0
+}

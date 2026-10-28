@@ -1,5 +1,12 @@
 # Milestone 2.5 — controlled native-client load, 2026-10-28
 
+## Milestone 2.6 update
+
+**Five-native readiness FAIL; ten native NOT ATTEMPTED;10 active CCU UNVERIFIED.** Five real accounts authenticated for21samples/span100.074seconds; only92/93/95 movement completed.71 submitted unchanged coordinates;94 moved but camera broke image classification. Stopped before farm/chat readiness or a300second active window; no ramp10. M2.5 user95 cause remainsUNRESOLVED. Handler timing is now available from103dispatches,with command/sample counts; it is not client RTT or capacity evidence. [M2.6 result](MILESTONE_2_6_FINAL_REPORT.md),[per-client evidence](LOAD_TEST_10_CCU_EVIDENCE.md),[latency/limits](PERFORMANCE_LATENCY_REPORT.md).
+
+## Milestone 2.5 historical run
+
+
 Final artifact SHA256 `2c93ede1f6082474b7ab3a419301e9542e5969e745cf961322f71d3e8019f2bf`. Isolated Ubuntu staging, Core2Duo T6670 /2cores/~3.8GiB/HDD; Java17 Xmx128MiB, Hikari max4/min1, MariaDB13317 buffer32MiB/max12. Native63 live sales OFF. No production deployment.
 
 Ten read-only Android emulator clones on a separate Mac run actual Avatar2.5.8 through J2ME Loader. Accounts71,92,93,94–100; no bot or idle TCP socket is counted. External WiFi is disabled; ADB reverse/SSH connects only staging19129. Full-mesh45 friendship rows are an explicit load fixture created **after** real UI delete/restart-empty acceptance. They do not prove fresh invitation acceptance.

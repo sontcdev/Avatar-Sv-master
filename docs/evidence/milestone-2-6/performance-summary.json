@@ -1,0 +1,23 @@
+{
+  "five_auth_sample_start": 1793167226792,
+  "five_auth_sample_end": 1793167326866,
+  "five_auth_sample_span_seconds": 100.074,
+  "five_auth_samples": 21,
+  "cpu_one_core_pct": 5.086236185222935,
+  "heap_max_mib": 20.006248474121094,
+  "rss_max_mib": 103.3984375,
+  "gc_count_delta": 0,
+  "gc_ms_delta": 0,
+  "java_threads_max": 75,
+  "os_threads_max": 89,
+  "pool_active_max": 0,
+  "pool_idle_max": 2,
+  "pool_wait_max": 0,
+  "read_delta": 0,
+  "write_delta": 135168,
+  "dispatch_total": 103,
+  "failed_dispatch": [],
+  "auth_dispatch_total": 66,
+  "five_auth_dispatch_count": 34,
+  "five_auth_dispatch_per_second": 0.33974858604632574
+}

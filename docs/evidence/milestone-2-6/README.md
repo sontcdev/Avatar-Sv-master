@@ -1,0 +1,21 @@
+# M2.6 evidence index
+
+Result: **five-native readiness failed; ten not attempted; active10 UNVERIFIED**. Source implementation HEAD `f51b2a9ba4e5c1cda272b0f47744768fe9a8daf1`; initial HEAD `36d80e2f1c5c8105a34e3d9a33be9378884e1e8f`. Final artifact SHA256 `12c781f70a001d6b487a1614740bfe3e1702e66fbc582c0f4783c3608f4b0331`.
+
+- `driver-*.jsonl`: Mac epoch, explicit serial/account, OCR, screenshot hash, ADB outcomes and bounded completion checks. Count only `event=completed`, not observe/login/transition/intent. Raw per-client final screenshots are retained.
+- `session-telemetry.txt`: authenticated packet trace plus payload-free timing/disconnect telemetry, filtered from private server log. No authentication payloads exported. `completed` in STAGING_DISPATCH means handler returned, not gameplay success.
+- `server-state.csv`: headerless `epoch_ms,user_id,session_id,map_id,x,y`; five-second samples, real logged-in connected socket users only. Missing rows at auth0; see JVM authenticated column for complete sample count.
+- `authenticated-active-counts.csv`: five-second authenticated count and completed movements in last30seconds; late-login state observer can lag one sample. No interpolation to fill a broken workload.
+- `handler-latency.csv`: nearest-rank percentiles, milliseconds, per command/auth-after-handler; all103dispatches including preparation. `performance-summary.json` uses only sampled auth5 plateau for JVM/workload metrics.
+- `jvm-metrics.csv`, `server-host-metrics.jsonl`: five-second observers. `client-host-metrics.jsonl`: Mac poll approximately3seconds plus command time; exports only owned emulator process resources, not unrelated command lines. RSS may double-count shared pages. Swap baseline was already high.
+- `android-events.txt`: process lifecycle, force-stop and exception/ANR-pattern excerpts from owned emulator logcat. Full raw logcat remains private under `/tmp/avatar2d-m26`; do not infer absence outside collected log buffers.
+- `integrity-{before,after}.tsv`: friendship schema followed by10players then10farms. Players columns `user_id,xu,luong,xeng,chests,scores,attendance_date,persistence_revision`; farms follow existing `SELECT *` schema: `user_id,land_data,animal_data,hatgiong,phanbon,nongsan,nongsandacbiet,starfruit_quantity,starfruit_last_harvest_ms,persistence_revision`. JSON result excludes only revisions from gameplay equality check.
+- `test-manifest.tsv`: unique executed tests; default skipped DB tests excluded and replaced by isolated executed results.36unit+27DB=63PASS.
+- `worker-lifecycle-repro.*`: deliberately non-detached20second child terminated before completed. Demonstrates harness risk, not definitive M2.5 worker postmortem.
+- `clock-check.json`: post-run only; no historical millisecond synchronization bound. No TCP capture. `cleanup.txt`: final read-only production identity and owned teardown.
+
+`M26Metrics.java`/`server-observer.py` are external staging-only collectors, not packaged in the JAR. Guard existing staging path/endpoints/config before running; do not reuse production PIDs without verifying their current identity. Baseline JVM `-Xms32m -Xmx128m -XX:ActiveProcessorCount=2`, `-Davatar.protocol.trace=true -Davatar.staging.telemetry=true`, classpath `.:m26-final.jar`, main `M26Metrics`. Sales property absent. Private config, backups, RMS/passwords and full logs stay outside Git.
+
+OCR helper uses installed macOS SDK: `swiftc ocr.swift -o /tmp/avatar2d-m26/ocr`. Native driver requires existing Pillow and a private observer cache `latest-state.txt` containing latest server-state lines plus latest JVM metrics row. This cache is a diagnostic side channel, not a game request/keepalive. Run `python3 scripts/native-client-driver.py --self-check` from repository root for bounded failure assertions. The driver is **not accepted for unattended load**: farm rendered/owner/chat verification and camera-independent park recognition remain incomplete.
+
+M2.5 historical sources are retained under `../milestone-2-5/load/`; timestamps and intent logs from that milestone are not upgraded into M2.6 acceptance. Backups remain in private staging paths `m26-before.sql`, `m26-after-writers-stop.sql`, `m26-test-db-before.sql`. Four owned friendship rows were removed only after JVM359161 stopped.

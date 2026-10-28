@@ -1,0 +1,11 @@
+{
+  "hardware_logical_cpus": 10,
+  "hardware_ram_gib": 32,
+  "samples": 199,
+  "five_emulator_samples": 83,
+  "five_emulator_sum_cpu_pct_max": 983.9,
+  "five_emulator_sum_rss_mib_max": 12096.875,
+  "swap_used_initial_mib": 5011.88,
+  "swap_used_max_mib": 5011.88,
+  "swap_used_final_mib": 4907.88
+}

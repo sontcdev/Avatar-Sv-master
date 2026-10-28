@@ -1,0 +1,60 @@
+[
+  {
+    "serial": "emulator-5556",
+    "user": 71,
+    "adb_commands": 212,
+    "adb_nonzero": 0,
+    "completed_movement": 0,
+    "failures": [
+      {
+        "epoch": 1793166989.644576,
+        "reason": "transition_timeout"
+      },
+      {
+        "epoch": 1793167024.7492108,
+        "reason": "transition_timeout"
+      },
+      {
+        "epoch": 1793167310.43656,
+        "reason": "movement_not_verified"
+      }
+    ]
+  },
+  {
+    "serial": "emulator-5558",
+    "user": 92,
+    "adb_commands": 56,
+    "adb_nonzero": 0,
+    "completed_movement": 1,
+    "failures": []
+  },
+  {
+    "serial": "emulator-5560",
+    "user": 93,
+    "adb_commands": 56,
+    "adb_nonzero": 0,
+    "completed_movement": 1,
+    "failures": []
+  },
+  {
+    "serial": "emulator-5562",
+    "user": 94,
+    "adb_commands": 60,
+    "adb_nonzero": 0,
+    "completed_movement": 0,
+    "failures": [
+      {
+        "epoch": 1793167311.4997718,
+        "reason": "movement_not_verified"
+      }
+    ]
+  },
+  {
+    "serial": "emulator-5564",
+    "user": 95,
+    "adb_commands": 52,
+    "adb_nonzero": 0,
+    "completed_movement": 1,
+    "failures": []
+  }
+]

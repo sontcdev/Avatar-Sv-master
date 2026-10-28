@@ -1,0 +1,33 @@
+# 5556-logcat-private.txt
+         1793166862.275   652   680 I ActivityManager: Start proc 4323:ru.playsoftware.j2meloader/u0a244 for next-top-activity {ru.playsoftware.j2meloader/ru.playsoftware.j2meloader.MainActivity}
+         1793166885.048   652   680 I ActivityManager: Start proc 4448:ru.playsoftware.j2meloader:midlet/u0a244 for next-top-activity {ru.playsoftware.j2meloader/javax.microedition.shell.MicroActivity}
+         1793166944.224   652  1966 I ActivityManager: Force stopping ru.playsoftware.j2meloader appid=10244 user=0: from pid 4519
+         1793166944.225   652  1966 I ActivityManager: Killing 4323:ru.playsoftware.j2meloader/u0a244 (adj 700): stop ru.playsoftware.j2meloader due to from pid 4519
+         1793166944.227   652  1966 I ActivityManager: Killing 4448:ru.playsoftware.j2meloader:midlet/u0a244 (adj 0): stop ru.playsoftware.j2meloader due to from pid 4519
+         1793166944.516   652   680 I ActivityManager: Start proc 4540:ru.playsoftware.j2meloader/u0a244 for next-top-activity {ru.playsoftware.j2meloader/ru.playsoftware.j2meloader.MainActivity}
+         1793166958.603   652   680 I ActivityManager: Start proc 4606:ru.playsoftware.j2meloader:midlet/u0a244 for next-top-activity {ru.playsoftware.j2meloader/javax.microedition.shell.MicroActivity}
+         1793167039.073   652   979 I ActivityManager: Force stopping ru.playsoftware.j2meloader appid=10244 user=0: from pid 4866
+         1793167039.074   652   979 I ActivityManager: Killing 4540:ru.playsoftware.j2meloader/u0a244 (adj 900): stop ru.playsoftware.j2meloader due to from pid 4866
+         1793167039.084   652   979 I ActivityManager: Killing 4606:ru.playsoftware.j2meloader:midlet/u0a244 (adj 0): stop ru.playsoftware.j2meloader due to from pid 4866
+         1793167040.071   652   680 I ActivityManager: Start proc 4886:ru.playsoftware.j2meloader/u0a244 for next-top-activity {ru.playsoftware.j2meloader/ru.playsoftware.j2meloader.MainActivity}
+         1793167046.832   652   982 I ActivityManager: Force stopping ru.playsoftware.j2meloader appid=10244 user=0: from pid 4924
+         1793167046.835   652   982 I ActivityManager: Killing 4886:ru.playsoftware.j2meloader/u0a244 (adj 0): stop ru.playsoftware.j2meloader due to from pid 4924
+         1793167047.942   652   680 I ActivityManager: Start proc 4960:ru.playsoftware.j2meloader/u0a244 for next-top-activity {ru.playsoftware.j2meloader/ru.playsoftware.j2meloader.MainActivity}
+         1793167063.727   652   680 I ActivityManager: Start proc 5015:ru.playsoftware.j2meloader:midlet/u0a244 for next-top-activity {ru.playsoftware.j2meloader/javax.microedition.shell.MicroActivity}
+         1793167092.581   652   666 I ActivityManager: Force stopping ru.playsoftware.j2meloader appid=10244 user=0: from pid 5079
+         1793167092.582   652   666 I ActivityManager: Killing 4960:ru.playsoftware.j2meloader/u0a244 (adj 700): stop ru.playsoftware.j2meloader due to from pid 5079
+         1793167092.586   652   666 I ActivityManager: Killing 5015:ru.playsoftware.j2meloader:midlet/u0a244 (adj 0): stop ru.playsoftware.j2meloader due to from pid 5079
+         1793167094.058   652   680 I ActivityManager: Start proc 5137:ru.playsoftware.j2meloader/u0a244 for next-top-activity {ru.playsoftware.j2meloader/ru.playsoftware.j2meloader.MainActivity}
+         1793167100.234   652   680 I ActivityManager: Start proc 5187:ru.playsoftware.j2meloader:midlet/u0a244 for next-top-activity {ru.playsoftware.j2meloader/javax.microedition.shell.MicroActivity}
+# 5558-logcat-private.txt
+         1793166989.286   646   674 I ActivityManager: Start proc 4313:ru.playsoftware.j2meloader/u0a244 for next-top-activity {ru.playsoftware.j2meloader/ru.playsoftware.j2meloader.MainActivity}
+         1793167160.438   646   674 I ActivityManager: Start proc 4551:ru.playsoftware.j2meloader:midlet/u0a244 for next-top-activity {ru.playsoftware.j2meloader/javax.microedition.shell.MicroActivity}
+# 5560-logcat-private.txt
+         1793167069.679   650   679 I ActivityManager: Start proc 4512:ru.playsoftware.j2meloader/u0a244 for next-top-activity {ru.playsoftware.j2meloader/ru.playsoftware.j2meloader.MainActivity}
+         1793167183.668   650   679 I ActivityManager: Start proc 4868:ru.playsoftware.j2meloader:midlet/u0a244 for next-top-activity {ru.playsoftware.j2meloader/javax.microedition.shell.MicroActivity}
+# 5562-logcat-private.txt
+         1793167081.871   651   683 I ActivityManager: Start proc 4288:ru.playsoftware.j2meloader/u0a244 for next-top-activity {ru.playsoftware.j2meloader/ru.playsoftware.j2meloader.MainActivity}
+         1793167195.975   651   683 I ActivityManager: Start proc 4595:ru.playsoftware.j2meloader:midlet/u0a244 for next-top-activity {ru.playsoftware.j2meloader/javax.microedition.shell.MicroActivity}
+# 5564-logcat-private.txt
+         1793167137.621   648   676 I ActivityManager: Start proc 4383:ru.playsoftware.j2meloader/u0a244 for next-top-activity {ru.playsoftware.j2meloader/ru.playsoftware.j2meloader.MainActivity}
+         1793167211.799   648   676 I ActivityManager: Start proc 4545:ru.playsoftware.j2meloader:midlet/u0a244 for next-top-activity {ru.playsoftware.j2meloader/javax.microedition.shell.MicroActivity}
