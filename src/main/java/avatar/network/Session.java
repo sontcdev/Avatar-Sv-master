@@ -62,6 +62,7 @@ public class Session implements ISession {
     private IMessageHandler messageHandler;
     public volatile boolean connected;
     private boolean closed;
+    public final CustomEnglishQuiz customEnglishQuiz = new CustomEnglishQuiz(this);
     public boolean login;
     private byte curR;
     private byte curW;
@@ -221,6 +222,7 @@ public class Session implements ISession {
     public synchronized void close() {
         if (closed) return;
         closed = true;
+        customEnglishQuiz.clear();
         this.parkService.cancelFishing();
         try {
             if (sc == null) {
@@ -1253,6 +1255,7 @@ public void NhanThuongEventXuBoss() throws IOException {
 
     public void doCommunicate(Message ms) throws IOException {
         int userId = ms.reader().readInt();
+        if (userId != CustomEnglishQuiz.NPC_ID) customEnglishQuiz.clear();
         if (userId >= 2000000000) {
             NpcHandler.handlerCommunicate(userId, this.user);
             return;

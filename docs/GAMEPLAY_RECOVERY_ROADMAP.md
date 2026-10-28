@@ -1,5 +1,7 @@
 # Gameplay recovery roadmap — milestone 3.6
 
+Milestone 3.8: **CUSTOM_NPC_645_QUIZ — IMPLEMENTED, native UNVERIFIED, default OFF**; **ORIGINAL_NPC_645_RECOVERY — BLOCKED**, not restored. See [custom quiz report](MILESTONE_3_8_CUSTOM_NPC_REPORT.md).
+
 Milestone 3.7: **PARTIAL/BLOCKED**. Four upgrades lack authoritative progression/economy; all 13 target NPCs lack verified original workflows. No gameplay was added. Native BUY_ANIMAL 71 and NPC UI acceptance remain unverified because the separate emulator stayed offline. See [report](MILESTONE_3_7_GAMEPLAY_REPORT.md), [upgrade blockers](FARM_UPGRADE_BLOCKERS.md), and [NPC evidence and proposed custom option](NPC_RECOVERY_IMPLEMENTATION.md).
 
 

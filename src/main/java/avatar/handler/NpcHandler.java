@@ -91,6 +91,10 @@ public class NpcHandler {
     }
 
     public static void handlerCommunicate(int npcId, User us) throws IOException {
+        if (npcId == CustomEnglishQuiz.NPC_ID && CustomEnglishQuiz.enabled()) {
+            if (us.getSession() != null) us.getSession().customEnglishQuiz.open();
+            return;
+        }
         Zone z = us.getZone();
         if (z != null) {
             User u = z.find(npcId);

@@ -1711,6 +1711,7 @@ public class User {
             this.x = x;
             this.y = y;
             this.direct = direct;
+            if (session != null) session.customEnglishQuiz.clearIfOutsideContext();
             getMapService().move(this);
             System.out.println("move " + x + ", y = " + y);
         } catch (IOException e) {

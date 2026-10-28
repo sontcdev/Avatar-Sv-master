@@ -44,6 +44,11 @@ public class GlobalHandler {
         byte menuId = ms.reader().readByte();
         byte select = ms.reader().readByte();
         System.out.println("userId = " + userId + ", menuId = " + menuId + ", select = " + select);
+        if (userId == CustomEnglishQuiz.NPC_ID && CustomEnglishQuiz.enabled()) {
+            if (us.getSession() != null) us.getSession().customEnglishQuiz.select(menuId, select);
+            return;
+        }
+        if (us.getSession() != null) us.getSession().customEnglishQuiz.clear();
         if (menuOptionHandle(userId, menuId, select)) return;
         if (userId >= 2000000000 || userId == 1) {
             //NpcHandler.handlerAction(this.us, userId, menuId, select);

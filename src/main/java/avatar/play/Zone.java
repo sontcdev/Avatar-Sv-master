@@ -80,6 +80,7 @@ public class Zone {
     }
 
     public void leave(User user) {
+        if (user.getSession() != null) user.getSession().customEnglishQuiz.clear();
         remove(user);
         getService().leavePark(user.getId());
         user.setZone(null);

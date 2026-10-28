@@ -827,6 +827,7 @@ public class AvatarService extends Service {
     }
 
     public void openMenuOption(int userID, int menuID, String... menus) {
+        if (userID != avatar.handler.CustomEnglishQuiz.NPC_ID) session.customEnglishQuiz.clear();
         session.user.setMenus(null);
         try {
             Message ms = new Message(Cmd.MENU_OPTION);
@@ -845,6 +846,7 @@ public class AvatarService extends Service {
     }
 
     public void openMenuOption(int userID, int menuID, List<Menu> menus) {
+        if (userID != avatar.handler.CustomEnglishQuiz.NPC_ID) session.customEnglishQuiz.clear();
         session.user.setMenus(menus);
         try {
             Message ms = new Message(Cmd.MENU_OPTION);
@@ -863,6 +865,7 @@ public class AvatarService extends Service {
     }
 
     public void openUIMenu(int userID, int menuID, List<Menu> menus, String npcName, String npcChat) {
+        if (userID != avatar.handler.CustomEnglishQuiz.NPC_ID) session.customEnglishQuiz.clear();
         session.user.setMenus(menus);
         try {
             Message ms = new Message(Cmd.MENU_OPTION);
