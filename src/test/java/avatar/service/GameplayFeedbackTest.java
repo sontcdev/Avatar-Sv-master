@@ -173,6 +173,28 @@ public class GameplayFeedbackTest {
             } finally { PartManager.getInstance().getFarmItems().remove(crop); }
         });
     }
+    @Test public void cropHarvestRejectsTrailingBytesWithoutChangingFarm() throws Exception {
+        withSession(session -> {
+            StarfruitHarvestTest.SavedUser user = new StarfruitHarvestTest.SavedUser();
+            user.setId(7); user.setSession(session); session.user = user;
+            user.landItems.add(new LandItem(0, 5, 100, 0, false, false, true, LocalDateTime.now().minusMinutes(10)));
+            farmItem crop = new farmItem(5, "Test crop", 5, 120, 20);
+            PartManager.getInstance().getFarmItems().add(crop);
+            try {
+                FarmMsgHandler handler = new FarmMsgHandler(session);
+                Message join = new Message(Cmd.JOIN); join.writer().writeInt(7);
+                handler.onMessage(new Message(Cmd.JOIN, join.getData()));
+                Message request = new Message(Cmd.TREE_HARVEST);
+                request.writer().writeInt(7); request.writer().writeByte(0); request.writer().writeByte(42);
+                session.messages.clear();
+                handler.onMessage(new Message(Cmd.TREE_HARVEST, request.getData()));
+                assertEquals(5, user.landItems.get(0).getType());
+                assertTrue(user.NongSan.isEmpty());
+                assertEquals(0, user.saves);
+                assertTrue(session.messages.stream().anyMatch(m -> m.getCommand() == Cmd.SET_MONEY_ERROR));
+            } finally { PartManager.getInstance().getFarmItems().remove(crop); }
+        });
+    }
     @Test public void cropHarvestCreditsInventoryOnceInsteadOfJustClearingTheLand() throws Exception {
         withSession(session -> {
             StarfruitHarvestTest.SavedUser user = new StarfruitHarvestTest.SavedUser();

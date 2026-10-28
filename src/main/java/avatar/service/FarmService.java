@@ -186,6 +186,7 @@ public class FarmService extends Service {
 
     //thu hoạch
     public void treeHarvest(Message ms) throws IOException {
+        if (ms.reader().available() != 5) throw new IllegalArgumentException("Yêu cầu thu hoạch không hợp lệ.");
         int farmId = ms.reader().readInt();
         int index = ms.reader().readUnsignedByte();
         if (farmId != session.user.getId() || viewedFarmId != farmId) {
