@@ -113,6 +113,7 @@ public class ServerManager {
     protected static void init() {
         ServerManager.start = false;
         DbManager.getInstance().start();
+        avatar.service.CustomCropPolicy.runtime();
         loadConfigFile();
         loadSettings();
         GameData.getInstance().load();

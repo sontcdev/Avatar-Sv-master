@@ -30,7 +30,6 @@ Avatar {
     }
 
     public static void start() {
-        avatar.service.CustomCropPolicy.runtime();
 
         //getPart insert sql item
 
