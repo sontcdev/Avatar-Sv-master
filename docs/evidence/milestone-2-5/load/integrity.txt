@@ -1,0 +1,5 @@
+PASS exact player currencies/chests/scores/attendance_date comparison before load -> graceful final logout, all10 synthetic IDs.
+PASS existing farm gameplay fields unchanged for71/92/93;94/95 first persisted at logout, no pre-existing-row equivalence claimed.
+Native farm-context55 count=0; server log EOF/Exception/ERROR count=0 across full observer run.
+45 owned load friendship fixtures removed after JVM stopped; total remaining friendships0.
+Private pre/post backups retained with0600 permissions on isolated host.

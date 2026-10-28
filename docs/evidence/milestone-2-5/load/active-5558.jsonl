@@ -1,0 +1,44 @@
+{"epoch": 1793163109.006285, "level": 3, "port": "5558", "event": "start"}
+{"epoch": 1793163154.1596642, "level": 3, "cycle": 1, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163204.584651, "level": 3, "cycle": 2, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163254.900544, "level": 3, "cycle": 3, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163475.4548538, "level": 3, "port": "5558", "event": "start"}
+{"epoch": 1793163512.292215, "level": 3, "cycle": 1, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163539.473809, "level": 3, "cycle": 2, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163566.827627, "level": 3, "cycle": 3, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163594.031687, "level": 3, "cycle": 4, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163621.318246, "level": 3, "cycle": 5, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163647.458674, "level": 3, "cycle": 6, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163673.929146, "level": 3, "cycle": 7, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163700.086943, "level": 3, "cycle": 8, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163726.5118358, "level": 3, "cycle": 9, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163752.301122, "level": 3, "cycle": 10, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163778.9229681, "level": 3, "cycle": 11, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163804.899269, "level": 3, "cycle": 12, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163831.258945, "level": 3, "cycle": 13, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163856.605809, "level": 3, "cycle": 14, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163882.1722088, "level": 3, "cycle": 15, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163907.336134, "level": 3, "cycle": 16, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163932.739876, "level": 3, "cycle": 17, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163958.975878, "level": 3, "cycle": 18, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793163985.2589939, "level": 3, "cycle": 19, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164011.774566, "level": 3, "cycle": 20, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164038.702427, "level": 3, "cycle": 21, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164066.711342, "level": 3, "cycle": 22, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164093.4155278, "level": 3, "cycle": 23, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164095.480204, "level": 5, "port": "5558", "event": "start"}
+{"epoch": 1793164132.528537, "level": 5, "cycle": 1, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164159.841324, "level": 5, "cycle": 2, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164188.417407, "level": 5, "cycle": 3, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164215.403692, "level": 5, "cycle": 4, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164242.695272, "level": 5, "cycle": 5, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164270.915358, "level": 5, "cycle": 6, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164298.404282, "level": 5, "cycle": 7, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164326.221493, "level": 5, "cycle": 8, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164353.9014652, "level": 5, "cycle": 9, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164381.030868, "level": 5, "cycle": 10, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164408.775146, "level": 5, "cycle": 11, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164436.445977, "level": 5, "cycle": 12, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164463.450624, "level": 5, "cycle": 13, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164491.394069, "level": 5, "cycle": 14, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}
+{"epoch": 1793164518.664094, "level": 5, "cycle": 15, "port": "5558", "event": "native UI movement, friend-farm visit/bootstrap, exit, park"}

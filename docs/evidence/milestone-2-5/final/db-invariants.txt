@@ -1,0 +1,5 @@
+Source: private m25-before.sql (03:46 UTC, before final-artifact UI runs); comparison after functional E2E, before load gameplay.
+PASS farm_data user=71: all nine gameplay columns identical pre-E2E backup -> post-E2E; revision 24 -> 35
+PASS farm_data user=92: all nine gameplay columns identical pre-E2E backup -> post-E2E; revision 16 -> 26
+PASS players user=71: xu/luong/xeng/chests/scores/attendance_date identical pre-E2E backup -> post-E2E: {"xu": "20000", "luong": "0", "xeng": "0", "chests": "[{\"expired\":-1,\"quantity\":1,\"id\":593}]", "scores": "20", "attendance_date": "2026-10-28"}
+PASS players user=92: xu/luong/xeng/chests/scores/attendance_date identical pre-E2E backup -> post-E2E: {"xu": "20000", "luong": "0", "xeng": "0", "chests": "[{\"expired\":-1,\"quantity\":1,\"id\":593}]", "scores": "20", "attendance_date": "2026-10-28"}

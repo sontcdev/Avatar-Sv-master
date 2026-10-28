@@ -1,6 +1,14 @@
 # Gameplay migration matrix — 2026-10-28
 
-## Milestone 2.4 — trạng thái hiện hành
+[Chắc chắn] **Milestone2.5 tổng thể PARTIAL**: functional acceptance đạt trong phạm vi fixture đã nêu; tải1/3 có cửa sổ native hoạt động trên5phút, mức5 giữ auth322giây nhưng vòng UI chưa đủ tin cậy, mức10 dừng khi auth10→8. **Chưa xác nhận10 active CCU**; p95 chưa đo được. Không dùng số kết nối để thay acceptance hoạt động.
+
+## Milestone 2.5 — trạng thái hiện hành
+
+[Chắc chắn] Final JAR SHA256 `2c93ede1f6082474b7ab3a419301e9542e5969e745cf961322f71d3e8019f2bf`, **62 unique PASS (35unit+27DB)**. Fresh native UI friend invite/accept/list/restart/delete/restart-empty, chat mới hai chiều sau reconnect, friend farm online/offline/restart/reverse và authenticated server-dispatch unauthorized85 rejection đã được chứng minh cùng artifact. Native UI giấu harvest của owner khi là visitor; không gọi injection là UI85. Fresh93 nhận593×1/+20scores, duplicate UI bị từ chối, reward giữ qua restart; NPC interaction dùng staging spawn fixture, chỉ route map25 là tự nhiên. Complete natural-route claim vẫn chưa chứng minh.
+
+Fix hẹp M2.5 đổi park weather2→-1 theo native decoder, tránh empty-vector timer AIOOBE làm treo điều khiển. Không đổi kiến trúc, writer, schema, social parser hay Native63. Live sales **OFF**, không production cutover. [Final report](MILESTONE_2_5_FINAL_REPORT.md), [client E2E](MILESTONE_2_5_CLIENT_E2E.md), [load report](LOAD_TEST_REPORT.md). Backlog rộng bên dưới vẫn giữ nguyên; M2.5 không đồng nghĩa migration hoàn thành.
+
+## Milestone 2.4 — lịch sử
 
 [Chắc chắn] Final JAR SHA256 `ce491e4c159591c540128f1cea38e9e3b373766fa257949f6265cf5b0159f268`, **61 unique tests PASS (34unit+27DB)**. Sửa park55 lọt vào farm decoder gây EOF và thứ tự native bootstrap/JOIN. Client thật cùng artifact render own71,71→92online/offline,92→71; attendance fixture92 nhận thưởng/repeat/restart rejection; chat hai chiều; delete friends và empty sau restart. Đường world-map “Nông trại” tới map25 được chứng minh bằng packet1900 và ảnh,không phải “Khu ngoại ô” map17.
 

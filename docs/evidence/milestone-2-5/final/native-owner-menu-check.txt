@@ -1,0 +1,31 @@
+    Code:
+       0: getstatic     #416                // Field main/GameMidlet.i:Lhn;
+       3: getfield      #315                // Field gx.w:I
+       6: getstatic     #278                // Field b:I
+       9: if_icmpeq     13
+      12: return
+      13: new           #111                // class java/util/Vector
+      16: dup
+      17: invokespecial #629                // Method java/util/Vector."<init>":()V
+      20: astore_1
+      21: getstatic     #236                // Field J:Lkc;
+      24: getfield      #351                // Field kc.d:S
+      27: ifle          79
+      30: aload_1
+      31: new           #31                 // class ao
+      34: dup
+      35: aload_0
+      36: new           #108                // class java/lang/StringBuffer
+      39: dup
+      40: getstatic     #410                // Field kf.eO:Ljava/lang/String;
+      43: invokestatic  #621                // Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+      46: invokespecial #622                // Method java/lang/StringBuffer."<init>":(Ljava/lang/String;)V
+      49: ldc           #4                  // String (
+      51: invokevirtual #625                // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      54: getstatic     #236                // Field J:Lkc;
+      57: getfield      #351                // Field kc.d:S
+      60: invokevirtual #623                // Method java/lang/StringBuffer.append:(I)Ljava/lang/StringBuffer;
+      63: ldc           #5                  // String )
+      65: invokevirtual #625                // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      68: invokevirtual #626                // Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+      71: bipush        12

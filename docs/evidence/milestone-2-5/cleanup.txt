@@ -1,0 +1,22 @@
+2026-10-28: Milestone2.5 safe teardown; no production cutover.
+Final load JVM353561 TERM; shutdown log: Shutdown Server!, CLOSE, eight live accounts disconnected/saved, End socket.
+Exact post-logout player currency/inventory/attendance comparison: PASS all10. Existing farms71/92/93 gameplay comparison PASS.
+45 owned full-mesh load friendship rows removed only after JVM stopped; total remaining0.
+Private m25-before.sql and m25-after-load.sql retained mode0600; isolated datadir and disposable test catalogs retained.
+Observer stop marker m25-load-stop.request; observer353884 exited. Isolated MariaDB348124 shutdown through verified stage/mysql.sock.
+Owned 5556 PID46669: absent after verified TERM.
+Owned 5558 PID46670: absent after verified TERM.
+Owned forward PID46671: absent after verified TERM.
+Owned 5560 PID75702: absent after verified TERM.
+Owned 5562 PID75703: absent after verified TERM.
+Owned 5564 PID76750: absent after verified TERM.
+Owned 5566 PID76751: absent after verified TERM.
+Owned 5568 PID76822: absent after verified TERM.
+Owned 5570 PID76823: absent after verified TERM.
+Owned 5572 PID76824: absent after verified TERM.
+Owned 5574 PID76825: absent after verified TERM.
+Remote final process check: only production302726 mariadbd and313665 java remain from tested PID set;348124/353561/353884 absent.
+Remote ss listener check: no13317/19129 listener. Production systemd avatar2d ActiveState=active,NRestarts=0.
+Production credentials/permissions/database/schema/service not mutated. Original dirty worktree and unrelated emulator data preserved.
+Native63 live sales OFF throughout: no avatar.farm.sales.catalog property; final JAR unchanged SHA256 2c93ede1f6082474b7ab3a419301e9542e5969e745cf961322f71d3e8019f2bf.
+No broad migration completion claimed;10-active load acceptance remains unfulfilled.

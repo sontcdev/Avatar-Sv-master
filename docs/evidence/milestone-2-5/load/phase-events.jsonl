@@ -1,0 +1,7 @@
+{"event": "start", "level": 1, "accounts": [71], "epoch": 1793162554.19018, "note": "native Avatar2.5.8; no other authenticated clients"}
+{"event": "end", "level": 1, "epoch": 1793162924.5413911, "active_seconds": 317.8053529262543, "cycles": 12, "note": "worker start ~1793162589.3; end ~1793162907.1; auth1 throughout"}
+{"event": "start", "level": 3, "epoch": 1793163508.986773, "accounts": [71, 92, 93], "note": "retry after invalid idle/automation preparation; native active workers running; direct text avoids IME"}
+{"event": "end", "level": 3, "epoch": 1793163920, "qualified_start": 1793163508.986773, "active_seconds": 411.013227, "note": "auth3 stable; player invariants cmp equal; line9711 before ramp"}
+{"event": "start", "level": 5, "epoch": 1793164072.7314901, "accounts": [71, 92, 93, 94, 95]}
+{"event": "end", "level": 5, "qualified_start": 1793164072.7314901, "epoch": 1793164394.9965591, "note": "five authenticated; player invariants equal; account93 UI manually repaired, failed menu cycles excluded from farm assertions"}
+{"event": "abort", "level": 10, "epoch": 1793164538.2309701, "reason": "ramp reached10 authenticated, then8; client input/preparation instability; no qualified five-minute10-active window"}

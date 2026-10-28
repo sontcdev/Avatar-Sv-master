@@ -69,7 +69,8 @@ public class Zone {
             us.setY(y);
             if (!(us instanceof Npc)) {
                 getService().addPlayer(us);
-                us.getService().weather((byte) 2);
+                // Native 2.5.8 weather 2 creates an empty timed effect and breaks its update loop.
+                us.getService().weather((byte) -1);
                 us.getAvatarService().enter(this);
             }
             add(us);

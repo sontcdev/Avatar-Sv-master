@@ -8,6 +8,26 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class FarmVisitTest {
+    @Test public void parkEntryClearsWeatherInsteadOfCreatingEmptyTimedEffect() throws Exception {
+        GameplayFeedbackTest.withSession(session -> {
+            avatar.model.User player = new avatar.model.User() {
+                @Override public AvatarService getAvatarService() {
+                    return new AvatarService(session) {
+                        @Override public void enter(avatar.play.Zone zone) { }
+                    };
+                }
+            };
+            player.setId(71); player.setUsername("stage71"); player.setSession(session); session.user = player;
+            avatar.play.Zone zone = new avatar.play.Zone(null, 0);
+            zone.enter(player, (short) 90, (short) 65);
+            Message weather = session.messages.stream().filter(m -> m.getCommand() == Cmd.WEATHER)
+                    .findFirst().orElseThrow(AssertionError::new);
+            // Native ir.a(-1) clears effects; ir.a(2) creates ba(2,0), which removes from an empty vector.
+            assertArrayEquals(new byte[]{-1}, weather.getData());
+            assertTrue(zone.getPlayers().contains(player));
+        });
+    }
+
     @Test public void farmContextLeavesParkBeforeOverlappingResourceCommands() throws Exception {
         GameplayFeedbackTest.withSession(visitor -> {
             avatar.play.Zone park = new avatar.play.Zone(null, 0);

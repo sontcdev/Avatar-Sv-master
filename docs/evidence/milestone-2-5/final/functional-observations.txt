@@ -1,0 +1,7 @@
+Final artifact 2c93ede1f6082474b7ab3a419301e9542e5969e745cf961322f71d3e8019f2bf.
+SQL observed during final-artifact UI acceptance: gameplay_friendships (user_low=71,user_high=92,created_at=2026-10-28 04:13:58 UTC).
+After UI deletion and direct-JAR restart PID352392: SELECT COUNT(*) FROM gameplay_friendships = 0. Native clients71/92 both displayed empty lists (screenshots).
+This observation precedes the explicitly separate 45-row friendship fixture created for load testing. The older diagnostic-old-artifact-db.tsv is NOT proof of final-artifact acceptance.
+Fresh93 before claim: scores=0,chests=[],attendance_date=NULL. After real NPC menu claim and duplicate rejection: scores=20,chests=[{expired:-1,quantity:1,id:593}],attendance_date=2026-10-28.
+After fixture restoration, graceful stop351182 and direct-JAR start352392, SQL verified the same93 reward/date. No attendance reset71/92, no clock changes.
+Authenticated visitor71 command85 was dispatched through FarmMsgHandler on its real live session after UI visit92. This was server-dispatch injection, not a native UI85 or an on-wire request. Guard rejected it with the client-visible Vietnamese dialog. Exact DB snapshots, including revisions, were identical. Subsequent logout/restart preserved visitor stock195(item215), owner92 stock[]/tree180 and both currencies.
