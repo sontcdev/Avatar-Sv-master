@@ -148,7 +148,7 @@ public class Session implements ISession {
             case -9: case -6: case -21: case -19: case -18: case -81: case -61: case -59: case -1:
             case 50: case 51: case 54: case 55: case 56: case 60: case 61: case 63: case 85:
                 if (data == null) data = new byte[0];
-                System.out.println("GAMEPLAY_PACKET " + direction + " user=" + user.getId() + " context=" + messageHandler.getClass().getSimpleName()
+                System.out.println("GAMEPLAY_PACKET " + direction + " epoch_ms=" + System.currentTimeMillis() + " session=" + id + " user=" + user.getId() + " context=" + messageHandler.getClass().getSimpleName()
                         + " cmd=" + message.getCommand() + " bytes=" + data.length + " hex="
                         + java.util.HexFormat.of().formatHex(data,0,Math.min(data.length,512)));
                 break;
@@ -2190,10 +2190,19 @@ public void NhanThuongEventXuBoss() throws IOException {
                     if (message == null) {
                         break;
                     }
-                    messageHandler.onMessage(message);
+                    long started = SessionTelemetry.enabled() ? System.nanoTime() : 0;
+                    boolean completed = false;
+                    try {
+                        messageHandler.onMessage(message);
+                        completed = true;
+                    } finally {
+                        if (started != 0) SessionTelemetry.dispatch(id, user == null ? -1 : user.getId(),
+                                message.getCommand(), started, completed);
+                    }
                     message.cleanup();
                 }
             } catch (Exception ex) {
+                SessionTelemetry.failure(id, user == null ? -1 : user.getId(), "handler", ex);
             }
             if (isConnected()) {
                 if (messageHandler != null) {
@@ -2232,6 +2241,7 @@ public void NhanThuongEventXuBoss() throws IOException {
                 traceGameplay("RECV",msg,data);
                 return msg;
             } catch (Exception e) {
+                SessionTelemetry.failure(id, user == null ? -1 : user.getId(), "read", e);
             }
             return null;
         }
