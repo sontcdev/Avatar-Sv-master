@@ -515,7 +515,10 @@ public class AvatarService extends Service {
 
     public void enter(Zone z) {
         try {
-            List<User> players = z.getPlayers();
+            List<User> players;
+            synchronized (z.getPlayers()) {
+                players = new ArrayList<>(z.getPlayers());
+            }
             Map map = z.getMap();
             Message ms = new Message(Cmd.AVATAR_JOIN_PARK);
             DataOutputStream ds = ms.writer();

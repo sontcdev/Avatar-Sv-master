@@ -15,6 +15,49 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class GameplayFeedbackTest {
+    @Test public void parkJoinKeepsConsistentSnapshotWhenMembershipChangesDuringSerialization() throws Exception {
+        withSession(session -> {
+            avatar.play.Map map = new avatar.play.Map(9, 0, 1) {
+                @Override public void load() { }
+            };
+            avatar.play.Zone zone = map.getZones().get(0);
+            User late = new User() {
+                @Override public void sendMessage(Message message) { }
+            };
+            late.setId(9); late.setUsername("late");
+            User existing = new User() {
+                private boolean added;
+                @Override public String getUsername() {
+                    if (!added) { added = true; zone.add(late); }
+                    return "existing";
+                }
+                @Override public void sendMessage(Message message) { }
+            };
+            existing.setId(8); existing.setDirect((byte) 3);
+            zone.add(existing);
+            session.user.setUsername("joining");
+            zone.enter(session.user, (short) 270, (short) 156);
+            assertSame(zone, session.user.getZone());
+            assertTrue("Joining user must remain in broadcast membership", zone.getPlayers().contains(session.user));
+            assertEquals(3, zone.getPlayers().size());
+            Message wire = session.messages.stream().filter(m -> m.getCommand() == Cmd.AVATAR_JOIN_PARK)
+                    .findFirst().orElseThrow(() -> new AssertionError("No join response"));
+            java.io.DataInputStream decoded = new Message(wire.getCommand(), wire.getData()).reader();
+            assertEquals(9, decoded.readByte()); assertEquals(0, decoded.readByte());
+            assertEquals(-1, decoded.readShort()); assertEquals(-1, decoded.readShort());
+            assertEquals(1, decoded.readUnsignedByte());
+            assertEquals(8, decoded.readInt()); assertEquals("existing", decoded.readUTF());
+            assertEquals(0, decoded.readUnsignedByte());
+            assertEquals(0, decoded.readShort()); assertEquals(0, decoded.readShort());
+            assertEquals(existing.getRole(), decoded.readByte());
+            assertEquals(3, decoded.readByte()); assertEquals(101, decoded.readUnsignedByte());
+            assertEquals(-1, decoded.readShort());
+            assertEquals(0, decoded.readByte()); assertEquals(0, decoded.readByte());
+            assertEquals(0, decoded.readShort()); assertEquals(0, decoded.readByte());
+            assertEquals(0, decoded.readByte()); assertEquals(-1, decoded.readShort());
+            assertEquals(0, decoded.available());
+        });
+    }
     @Test public void initialCityHandlerWorksBeforeJoiningAnyZone() throws Exception {
         withSession(session -> {
             assertNull(session.user.getZone());
