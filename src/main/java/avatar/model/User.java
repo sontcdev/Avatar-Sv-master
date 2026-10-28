@@ -440,7 +440,7 @@ public class User {
         if (quantity <= 0) throw new IllegalArgumentException("Cây không có nông sản để thu hoạch.");
         NongSan stock = NongSan.stream().filter(item -> item.getId() == crop.getId()).findFirst().orElse(null);
         int oldStock = stock == null ? 0 : stock.getSoluong();
-        if (oldStock < 0 || quantity > Short.MAX_VALUE - oldStock)
+        if (oldStock < 0 || quantity > Short.MAX_VALUE - oldStock || (stock == null && NongSan.size() >= 127))
             throw new IllegalArgumentException("Kho nông sản đã đầy.");
         boolean added = stock == null;
         if (added) { stock = new NongSan(crop.getId(), 0); NongSan.add(stock); }
@@ -461,7 +461,7 @@ public class User {
         if (quantity <= 0) return 0;
         NongSanDacBiet stock = NongSanDacBiet.stream().filter(item -> item.getId() == 215).findFirst().orElse(null);
         int oldStock = stock == null ? 0 : stock.getSoluong();
-        if (oldStock < 0 || quantity > Short.MAX_VALUE - oldStock) {
+        if (oldStock < 0 || quantity > Short.MAX_VALUE - oldStock || (stock == null && NongSanDacBiet.size() >= 127)) {
             throw new SQLException("Starfruit inventory exceeds client capacity");
         }
         boolean added = stock == null;
