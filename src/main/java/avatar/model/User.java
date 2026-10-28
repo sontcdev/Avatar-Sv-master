@@ -347,6 +347,66 @@ public class User {
         }
     }
 
+    public synchronized void plantCustomCrop(int index, int seedId, CustomCropPolicy policy, long now) throws SQLException {
+        if (farmSaleUncertain) throw new SQLException("Persistence outcome requires reconnect");
+        if (index < 0 || index >= landItems.size() || index > 127 || now <= 0 || seedId != policy.seedId)
+            throw new IllegalArgumentException("Hạt giống hoặc ô đất không hợp lệ.");
+        LandItem previous = landItems.get(index);
+        if (previous.getType() >= 0 || previous.getCustomPolicy() != null)
+            throw new IllegalArgumentException("Ô đất này đã có cây.");
+        HatGiong seed = null;
+        for (HatGiong item : hatgiong) if (item.getId() == seedId) {
+            if (seed != null) throw new IllegalArgumentException("Dữ liệu kho không hợp lệ.");
+            seed = item;
+        }
+        if (seed == null || seed.getSoluong() <= 0 || seed.getSoluong() > Short.MAX_VALUE)
+            throw new IllegalArgumentException("Không đủ hạt giống.");
+        long deadline = Math.addExact(now, CustomCropPolicy.GROWTH_MS);
+        LandItem crop = new LandItem(0, CustomCropPolicy.CROP_ID, CustomCropPolicy.HEALTH, 0, false, false, false,
+                LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(now), java.time.ZoneOffset.UTC));
+        crop.setCustomCrop(CustomCropPolicy.VERSION, UUID.randomUUID().toString(), now, deadline, policy.productId);
+        seed.setSoluong(seed.getSoluong() - 1);
+        landItems.set(index, crop);
+        long previousRevision = farmRevision;
+        try { saveFarmData(id); }
+        catch (SQLException | RuntimeException failure) {
+            if (farmRevision != previousRevision) farmSaleUncertain = true;
+            landItems.set(index, previous); seed.setSoluong(seed.getSoluong() + 1);
+            throw failure;
+        }
+    }
+
+    public synchronized int harvestCustomCrop(int index, CustomCropPolicy policy, long now) throws SQLException {
+        if (farmSaleUncertain) throw new SQLException("Persistence outcome requires reconnect");
+        if (index < 0 || index >= landItems.size() || index > 127) throw new IllegalArgumentException("Ô đất không hợp lệ.");
+        LandItem crop = landItems.get(index);
+        if (!CustomCropPolicy.VERSION.equals(crop.getCustomPolicy()) || crop.getType() != CustomCropPolicy.CROP_ID
+                || crop.getCustomInstance() == null || crop.getCustomProductId() != policy.productId || crop.getCustomPlantedMs() <= 0
+                || crop.getCustomDeadlineMs() - crop.getCustomPlantedMs() != CustomCropPolicy.GROWTH_MS
+                || now < crop.getCustomDeadlineMs()) throw new IllegalArgumentException("Cây chưa sẵn sàng thu hoạch.");
+        NongSan stock = null;
+        for (NongSan item : NongSan) if (item.getId() == policy.productId) {
+            if (stock != null) throw new IllegalArgumentException("Dữ liệu kho không hợp lệ.");
+            stock = item;
+        }
+        int old = stock == null ? 0 : stock.getSoluong();
+        if (old < 0 || old > Short.MAX_VALUE - CustomCropPolicy.HARVEST_QUANTITY || (stock == null && NongSan.size() >= 127))
+            throw new IllegalArgumentException("Kho nông sản đã đầy.");
+        boolean added = stock == null;
+        if (added) { stock = new NongSan(policy.productId, 0); NongSan.add(stock); }
+        stock.setSoluong(old + CustomCropPolicy.HARVEST_QUANTITY);
+        landItems.set(index, new LandItem(0, -1, 0, 0, false, false, false, null));
+        long previousRevision = farmRevision;
+        try { saveFarmData(id); }
+        catch (SQLException | RuntimeException failure) {
+            if (farmRevision != previousRevision) farmSaleUncertain = true;
+            landItems.set(index, crop);
+            if (added) NongSan.remove(stock); else stock.setSoluong(old);
+            throw failure;
+        }
+        return CustomCropPolicy.HARVEST_QUANTITY;
+    }
+
     public synchronized void plantCrop(int index, int seedId) throws SQLException {
         if (farmSaleUncertain) throw new SQLException("Persistence outcome requires reconnect");
         if (index < 0 || index >= landItems.size()) throw new IllegalArgumentException("Ô đất không hợp lệ.");
@@ -371,6 +431,7 @@ public class User {
     public synchronized int harvestCrop(int index) throws SQLException {
         if (index < 0 || index >= landItems.size()) throw new IllegalArgumentException("Ô đất không hợp lệ.");
         LandItem land = landItems.get(index);
+        if (land.getCustomPolicy() != null) throw new IllegalArgumentException("Cây này không được hỗ trợ.");
         farmItem crop = avatar.item.PartManager.getInstance().findFarmitemByID(land.getType());
         if (crop == null) throw new IllegalArgumentException("Ô đất trống hoặc cây chưa có dữ liệu thu hoạch.");
         if (land.getPlantedTime() == null || land.getMinutesSincePlanted() < crop.getTime())
@@ -992,6 +1053,13 @@ public class User {
                 landObject.put("plantedTime", "not_planted"); // Hoặc loại bỏ dòng này
             }
 
+            if (landItem.getCustomPolicy() != null) {
+                landObject.put("customPolicy", landItem.getCustomPolicy());
+                landObject.put("customInstance", landItem.getCustomInstance());
+                landObject.put("customPlantedMs", landItem.getCustomPlantedMs());
+                landObject.put("customDeadlineMs", landItem.getCustomDeadlineMs());
+                landObject.put("customProductId", landItem.getCustomProductId());
+            }
             landData.add(landObject);
         }
 
@@ -1112,6 +1180,15 @@ public class User {
                                 ? null : LocalDateTime.parse(plantedTimeStr, formatter);
 
                         LandItem landItem = new LandItem(growthTime, type,suckhoe, resourceCount, isWatered, isFertilized, isHarvestable, plantedTime);
+                        if (obj.get("customPolicy") != null) {
+                            if (!(obj.get("customPolicy") instanceof String) || !(obj.get("customInstance") instanceof String)
+                                    || !(obj.get("customPlantedMs") instanceof Number) || !(obj.get("customDeadlineMs") instanceof Number)
+                                    || !(obj.get("customProductId") instanceof Number))
+                                throw new IllegalStateException("Invalid custom crop data");
+                            landItem.setCustomCrop((String) obj.get("customPolicy"), (String) obj.get("customInstance"),
+                                    ((Number) obj.get("customPlantedMs")).longValue(), ((Number) obj.get("customDeadlineMs")).longValue(),
+                                    ((Number) obj.get("customProductId")).intValue());
+                        }
                         landItems.add(landItem);
                     }
                     // Cập nhật danh sách ô đất cho người chơi

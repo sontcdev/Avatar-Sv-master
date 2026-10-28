@@ -33,6 +33,8 @@ public class FarmService extends Service {
     private int viewedFarmId = -1;
     private int pendingFriendFarmId = -1;
     private FarmCookingCatalog cookingCatalog;
+    private final CustomCropPolicy customCrop;
+    private final java.time.Clock clock;
 
     public void resetVisit() {
         viewedFarmId = -1;
@@ -46,7 +48,13 @@ public class FarmService extends Service {
     private static final Logger logger = Logger.getLogger(Service.class);
 
     public FarmService(Session cl) {
+        this(cl, CustomCropPolicy.runtime(), java.time.Clock.systemUTC());
+    }
+
+    FarmService(Session cl, CustomCropPolicy policy, java.time.Clock clock) {
         super(cl);
+        this.customCrop = policy;
+        this.clock = clock;
     }
 
 
@@ -171,7 +179,13 @@ public class FarmService extends Service {
             serverDialog("Bạn chỉ có thể trồng cây ở nông trại của mình.");
             return;
         }
-        session.user.plantCrop(indexCell, idSeed);
+        try {
+            if (customCrop != null) session.user.plantCustomCrop(indexCell, idSeed, customCrop, clock.millis());
+            else session.user.plantCrop(indexCell, idSeed);
+        } catch (SQLException failure) {
+            if (session.user.isFarmSaleUncertain()) session.close();
+            throw failure;
+        }
 
         // Tạo Message và gửi thông tin trồng cây
         ms = new Message(Cmd.PLANT_SEED);
@@ -194,11 +208,13 @@ public class FarmService extends Service {
             return;
         }
         final int quantity;
-        try { quantity = session.user.harvestCrop(index); }
+        try { quantity = customCrop == null ? session.user.harvestCrop(index)
+                : session.user.harvestCustomCrop(index, customCrop, clock.millis()); }
         catch (IllegalArgumentException invalid) { serverDialog(invalid.getMessage()); return; }
         catch (SQLException failure) {
             logger.error("Could not save crop harvest", failure);
-            serverDialog("Chưa lưu được thu hoạch. Vui lòng thử lại sau.");
+            if (session.user.isFarmSaleUncertain()) session.close();
+            else serverDialog("Chưa lưu được thu hoạch. Vui lòng thử lại sau.");
             return;
         }
         Message response = new Message(Cmd.TREE_HARVEST);
@@ -206,6 +222,12 @@ public class FarmService extends Service {
         response.writer().writeShort(quantity);
         session.sendMessage(response);
         getInventory(null);
+        if (customCrop != null) {
+            Message refresh = new Message(Cmd.JOIN);
+            refresh.writer().writeInt(farmId);
+            try { joinFarm(new Message(Cmd.JOIN, refresh.getData())); }
+            catch (SQLException failure) { throw new IOException(failure); }
+        }
     }
    // mở ô đất
     public void doRequestslot(Message ms) throws IOException {
@@ -446,7 +468,12 @@ public class FarmService extends Service {
     }
 
     private void writeInfoCell(DataOutputStream ds, LandItem land) throws IOException {
-        ds.writeShort(land.getPlantedTime() == null ? 0 : (int)land.getMinutesSincePlanted());
+        if (land.getCustomPolicy() != null) {
+            long age = Math.max(0, (clock.millis() - land.getCustomPlantedMs()) / 60_000L);
+            ds.writeShort((int) Math.min(Short.MAX_VALUE, age));
+        } else {
+            ds.writeShort(land.getPlantedTime() == null ? 0 : (int) land.getMinutesSincePlanted());
+        }
         ds.writeByte(land.getSucKhoe());
         ds.writeByte(1); //100 la héo
         ds.writeBoolean(land.isWatered());

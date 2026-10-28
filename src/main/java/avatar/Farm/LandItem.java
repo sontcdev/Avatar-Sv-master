@@ -12,6 +12,20 @@ public class LandItem {
     private boolean isFertilized;  // Trạng thái đã bón phân
     private boolean isHarvestable; // Trạng thái có thể thu hoạch
     private LocalDateTime plantedTime; // Time when the plant was planted
+    private String customPolicy;
+    private String customInstance;
+    private long customPlantedMs;
+    private long customDeadlineMs;
+    private int customProductId;
+
+    public String getCustomPolicy() { return customPolicy; }
+    public String getCustomInstance() { return customInstance; }
+    public long getCustomPlantedMs() { return customPlantedMs; }
+    public long getCustomDeadlineMs() { return customDeadlineMs; }
+    public int getCustomProductId() { return customProductId; }
+    public void setCustomCrop(String policy, String instance, long planted, long deadline, int productId) {
+        customPolicy = policy; customInstance = instance; customPlantedMs = planted; customDeadlineMs = deadline; customProductId = productId;
+    }
     // Constructor
     public LandItem(int growthTime, int type,int suckhoe, int resourceCount, boolean isWatered, boolean isFertilized, boolean isHarvestable, LocalDateTime plantedTime) {
         this.growthTime = growthTime;
